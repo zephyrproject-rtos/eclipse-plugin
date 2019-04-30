@@ -37,6 +37,7 @@ import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -44,6 +45,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
@@ -63,6 +65,10 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		IProject project = getProject();
 		IFolder buildFolder =
 				project.getFolder(ZephyrConstants.DEFAULT_BUILD_DIR);
+		if (!buildFolder.exists()) {
+			buildFolder.create(IResource.FORCE | IResource.DERIVED, true,
+					new NullProgressMonitor());
+		}
 
 		return buildFolder;
 	}
@@ -261,18 +267,35 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 					"Cleaning Zephyr Application project %s for board %s\n",
 					project.getName(), boardName));
 
-			IFolder buildFolder =
-					project.getFolder(ZephyrConstants.DEFAULT_BUILD_DIR);
+			IFolder buildFolder = (IFolder) getBuildContainer();
 
-			if (buildFolder.exists()) {
-				/*
-				 * Safer to use Eclipse's built-in delete than doing our own
-				 * File.delete() to make sure we are not deleting anything
-				 * outside the project directory.
-				 */
-				buildFolder.delete(true, monitor);
-				buildFolder.create(IResource.FORCE | IResource.DERIVED, true,
-						monitor);
+			String[] folderToRemove = new String[] {
+				"app", //$NON-NLS-1$
+				"CMakeFiles", //$NON-NLS-1$
+				"zephyr", //$NON-NLS-1$
+			};
+
+			String[] filesToRemove = new String[] {
+				"CMakeCache.txt", //$NON-NLS-1$
+				"CMakeFiles", //$NON-NLS-1$
+				"cmake_install.cmake", //$NON-NLS-1$
+				"Kconfig.modules", //$NON-NLS-1$
+				"Makefile", //$NON-NLS-1$
+				"zephyr_modules.txt" //$NON-NLS-1$
+			};
+
+			for (String remove : folderToRemove) {
+				IFolder f = buildFolder.getFolder(remove);
+				if (f.exists()) {
+					f.delete(true, monitor);
+				}
+			}
+
+			for (String remove : filesToRemove) {
+				IFile f = buildFolder.getFile(remove);
+				if (f.exists()) {
+					f.delete(true, monitor);
+				}
 			}
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);

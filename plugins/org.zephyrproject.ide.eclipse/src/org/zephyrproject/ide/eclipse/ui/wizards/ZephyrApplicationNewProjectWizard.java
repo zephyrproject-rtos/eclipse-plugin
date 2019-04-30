@@ -192,9 +192,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			}
 		}
 
-		entries.add(CoreModel.newOutputEntry(
-				project.getFolder(ZephyrConstants.DEFAULT_BUILD_DIR)
-						.getFullPath(),
+		entries.add(CoreModel.newOutputEntry(buildFolder.getFullPath(),
 				new IPath[] {
 					new Path("**/CMakeFiles/**") //$NON-NLS-1$
 				}));
