@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceTopPage"
+            class="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceToolchainPage"
+            id="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceToolchainPage"
+            name="Zephyr Toolchain">
+      </page>
+      <page
+            class="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceTopPage"
+            id="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceTopPage"
+            name="Zephyr">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceInitializer">
+      </initializer>
+   </extension>
+   <extension
+         id="zephyrApplicationBuilder"
+         name="Zephyr Application Builder"
+         point="org.eclipse.core.resources.builders">
+      <builder
+            hasNature="true"
+            isConfigurable="true">
+         <run
+               class="org.zephyrproject.ide.eclipse.core.ZephyrApplicationBuilder">
+         </run>
+      </builder>
+   </extension>
+   <extension
+         id="zephyrApplicationNature"
+         name="Zephyr Application Nature"
+         point="org.eclipse.core.resources.natures">
+      <requires-nature
+            id="org.eclipse.cdt.core.cnature">
+      </requires-nature>
+      <runtime>
+         <run
+               class="org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature">
+         </run>
+      </runtime>
+      <builder
+            id="org.zephyrproject.ide.eclipse.zephyrApplicationBuilder">
+      </builder>
+   </extension>
+   <extension
+         id="xmlProblem"
+         name="XML Problem"
+         point="org.eclipse.core.resources.markers">
+      <super
+            type="org.eclipse.core.resources.problemmarker">
+      </super>
+      <persistent
+            value="true">
+      </persistent>
+   </extension>
+   <extension
+         point="org.eclipse.ui.newWizards">
+      <category
+            id="org.zephyrproject.ide.eclipse.category.ui.wizards"
+            name="Zephyr Project">
+      </category>
+      <wizard
+            category="org.zephyrproject.ide.eclipse.category.ui.wizards"
+            class="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationNewProjectWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/zephyr-kite-logo_32x32.png"
+            id="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationNewProjectWizard"
+            name="Zephyr Application"
+            project="true">
+      </wizard>
+   </extension>
+   <extension
+         point="org.eclipse.ui.ide.projectNatureImages">
+      <image
+            icon="icons/zephyr-project-icon.png"
+            id="org.zephyrproject.ide.eclipse.core.natureImage"
+            natureId="org.zephyrproject.ide.eclipse.zephyrApplicationNature">
+      </image>
+   </extension>
+   <extension
+         point="org.eclipse.tools.templates.ui.templates">
+      <template
+            icon="icons/zephyr-kite-logo_48x48.png"
+            id="org.zephyrproject.ide.eclipse.ui.ZephyrApplicationNewProjectTemplate"
+            label="Zephyr Application"
+            wizard="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationNewProjectWizard">
+         <description>
+            A new Zephyr Application
+         </description>
+         <tagReference
+               id="org.zephyrproject.ide.eclipse.ui.tag">
+         </tagReference>
+         <tagReference
+               id="org.eclipse.cdt.ui.cdtTag">
+         </tagReference>
+      </template>
+      <tag
+            id="org.zephyrproject.ide.eclipse.ui.tag"
+            label="Zephyr">
+      </tag>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.core.buildConfigProvider">
+      <provider
+            class="org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider"
+            id="org.zephyrproject.ide.eclipse.core.build.zephyrApplicationBuildConfigProvider"
+            natureId="org.zephyrproject.ide.eclipse.zephyrApplicationNature">
+      </provider>
+   </extension>
+   <extension
+         point="org.eclipse.cdt.core.toolChainProvider">
+      <provider
+            class="org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChainProvider"
+            id="org.zephyrproject.ide.eclipse.core.build.zephyrApplicationToolChainProvider">
+      </provider>
+   </extension>
+</plugin>

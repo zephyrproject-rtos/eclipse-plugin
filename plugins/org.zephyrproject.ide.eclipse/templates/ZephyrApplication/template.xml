@@ -1,0 +1,16 @@
+<templateManifest>
+	<file
+		src="/templates/ZephyrApplication/CMakeLists.txt"
+		dest="/${projectName}/CMakeLists.txt"
+		/>
+	<file
+		src="/templates/ZephyrApplication/prj.conf"
+		dest="/${projectName}/prj.conf"
+		/>
+	<file
+		src="/templates/ZephyrApplication/src/main.c"
+		dest="/${projectName}/${srcDir}/main.c"
+		open="true"
+		/>
+	<srcRoot dir="${srcDir}" />
+</templateManifest>

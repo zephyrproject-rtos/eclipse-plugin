@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Zephyr Project
+Bundle-SymbolicName: org.zephyrproject.ide.eclipse;singleton:=true
+Bundle-Version: 0.0.1.qualifier
+Bundle-Activator: org.zephyrproject.ide.eclipse.core.ZephyrPlugin
+Bundle-Vendor: Zephyr Project
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources;bundle-version="3.11.0",
+ org.eclipse.ui.ide,
+ org.eclipse.cdt.ui;bundle-version="6.1.0",
+ org.eclipse.cdt.core;bundle-version="6.2.0",
+ org.eclipse.tools.templates.ui;bundle-version="1.1.0",
+ org.eclipse.tools.templates.freemarker;bundle-version="1.0.0",
+ org.eclipse.equinox.bidi,
+ org.eclipse.cdt.launch;bundle-version="9.1.0",
+ org.eclipse.debug.ui;bundle-version="3.11.202",
+ org.eclipse.cdt.build.gcc.core;bundle-version="1.0.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Automatic-Module-Name: org.zephyrproject.ide.eclipse
+Bundle-ActivationPolicy: lazy
