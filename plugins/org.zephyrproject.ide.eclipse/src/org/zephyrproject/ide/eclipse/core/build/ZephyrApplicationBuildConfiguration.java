@@ -40,6 +40,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -169,7 +170,8 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 					"Building Zephyr Application project %s for board %s\n",
 					project.getName(), boardName));
 
-			if (!Files.exists(buildDir.resolve("CMakeFiles"))) { //$NON-NLS-1$
+			if (!Files.exists(buildDir.resolve("CMakeFiles")) //$NON-NLS-1$
+					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
 				List<String> command = new ArrayList<>();
 
 				Path cmakePath = findCommand("cmake"); //$NON-NLS-1$

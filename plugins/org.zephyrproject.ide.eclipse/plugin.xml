@@ -26,6 +26,7 @@
          name="Zephyr Application Builder"
          point="org.eclipse.core.resources.builders">
       <builder
+            callOnEmptyDelta="true"
             hasNature="true"
             isConfigurable="true">
          <run
