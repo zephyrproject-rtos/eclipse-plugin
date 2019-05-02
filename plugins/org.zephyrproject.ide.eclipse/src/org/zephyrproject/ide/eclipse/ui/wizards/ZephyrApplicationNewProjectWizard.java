@@ -9,6 +9,7 @@ package org.zephyrproject.ide.eclipse.ui.wizards;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -173,6 +174,21 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 		} catch (CModelException e) {
 			showErrorDialogAndDeleteProject("Error getting paths from CDT", e);
 			return false;
+		}
+
+		/*
+		 * The project root path is designated as both source and output by
+		 * default. Remove them to avoid confusing the indexer.
+		 */
+		Iterator<IPathEntry> iter = entries.iterator();
+		while (iter.hasNext()) {
+			IPathEntry path = iter.next();
+
+			if (((path.getEntryKind() == IPathEntry.CDT_SOURCE)
+					|| (path.getEntryKind() == IPathEntry.CDT_OUTPUT))
+					&& (path.getPath().equals(project.getFullPath()))) {
+				iter.remove();
+			}
 		}
 
 		/*
