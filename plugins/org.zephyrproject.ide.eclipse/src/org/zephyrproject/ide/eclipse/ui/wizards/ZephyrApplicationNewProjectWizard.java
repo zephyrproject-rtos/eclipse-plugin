@@ -217,11 +217,32 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 		 * Create a link to ZEPHYR_BASE so the indexer can also index the Zephyr
 		 * core code.
 		 */
-		IFolder zBase = project.getFolder("ZEPHYR_BASE"); //$NON-NLS-1$
+		IFolder zBase = project.getFolder(ZephyrConstants.ZEPHYR_BASE); // $NON-NLS-1$
 		String zBaseLoc = mainPage.getZephyrBaseLocation();
 		IPath zBaseLink = new Path(zBaseLoc);
 
-		if (workspace.validateLinkLocation(zBase, zBaseLink).isOK()) {
+		if (zBase.exists() && zBase.isLinked()) {
+			/*
+			 * The project itself might be deleted from workspace metadata, but
+			 * project files still exist on storage.
+			 */
+			try {
+				zBase.delete(false, new NullProgressMonitor());
+			} catch (CoreException e) {
+				showErrorDialogAndDeleteProject(String.format(
+						"Cannot create project due to pre-existing linked resource '%s'",
+						zBase.getFullPath()), e);
+				return false;
+			}
+		}
+
+		IStatus zBaseLinkValid =
+				workspace.validateLinkLocation(zBase, zBaseLink);
+		if (zBaseLinkValid.isOK() || zBaseLinkValid.matches(IStatus.WARNING)) {
+			/*
+			 * WARNING means the linked resource also appears in another
+			 * project, so not exactly an issue.
+			 */
 			try {
 				zBase.createLink(zBaseLink, IResource.NONE, null);
 			} catch (CoreException e) {
