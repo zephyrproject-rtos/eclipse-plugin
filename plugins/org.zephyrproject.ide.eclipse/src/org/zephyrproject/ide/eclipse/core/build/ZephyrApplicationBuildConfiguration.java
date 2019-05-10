@@ -37,7 +37,6 @@ import org.eclipse.cdt.core.model.ICModelMarker;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -255,48 +254,43 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
 					IResource.DEPTH_INFINITE);
 
-			ConsoleOutputStream consoleOut = console.getOutputStream();
-
 			/* Grab the board name from project */
 			ScopedPreferenceStore pStore = new ScopedPreferenceStore(
 					new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
 
+			Path buildDir = getBuildDirectory();
+
+			if (!Files.exists(buildDir.resolve("CMakeFiles"))) {
+				/* Haven't run CMake yet, so nothing to clean */
+				return;
+			}
+
 			String boardName = pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+
+			ConsoleOutputStream consoleOut = console.getOutputStream();
 
 			consoleOut.write(String.format(
 					"Cleaning Zephyr Application project %s for board %s\n",
 					project.getName(), boardName));
 
-			IFolder buildFolder = (IFolder) getBuildContainer();
-
-			String[] folderToRemove = new String[] {
-				"app", //$NON-NLS-1$
-				"CMakeFiles", //$NON-NLS-1$
-				"zephyr", //$NON-NLS-1$
+			String[] command = {
+				"make", //$NON-NLS-1$
+				"clean" //$NON-NLS-1$
 			};
 
-			String[] filesToRemove = new String[] {
-				"CMakeCache.txt", //$NON-NLS-1$
-				"CMakeFiles", //$NON-NLS-1$
-				"cmake_install.cmake", //$NON-NLS-1$
-				"Kconfig.modules", //$NON-NLS-1$
-				"Makefile", //$NON-NLS-1$
-				"zephyr_modules.txt" //$NON-NLS-1$
-			};
-
-			for (String remove : folderToRemove) {
-				IFolder f = buildFolder.getFolder(remove);
-				if (f.exists()) {
-					f.delete(true, monitor);
-				}
+			Path cmdPath = findCommand(command[0]);
+			if (cmdPath != null) {
+				command[0] = cmdPath.toString();
 			}
 
-			for (String remove : filesToRemove) {
-				IFile f = buildFolder.getFile(remove);
-				if (f.exists()) {
-					f.delete(true, monitor);
-				}
-			}
+			ProcessBuilder processBuilder =
+					new ProcessBuilder(command).directory(buildDir.toFile());
+			Map<String, String> env = processBuilder.environment();
+			setupCommandEnvironment(project, env);
+			setBuildEnvironment(env);
+			Process process = processBuilder.start();
+			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+			watchProcess(process, new IConsoleParser[0], console);
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException eio) {
