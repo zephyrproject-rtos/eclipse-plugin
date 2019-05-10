@@ -6,10 +6,28 @@
 
 package org.zephyrproject.ide.eclipse.core.internal;
 
-import java.io.File;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR;
+import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
 
+import java.io.File;
+import java.util.Map;
+
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 
 /**
@@ -131,6 +149,46 @@ public final class ZephyrHelpers {
 	 */
 	public static IStatus errorStatus(String message, Throwable cause) {
 		return new Status(IStatus.ERROR, ZephyrPlugin.getId(), message, cause);
+	}
+
+	/**
+	 * Setup environment variables for build command execution.
+	 *
+	 * @param project The Project.
+	 * @param env The environment to be manipulated.
+	 */
+	public static void setupBuildCommandEnvironment(IProject project,
+			Map<String, String> env) {
+		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
+				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+
+		/* Set ZEPHYR_BASE */
+		String zephyrBase =
+				pStore.getString(ZephyrConstants.ZEPHYR_BASE_LOCATION);
+
+		env.put(ZephyrConstants.ZEPHYR_BASE, zephyrBase);
+
+		/* Set toolchain environment variables */
+		String variant = pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT);
+		env.put(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT, variant);
+
+		String tcVarName;
+		if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR)) {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
+		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS)) {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
+		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB)) {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
+		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM)) {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
+		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE)) {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
+		} else {
+			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
+		}
+
+		String tcVarValue = pStore.getString(tcVarName);
+		env.put(tcVarName, tcVarValue);
 	}
 
 }

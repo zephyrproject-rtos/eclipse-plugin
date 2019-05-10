@@ -7,19 +7,6 @@
 
 package org.zephyrproject.ide.eclipse.core.build;
 
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -93,46 +80,6 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 	}
 
 	/**
-	 * Setup environment variables for command execution.
-	 *
-	 * @param project The Project.
-	 * @param env The environment to be manipulated.
-	 */
-	private void setupCommandEnvironment(IProject project,
-			Map<String, String> env) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-
-		/* Set ZEPHYR_BASE */
-		String zephyrBase =
-				pStore.getString(ZephyrConstants.ZEPHYR_BASE_LOCATION);
-
-		env.put(ZephyrConstants.ZEPHYR_BASE, zephyrBase);
-
-		/* Set toolchain environment variables */
-		String variant = pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT);
-		env.put(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT, variant);
-
-		String tcVarName;
-		if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
-		} else {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
-		}
-
-		String tcVarValue = pStore.getString(tcVarName);
-		env.put(tcVarName, tcVarValue);
-	}
-
-	/**
 	 * Get the board name to be built for.
 	 *
 	 * @param project The Project.
@@ -194,7 +141,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				ProcessBuilder processBuilder = new ProcessBuilder(command)
 						.directory(buildDir.toFile());
 				Map<String, String> env = processBuilder.environment();
-				setupCommandEnvironment(project, env);
+				ZephyrHelpers.setupBuildCommandEnvironment(project, env);
 				setBuildEnvironment(env);
 				Process process = processBuilder.start();
 				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
@@ -216,7 +163,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				ProcessBuilder processBuilder = new ProcessBuilder(command)
 						.directory(buildDir.toFile());
 				Map<String, String> env = processBuilder.environment();
-				setupCommandEnvironment(project, env);
+				ZephyrHelpers.setupBuildCommandEnvironment(project, env);
 				setBuildEnvironment(env);
 				Process process = processBuilder.start();
 				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
