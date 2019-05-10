@@ -33,6 +33,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
 
 /**
  * Build configuration for Zephyr Application
@@ -96,6 +97,8 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		IProject project = getProject();
 
 		try {
+			monitor.beginTask("Building...", 100);
+
 			/* Remove C-related warnings/errors */
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
 					IResource.DEPTH_INFINITE);
@@ -115,6 +118,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			try (ErrorParserManager epm =
 					new ErrorParserManager(project, getBuildDirectoryURI(),
 							this, getToolChain().getErrorParserIds())) {
+				MakefileProgressMonitor buildProgress =
+						new MakefileProgressMonitor(monitor);
+
 				consoleOut.write(String.format(
 						"----- Building for board %s in %s\n", boardName,
 						buildFolder.getProjectRelativePath().toString()));
@@ -136,11 +142,14 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				Process process = processBuilder.start();
 				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 				watchProcess(process, new IConsoleParser[] {
-					epm
+					epm,
+					buildProgress
 				}, console);
 			}
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+
+			monitor.done();
 
 			return new IProject[] {
 				project

@@ -190,6 +190,9 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 			}
 
+			monitor.worked(1);
+			monitor.done();
+
 			/*
 			 * Return this project so that we get resource delta next time
 			 * this is invoked.
