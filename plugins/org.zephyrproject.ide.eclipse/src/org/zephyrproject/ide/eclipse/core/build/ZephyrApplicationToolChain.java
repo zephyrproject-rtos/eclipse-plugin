@@ -7,6 +7,7 @@
 package org.zephyrproject.ide.eclipse.core.build;
 
 import org.eclipse.cdt.build.gcc.core.GCCToolChain;
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.IToolChainProvider;
 import org.eclipse.core.resources.IBuildConfiguration;
 
@@ -33,6 +34,11 @@ public class ZephyrApplicationToolChain extends GCCToolChain {
 			String version) {
 		super(provider, id, version);
 		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
+	}
+
+	@Override
+	public String getBinaryParserId() {
+		return CCorePlugin.PLUGIN_ID + ".ELF"; //$NON-NLS-1$
 	}
 
 }

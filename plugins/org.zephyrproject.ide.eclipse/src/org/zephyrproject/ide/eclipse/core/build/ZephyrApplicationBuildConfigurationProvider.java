@@ -54,8 +54,8 @@ public class ZephyrApplicationBuildConfigurationProvider
 	public ICBuildConfiguration getCBuildConfiguration(
 			IBuildConfiguration config, String name) throws CoreException {
 		try {
-			if (config.getName()
-					.equals(IBuildConfiguration.DEFAULT_CONFIG_NAME)) {
+			if (config.getName().equals(
+					ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME)) {
 				Map<String, String> properties = new HashMap<>();
 				properties.put(IToolChain.ATTR_OS, "zephyr");
 				for (IToolChain toolChain : toolChainManager
@@ -63,10 +63,9 @@ public class ZephyrApplicationBuildConfigurationProvider
 					return new ZephyrApplicationBuildConfiguration(config, name,
 							toolChain);
 				}
-				return null;
-			} else {
-				return new ZephyrApplicationBuildConfiguration(config, name);
 			}
+
+			return null;
 		} catch (CoreException e) {
 			// Failed to create the build config. Return null so it gets
 			// recreated.

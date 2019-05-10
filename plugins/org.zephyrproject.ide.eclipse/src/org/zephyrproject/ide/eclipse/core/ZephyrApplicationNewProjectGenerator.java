@@ -17,16 +17,20 @@ import org.eclipse.cdt.core.CProjectNature;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IPathEntry;
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.ICommand;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IProjectDescription;
+import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.freemarker.FMProjectGenerator;
 import org.eclipse.tools.templates.freemarker.SourceRoot;
 import org.osgi.framework.Bundle;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 
 /**
  * New project generator for Zephyr Application.
@@ -73,6 +77,20 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		desc.setBuildSpec(new ICommand[] {
 			cmd
 		});
+
+		/* Setup build configuration */
+		IProject project = getProject();
+		IWorkspace workspace = ResourcesPlugin.getWorkspace();
+		IBuildConfiguration config = workspace.newBuildConfig(project.getName(),
+				ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME);
+
+		String[] configNames = {
+			config.getName()
+		};
+
+		desc.setBuildConfigs(configNames);
+		desc.setActiveBuildConfig(config.getName());
+
 	}
 
 	/*

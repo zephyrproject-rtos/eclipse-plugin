@@ -7,14 +7,12 @@
 
 package org.zephyrproject.ide.eclipse.core.build;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
+import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.ConsoleOutputStream;
 import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
@@ -27,7 +25,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -46,6 +43,20 @@ import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
  */
 public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
+	public static final String DEFAULT_CONFIG_NAME =
+			ZephyrApplicationBuildConfigurationProvider.ID
+					+ "/zephyr.app.build.config"; //$NON-NLS-1$
+
+	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
+			IToolChain toolChain) {
+		super(config, DEFAULT_CONFIG_NAME, toolChain);
+	}
+
+	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
+			String name, IToolChain toolChain) {
+		super(config, name, toolChain);
+	}
+
 	@Override
 	public IContainer getBuildContainer() throws CoreException {
 		IProject project = getProject();
@@ -57,26 +68,6 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		}
 
 		return buildFolder;
-	}
-
-	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
-			String name) throws CoreException {
-		super(config, name);
-	}
-
-	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
-			IToolChain toolChain) {
-		super(config, toolChain);
-	}
-
-	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
-			String name, IToolChain toolChain) {
-		super(config, name, toolChain);
-	}
-
-	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
-			String name, IToolChain toolChain, String launchMode) {
-		super(config, name, toolChain, launchMode);
 	}
 
 	/**
@@ -112,45 +103,22 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			ConsoleOutputStream consoleOut = console.getOutputStream();
 
 			Path buildDir = getBuildDirectory();
+			IFolder buildFolder = (IFolder) getBuildContainer();
 
 			String boardName = getBoardName(project);
 
-			String projectAbsPath =
-					new File(project.getLocationURI()).getAbsolutePath();
-
-			consoleOut.write(String.format(
-					"Building Zephyr Application project %s for board %s\n",
-					project.getName(), boardName));
-
-			if (!Files.exists(buildDir.resolve("CMakeFiles")) //$NON-NLS-1$
-					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
-				List<String> command = new ArrayList<>();
-
-				Path cmakePath = findCommand("cmake"); //$NON-NLS-1$
-				if (cmakePath != null) {
-					command.add(cmakePath.toString());
-				} else {
-					/* Hope this is in path */
-					command.add("cmake"); //$NON-NLS-1$
-				}
-
-				command.add(String.format("-DBOARD=%s", boardName));
-
-				command.add(projectAbsPath);
-
-				ProcessBuilder processBuilder = new ProcessBuilder(command)
-						.directory(buildDir.toFile());
-				Map<String, String> env = processBuilder.environment();
-				ZephyrHelpers.setupBuildCommandEnvironment(project, env);
-				setBuildEnvironment(env);
-				Process process = processBuilder.start();
-				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
-				watchProcess(process, new IConsoleParser[0], console);
+			if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
+				console.getErrorStream().write("Makefile does not exist\n");
+				return new IProject[0];
 			}
 
 			try (ErrorParserManager epm =
 					new ErrorParserManager(project, getBuildDirectoryURI(),
 							this, getToolChain().getErrorParserIds())) {
+				consoleOut.write(String.format(
+						"----- Building for board %s in %s\n", boardName,
+						buildFolder.getProjectRelativePath().toString()));
+
 				String[] command = {
 					"make" //$NON-NLS-1$
 				};
@@ -179,8 +147,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			};
 		} catch (IOException eio) {
 			throw new CoreException(ZephyrHelpers.errorStatus(String.format(
-					"Error building Zephyr Application project %s!",
-					project.getName()), eio));
+					"Error building project %s!", project.getName()), eio));
 		}
 	}
 
@@ -201,24 +168,27 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
 					IResource.DEPTH_INFINITE);
 
-			/* Grab the board name from project */
-			ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-					new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-
 			Path buildDir = getBuildDirectory();
-
-			if (!Files.exists(buildDir.resolve("CMakeFiles"))) {
-				/* Haven't run CMake yet, so nothing to clean */
-				return;
-			}
-
-			String boardName = pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+			IFolder buildFolder = (IFolder) getBuildContainer();
 
 			ConsoleOutputStream consoleOut = console.getOutputStream();
 
-			consoleOut.write(String.format(
-					"Cleaning Zephyr Application project %s for board %s\n",
-					project.getName(), boardName));
+			if (!Files.exists(buildDir.resolve("CMakeFiles"))) {
+				/* Haven't run CMake yet, so nothing to clean */
+				console.getErrorStream()
+						.write("----- Need to run CMake first.\n");
+				return;
+			}
+
+			if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
+				/* Makefile does not exist, 'make clean' won't work */
+				console.getErrorStream()
+						.write("----- Makefile does not exist.\n");
+				return;
+			}
+
+			consoleOut.write(String.format("----- Cleaning in %s\n",
+					buildFolder.getProjectRelativePath().toString()));
 
 			String[] command = {
 				"make", //$NON-NLS-1$
@@ -233,7 +203,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			ProcessBuilder processBuilder =
 					new ProcessBuilder(command).directory(buildDir.toFile());
 			Map<String, String> env = processBuilder.environment();
-			setupCommandEnvironment(project, env);
+			ZephyrHelpers.setupBuildCommandEnvironment(project, env);
 			setBuildEnvironment(env);
 			Process process = processBuilder.start();
 			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
@@ -245,5 +215,15 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 					"Error cleaning Zephyr Application project %s!",
 					project.getName()), eio));
 		}
+	}
+
+	@Override
+	public String getBinaryParserId() throws CoreException {
+		return CCorePlugin.PLUGIN_ID + ".ELF"; //$NON-NLS-1$
+	}
+
+	@Override
+	public Path findCommand(String command) {
+		return super.findCommand(command);
 	}
 }
