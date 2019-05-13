@@ -25,6 +25,7 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -33,6 +34,7 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
 
 /**
@@ -48,6 +50,10 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			ZephyrApplicationBuildConfigurationProvider.ID
 					+ "/zephyr.app.build.config"; //$NON-NLS-1$
 
+	private String cmakeMakeProgram;
+
+	private CMakeCache cmakeCache;
+
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
 			IToolChain toolChain) {
 		super(config, DEFAULT_CONFIG_NAME, toolChain);
@@ -56,6 +62,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
 			String name, IToolChain toolChain) {
 		super(config, name, toolChain);
+
+		this.cmakeMakeProgram = "make"; //$NON-NLS-1$
+		this.cmakeCache = null;
 	}
 
 	@Override
@@ -84,6 +93,25 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
 	}
 
+	private void parseCMakeCache(IProject project, Path buildDir)
+			throws IOException, CoreException {
+		Path cachePath = buildDir.resolve("CMakeCache.txt"); //$NON-NLS-1$
+		boolean done = false;
+		if (Files.exists(cachePath)) {
+			CMakeCache cache = new CMakeCache(project);
+			done = cache.parseFile(cachePath.toFile());
+			if (done) {
+				this.cmakeCache = cache;
+				updateToolChain(this.cmakeCache);
+			}
+		}
+
+		if (!done) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Build not configured properly.", new Exception()));
+		}
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -108,6 +136,11 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			Path buildDir = getBuildDirectory();
 			IFolder buildFolder = (IFolder) getBuildContainer();
 
+			if ((cmakeCache == null)
+					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
+				parseCMakeCache(project, buildDir);
+			}
+
 			String boardName = getBoardName(project);
 
 			if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
@@ -126,7 +159,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 						buildFolder.getProjectRelativePath().toString()));
 
 				String[] command = {
-					"make" //$NON-NLS-1$
+					this.cmakeMakeProgram
 				};
 
 				Path cmdPath = findCommand(command[0]);
@@ -196,11 +229,15 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				return;
 			}
 
+			if (cmakeCache == null) {
+				parseCMakeCache(project, buildDir);
+			}
+
 			consoleOut.write(String.format("----- Cleaning in %s\n",
 					buildFolder.getProjectRelativePath().toString()));
 
 			String[] command = {
-				"make", //$NON-NLS-1$
+				this.cmakeMakeProgram,
 				"clean" //$NON-NLS-1$
 			};
 
@@ -235,4 +272,33 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 	public Path findCommand(String command) {
 		return super.findCommand(command);
 	}
+
+	private void updateToolChain(CMakeCache cache) throws CoreException {
+		/* Make sure it is of known toolchain class */
+		IToolChain iTC = getToolChain();
+		if ((iTC == null) || !(iTC instanceof ZephyrApplicationToolChain)) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Toolchain not configured properly.", new Exception()));
+		}
+
+		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
+
+		/* Populate compiler paths */
+		String str;
+		str = cache.getCCompiler();
+		if (str != null) {
+			toolChain.setCCompiler(str);
+		}
+
+		str = cache.getCXXCompiler();
+		if (str != null) {
+			toolChain.setCXXCompiler(str);
+		}
+
+		str = cache.getMakeProgram();
+		if (str != null) {
+			this.cmakeMakeProgram = str;
+		}
+	}
+
 }
