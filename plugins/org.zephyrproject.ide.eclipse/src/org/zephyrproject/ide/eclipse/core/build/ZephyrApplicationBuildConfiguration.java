@@ -36,6 +36,7 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
+import org.zephyrproject.ide.eclipse.core.internal.build.NinjaProgressMonitor;
 
 /**
  * Build configuration for Zephyr Application
@@ -54,9 +55,11 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 	private CMakeCache cmakeCache;
 
+	private ScopedPreferenceStore pStore;
+
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
 			IToolChain toolChain) {
-		super(config, DEFAULT_CONFIG_NAME, toolChain);
+		this(config, DEFAULT_CONFIG_NAME, toolChain);
 	}
 
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
@@ -65,6 +68,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 		this.cmakeMakeProgram = "make"; //$NON-NLS-1$
 		this.cmakeCache = null;
+
+		this.pStore = new ScopedPreferenceStore(
+				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
 	}
 
 	@Override
@@ -83,14 +89,24 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 	/**
 	 * Get the board name to be built for.
 	 *
-	 * @param project The Project.
 	 * @return Name of board to be built for.
 	 */
-	private String getBoardName(IProject project) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-
+	private String getBoardName() {
 		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+	}
+
+	/**
+	 * @return The CMake Generator identifier
+	 */
+	private String getCMakeGenerator() {
+		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+
+		if (generator.trim().isEmpty()) {
+			/* Default is ninja */
+			return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+		}
+
+		return generator;
 	}
 
 	private void parseCMakeCache(IProject project, Path buildDir)
@@ -141,19 +157,37 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				parseCMakeCache(project, buildDir);
 			}
 
-			String boardName = getBoardName(project);
+			String boardName = getBoardName();
+			String cmakeGenerator = getCMakeGenerator();
 
-			if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
-				console.getErrorStream().write("Makefile does not exist\n");
-				return new IProject[0];
+			IConsoleParser buildProgress = null;
+			if (cmakeGenerator
+					.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
+					/* Makefile does not exist, 'make' won't work */
+					console.getErrorStream().write("Makefile does not exist\n");
+					return null;
+				}
+
+				buildProgress = new MakefileProgressMonitor(monitor);
+			} else if (cmakeGenerator
+					.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
+					/* build.ninja does not exist, 'ninja' won't work */
+					console.getErrorStream()
+							.write("build.ninja does not exist\n");
+					return null;
+				}
+
+				buildProgress = new NinjaProgressMonitor(monitor);
+			} else {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Unknonw CMake Generator specified", new Exception()));
 			}
 
 			try (ErrorParserManager epm =
 					new ErrorParserManager(project, getBuildDirectoryURI(),
 							this, getToolChain().getErrorParserIds())) {
-				MakefileProgressMonitor buildProgress =
-						new MakefileProgressMonitor(monitor);
-
 				consoleOut.write(String.format(
 						"----- Building for board %s in %s\n", boardName,
 						buildFolder.getProjectRelativePath().toString()));
@@ -222,11 +256,26 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				return;
 			}
 
-			if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
-				/* Makefile does not exist, 'make clean' won't work */
-				console.getErrorStream()
-						.write("----- Makefile does not exist.\n");
-				return;
+			String cmakeGenerator = getCMakeGenerator();
+
+			if (cmakeGenerator
+					.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
+					/* Makefile does not exist, 'make clean' won't work */
+					console.getErrorStream().write("Makefile does not exist\n");
+					return;
+				}
+			} else if (cmakeGenerator
+					.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
+					/* build.ninja does not exist, 'ninja clean' won't work */
+					console.getErrorStream()
+							.write("build.ninja does not exist\n");
+					return;
+				}
+			} else {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Unknonw CMake Generator specified", new Exception()));
 			}
 
 			if (cmakeCache == null) {

@@ -89,4 +89,13 @@ public final class ZephyrConstants {
 
 	public static final String DEFAULT_SRC_DIR = "src"; //$NON-NLS-1$
 
+	public static final String CMAKE_GENERATOR = "CMAKE_GENERATOR"; //$NON-NLS-1$
+	public static final String CMAKE_GENERATOR_DESC = "CMake Generator"; //$NON-NLS-1$
+	public static final String CMAKE_GENERATOR_MAKEFILE = "Unix Makefiles"; //$NON-NLS-1$
+	public static final String CMAKE_GENERATOR_NINJA = "Ninja"; //$NON-NLS-1$
+
+	public static final String[] CMAKE_GENERATOR_LIST = {
+		CMAKE_GENERATOR_NINJA,
+		CMAKE_GENERATOR_MAKEFILE
+	};
 }

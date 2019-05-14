@@ -22,6 +22,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Event;
@@ -55,6 +56,8 @@ public class ZephyrApplicationMainWizardPage
 
 	private String zbUserLoc;
 
+	private Combo zCMakeGenerator;
+
 	public ZephyrApplicationMainWizardPage(String pageName) {
 		super(pageName);
 	}
@@ -77,6 +80,7 @@ public class ZephyrApplicationMainWizardPage
 		}
 
 		createZephyrBaseGroup((Composite) getControl());
+		createCMakeGeneratorGroup((Composite) getControl());
 		setPageComplete(validatePage());
 		Dialog.applyDialogFont(getControl());
 	}
@@ -205,6 +209,39 @@ public class ZephyrApplicationMainWizardPage
 	}
 
 	/**
+	 * Create the controls to specify the CMake generator.
+	 *
+	 * @param parent
+	 */
+	private final void createCMakeGeneratorGroup(Composite parent) {
+		GridData gridData;
+		Composite cmakeGroup = new Composite(parent, SWT.NONE);
+
+		/* Create a grid with 3 columns */
+		GridLayout layout = new GridLayout(3, false);
+		cmakeGroup.setLayout(layout);
+		cmakeGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		/* Label: "CMake Generator" */
+		Label generator = new Label(cmakeGroup, SWT.NONE);
+		gridData = new GridData();
+		generator.setLayoutData(gridData);
+		generator.setText(ZephyrConstants.CMAKE_GENERATOR_DESC + ":"); //$NON-NLS-1$
+		generator.setFont(cmakeGroup.getFont());
+
+		/* Combo box for CMake Generator */
+		zCMakeGenerator = new Combo(cmakeGroup, SWT.BORDER | SWT.READ_ONLY);
+		gridData = new GridData();
+		gridData.horizontalSpan = 2;
+		zCMakeGenerator.setLayoutData(gridData);
+		zCMakeGenerator.setItems(ZephyrConstants.CMAKE_GENERATOR_LIST);
+		zCMakeGenerator.select(0);
+		zCMakeGenerator.setFont(cmakeGroup.getFont());
+
+		Dialog.applyDialogFont(cmakeGroup);
+	}
+
+	/**
 	 * Handle the event from the "Browse" button for ZEPHYR_BASE.
 	 */
 	private void handleZephyrBaseBrowseBtn() {
@@ -294,6 +331,10 @@ public class ZephyrApplicationMainWizardPage
 		}
 
 		pStore.putValue(ZephyrConstants.ZEPHYR_BASE_LOCATION, zBaseLoc);
+
+		/* Store the chosen CMake generator */
+		String generator = zCMakeGenerator.getText();
+		pStore.putValue(ZephyrConstants.CMAKE_GENERATOR, generator);
 
 		pStore.save();
 	}

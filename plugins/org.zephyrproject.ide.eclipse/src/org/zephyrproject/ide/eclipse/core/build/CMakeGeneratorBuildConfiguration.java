@@ -62,23 +62,38 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 	private ZephyrApplicationBuildConfiguration zAppBuildCfg;
 
+	private ScopedPreferenceStore pStore;
+
 	public CMakeGeneratorBuildConfiguration(IBuildConfiguration config,
 			ZephyrApplicationBuildConfiguration zAppBuildCfg) {
 		this.config = config;
 		this.zAppBuildCfg = zAppBuildCfg;
+
+		this.pStore = new ScopedPreferenceStore(
+				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
 	}
 
 	/**
 	 * Get the board name to be built for.
 	 *
-	 * @param project The Project.
 	 * @return Name of board to be built for.
 	 */
-	private String getBoardName(IProject project) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-
+	private String getBoardName() {
 		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+	}
+
+	/**
+	 * @return The CMake Generator identifier
+	 */
+	private String getCMakeGenerator() {
+		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+
+		if (generator.trim().isEmpty()) {
+			/* Default is ninja */
+			return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+		}
+
+		return generator;
 	}
 
 	protected int watchProcess(Process process, IConsoleParser[] consoleParsers,
@@ -150,7 +165,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 			Path buildDir = zAppBuildCfg.getBuildDirectory();
 			IFolder buildFolder = (IFolder) zAppBuildCfg.getBuildContainer();
 
-			String boardName = getBoardName(project);
+			String boardName = getBoardName();
 
 			String projectAbsPath =
 					new File(project.getLocationURI()).getAbsolutePath();
@@ -173,7 +188,10 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 					command.add("cmake"); //$NON-NLS-1$
 				}
 
-				command.add(String.format("-DBOARD=%s", boardName));
+				command.add(String.format("-DBOARD=%s", boardName)); //$NON-NLS-1$
+
+				command.add("-G"); //$NON-NLS-1$
+				command.add(getCMakeGenerator());
 
 				command.add(projectAbsPath);
 
