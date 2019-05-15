@@ -54,7 +54,15 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 	@Override
 	protected void initProjectDescription(IProjectDescription desc)
 			throws CoreException {
+		this.setupProject(desc);
+	}
 
+	/**
+	 * Sets up necessary bits for project.
+	 *
+	 * @param desc IProjectDescription associated with the project
+	 */
+	private void setupProject(IProjectDescription desc) {
 		/*
 		 * Setup Nature for project.
 		 *
@@ -90,7 +98,6 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 
 		desc.setBuildConfigs(configNames);
 		desc.setActiveBuildConfig(config.getName());
-
 	}
 
 	/*
@@ -146,6 +153,11 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		/* Tell CDT source and build paths */
 		cproject.setRawPathEntries(
 				entries.toArray(new IPathEntry[entries.size()]), monitor);
+
+		/* Setup project */
+		IProjectDescription desc = project.getDescription();
+		setupProject(desc);
+		project.setDescription(desc, monitor);
 	}
 
 }
