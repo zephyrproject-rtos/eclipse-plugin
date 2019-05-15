@@ -205,6 +205,11 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 				watchProcess(process, new IConsoleParser[0], console);
 
+				consoleOut.write(String.format(
+						"----- Done generating CMake files for board %s in %s\n",
+						boardName,
+						buildFolder.getProjectRelativePath().toString()));
+
 				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 			}
 

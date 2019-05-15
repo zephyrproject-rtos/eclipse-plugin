@@ -212,6 +212,10 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 					epm,
 					buildProgress
 				}, console);
+
+				consoleOut.write(String.format(
+						"----- Done building for board %s in %s\n", boardName,
+						buildFolder.getProjectRelativePath().toString()));
 			}
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
@@ -303,6 +307,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			Process process = processBuilder.start();
 			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 			watchProcess(process, new IConsoleParser[0], console);
+
+			consoleOut.write(String.format("----- Done cleaning in %s\n",
+					buildFolder.getProjectRelativePath().toString()));
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 		} catch (IOException eio) {
