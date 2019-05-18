@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2019 Intel Corporation
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: EPL-2.0
  */
 
 package org.zephyrproject.ide.eclipse.core.build;
