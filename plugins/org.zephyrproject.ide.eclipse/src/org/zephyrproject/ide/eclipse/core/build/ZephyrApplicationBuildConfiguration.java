@@ -95,6 +95,12 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
 	}
 
+	@Override
+	public void setBuildEnvironment(Map<String, String> env) {
+		ZephyrHelpers.setupBuildCommandEnvironment(pStore, env);
+		super.setBuildEnvironment(env);
+	}
+
 	/**
 	 * @return The CMake Generator identifier
 	 */
@@ -203,9 +209,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 				ProcessBuilder processBuilder = new ProcessBuilder(command)
 						.directory(buildDir.toFile());
-				Map<String, String> env = processBuilder.environment();
-				ZephyrHelpers.setupBuildCommandEnvironment(project, env);
-				setBuildEnvironment(env);
+				setBuildEnvironment(processBuilder.environment());
 				Process process = processBuilder.start();
 				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 				watchProcess(process, new IConsoleParser[] {
@@ -301,9 +305,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 			ProcessBuilder processBuilder =
 					new ProcessBuilder(command).directory(buildDir.toFile());
-			Map<String, String> env = processBuilder.environment();
-			ZephyrHelpers.setupBuildCommandEnvironment(project, env);
-			setBuildEnvironment(env);
+			setBuildEnvironment(processBuilder.environment());
 			Process process = processBuilder.start();
 			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 			watchProcess(process, new IConsoleParser[0], console);

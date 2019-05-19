@@ -161,6 +161,17 @@ public final class ZephyrHelpers {
 			Map<String, String> env) {
 		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
 				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		setupBuildCommandEnvironment(pStore, env);
+	}
+
+	/**
+	 * Setup environment variables for build command execution.
+	 *
+	 * @param pStore Project preference store.
+	 * @param env The environment to be manipulated.
+	 */
+	public static void setupBuildCommandEnvironment(
+			ScopedPreferenceStore pStore, Map<String, String> env) {
 
 		/* Set ZEPHYR_BASE */
 		String zephyrBase =

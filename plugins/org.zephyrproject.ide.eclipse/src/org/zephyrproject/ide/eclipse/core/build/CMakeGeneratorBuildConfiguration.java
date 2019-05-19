@@ -143,6 +143,13 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 	}
 
+	@Override
+	public void setBuildEnvironment(Map<String, String> env) {
+		ZephyrHelpers.setupBuildCommandEnvironment(pStore, env);
+		CCorePlugin.getDefault().getBuildEnvironmentManager()
+				.setEnvironment(env, config, true);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 *
@@ -197,9 +204,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 				ProcessBuilder processBuilder = new ProcessBuilder(command)
 						.directory(buildDir.toFile());
-				Map<String, String> env = processBuilder.environment();
-				ZephyrHelpers.setupBuildCommandEnvironment(project, env);
-				setBuildEnvironment(env);
+				setBuildEnvironment(processBuilder.environment());
 				Process process = processBuilder.start();
 				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
 
