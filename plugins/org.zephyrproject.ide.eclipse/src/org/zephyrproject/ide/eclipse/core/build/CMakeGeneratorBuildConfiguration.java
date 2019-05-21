@@ -200,6 +200,8 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 				command.add("-G"); //$NON-NLS-1$
 				command.add(getCMakeGenerator());
 
+				command.add("-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"); //$NON-NLS-1$
+
 				command.add(projectAbsPath);
 
 				ProcessBuilder processBuilder = new ProcessBuilder(command)

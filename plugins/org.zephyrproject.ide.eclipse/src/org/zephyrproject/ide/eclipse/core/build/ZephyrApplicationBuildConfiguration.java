@@ -7,9 +7,13 @@
 
 package org.zephyrproject.ide.eclipse.core.build;
 
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -18,7 +22,12 @@ import org.eclipse.cdt.core.ErrorParserManager;
 import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.build.CBuildConfiguration;
 import org.eclipse.cdt.core.build.IToolChain;
+import org.eclipse.cdt.core.index.IIndexManager;
+import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.model.ITranslationUnit;
+import org.eclipse.cdt.core.parser.IExtendedScannerInfo;
+import org.eclipse.cdt.core.parser.IScannerInfo;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IContainer;
@@ -35,8 +44,12 @@ import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
+import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
 import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
 import org.zephyrproject.ide.eclipse.core.internal.build.NinjaProgressMonitor;
+import org.zephyrproject.ide.eclipse.core.internal.build.ZephyrScannerInfoCache;
+
+import com.google.gson.Gson;
 
 /**
  * Build configuration for Zephyr Application
@@ -57,6 +70,8 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 	private ScopedPreferenceStore pStore;
 
+	private ZephyrScannerInfoCache scannerInfoCache;
+
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
 			IToolChain toolChain) {
 		this(config, DEFAULT_CONFIG_NAME, toolChain);
@@ -68,6 +83,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 		this.cmakeMakeProgram = "make"; //$NON-NLS-1$
 		this.cmakeCache = null;
+		this.scannerInfoCache = new ZephyrScannerInfoCache(config);
 
 		this.pStore = new ScopedPreferenceStore(
 				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
@@ -224,6 +240,8 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 
+			processCompileCommandsFile(monitor);
+
 			monitor.done();
 
 			return new IProject[] {
@@ -356,6 +374,121 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		str = cache.getMakeProgram();
 		if (str != null) {
 			this.cmakeMakeProgram = str;
+		}
+	}
+
+	@Override
+	public IScannerInfo getScannerInformation(IResource resource) {
+		IExtendedScannerInfo info = scannerInfoCache.getScannerInfo(resource);
+
+		if (info == null) {
+			ICElement celement =
+					CCorePlugin.getDefault().getCoreModel().create(resource);
+			if (celement instanceof ITranslationUnit) {
+				info = scannerInfoCache
+						.getDefaultScannerInfo(celement.getResource());
+			}
+		}
+		return info;
+	}
+
+	@Override
+	public boolean processLine(String line) {
+		return false;
+	}
+
+	public void processCompileCommand(String line,
+			ArrayList<ICElement> tuSelection) throws CoreException {
+
+		List<String> command = Arrays.asList(line.split("\\s+")); //$NON-NLS-1$
+
+		/* Only work with known toolchain object */
+		IToolChain iTC = getToolChain();
+		if (!(iTC instanceof ZephyrApplicationToolChain)) {
+			return;
+		}
+		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
+
+		/* Make sure it's a compiler command */
+		String[] compileCommands = toolChain.getCompileCommands();
+		loop: for (String arg : command) {
+			if (arg.startsWith("-")) { //$NON-NLS-1$
+				/* compiler option found, gone too far into the list */
+				return;
+			}
+
+			for (String cc : compileCommands) {
+				if (arg.endsWith(cc)) {
+					break loop;
+				}
+			}
+		}
+
+		/* Add artifacts to the tuSelection so indexer can update these later */
+		IResource[] resources = getToolChain().getResourcesFromCommand(command,
+				getBuildDirectoryURI());
+		if (resources != null) {
+			for (IResource resource : resources) {
+				Path commandPath = findCommand(command.get(0));
+				command.set(0, commandPath.toString());
+
+				/*
+				 * Note that this does not use the reference scanner info
+				 * object, as the command line already has everything to
+				 * parse the file correctly.
+				 */
+				IExtendedScannerInfo info = getToolChain().getScannerInfo(
+						getBuildConfiguration(), command, null, resource,
+						getBuildDirectoryURI());
+				scannerInfoCache.setScannerInfo(resource, info);
+				scannerInfoCache.setDefaultScannerInfo(resource, info);
+
+				ICElement element = CCorePlugin.getDefault().getCoreModel()
+						.create(resource);
+				if (element != null) {
+					tuSelection.add(element);
+				}
+			}
+		}
+	}
+
+	@Override
+	public void shutdown() {
+		/* Nothing to do here. */
+	}
+
+	private void processCompileCommandsFile(IProgressMonitor monitor)
+			throws CoreException {
+		IProject project = getProject();
+		Path commandsFile =
+				getBuildDirectory().resolve("compile_commands.json"); //$NON-NLS-1$
+		if (Files.exists(commandsFile)) {
+			try (FileReader reader = new FileReader(commandsFile.toFile())) {
+				Gson gson = new Gson();
+				ArrayList<ICElement> tuSelection = new ArrayList<>();
+
+				CompileCommand[] commands =
+						gson.fromJson(reader, CompileCommand[].class);
+				for (CompileCommand command : commands) {
+					processCompileCommand(command.getCommand(), tuSelection);
+				}
+
+				if (!tuSelection.isEmpty()) {
+					CCorePlugin.getIndexManager().update(
+							tuSelection.toArray(new ICElement[0]),
+							IIndexManager.UPDATE_CHECK_TIMESTAMPS
+									| IIndexManager.UPDATE_CHECK_CONFIGURATION
+									| IIndexManager.UPDATE_EXTERNAL_FILES_FOR_PROJECT
+									| IIndexManager.UPDATE_CHECK_CONTENTS_HASH
+									| IIndexManager.UPDATE_UNRESOLVED_INCLUDES);
+				}
+
+				scannerInfoCache.writeCache();
+			} catch (IOException e) {
+				throw new CoreException(ZephyrHelpers.errorStatus(String.format(
+						"Cannot parse compiler commands from CMake for project %s",
+						project.getName()), e));
+			}
 		}
 	}
 
