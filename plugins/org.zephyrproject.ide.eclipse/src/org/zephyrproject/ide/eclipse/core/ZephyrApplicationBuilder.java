@@ -10,6 +10,8 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
+import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
+import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
 import org.eclipse.cdt.core.resources.IConsole;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
@@ -22,6 +24,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.zephyrproject.ide.eclipse.core.build.CMakeGeneratorBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
@@ -69,6 +72,35 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 		return newKind;
 	}
 
+	private ICBuildConfiguration fixBuildConfig(IBuildConfiguration config)
+			throws CoreException {
+		ICBuildConfigurationManager configManager =
+				CCorePlugin.getService(ICBuildConfigurationManager.class);
+
+		if (configManager == null) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Cannot get build configuration manager!", null));
+		}
+
+		ICBuildConfigurationProvider provider = configManager
+				.getProvider(ZephyrApplicationBuildConfigurationProvider.ID);
+
+		if (provider == null) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Cannot get build configuration provider!", null));
+		}
+
+		ICBuildConfiguration buildCfg = provider.getCBuildConfiguration(config,
+				ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME);
+		if ((buildCfg == null)
+				|| !(buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Unable to retrieve build configuration!", null));
+		}
+
+		return buildCfg;
+	}
+
 	@Override
 	protected IProject[] build(int kind, Map<String, String> args,
 			IProgressMonitor monitor) throws CoreException {
@@ -88,8 +120,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 				buildCfg.getAdapter(ICBuildConfiguration.class);
 		if ((appBuildCfg == null)
 				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-			throw new CoreException(ZephyrHelpers.errorStatus(
-					"Build not configured properly.", new Exception()));
+			appBuildCfg = fixBuildConfig(buildCfg);
 		}
 
 		ZephyrApplicationBuildConfiguration zAppBuildCfg =
@@ -123,8 +154,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 				buildCfg.getAdapter(ICBuildConfiguration.class);
 		if ((appBuildCfg == null)
 				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-			throw new CoreException(ZephyrHelpers.errorStatus(
-					"Build not configured properly.", new Exception()));
+			appBuildCfg = fixBuildConfig(buildCfg);
 		}
 
 		ZephyrApplicationBuildConfiguration zAppBuildCfg =
