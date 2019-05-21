@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/org.zephyrproject.ide.eclipse.feature_0.0.1.qualifier.jar" id="org.zephyrproject.ide.eclipse.feature" version="0.0.1.qualifier">
+      <category name="org.zephyrproject"/>
+   </feature>
+   <category-def name="org.zephyrproject" label="Zephyr Project"/>
+</site>
