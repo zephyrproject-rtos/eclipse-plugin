@@ -346,7 +346,18 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 	@Override
 	public Path findCommand(String command) {
-		return super.findCommand(command);
+		Path cmd = null;
+
+		try {
+			cmd = super.findCommand(command);
+		} catch (NullPointerException npe) {
+			/*
+			 * super.findCommand() may throw NullPointerException if
+			 * PATH is not in environment.
+			 */
+		}
+
+		return cmd;
 	}
 
 	private void updateToolChain(CMakeCache cache) throws CoreException {

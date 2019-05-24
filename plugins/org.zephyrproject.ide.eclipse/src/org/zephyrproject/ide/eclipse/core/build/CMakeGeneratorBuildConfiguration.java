@@ -191,8 +191,8 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 				if (cmakePath != null) {
 					command.add(cmakePath.toString());
 				} else {
-					/* Hope this is in path */
-					command.add("cmake"); //$NON-NLS-1$
+					throw new CoreException(ZephyrHelpers.errorStatus(
+							"Cannot find CMake executable", new Exception())); //$NON-NLS-1$
 				}
 
 				command.add(String.format("-DBOARD=%s", boardName)); //$NON-NLS-1$
