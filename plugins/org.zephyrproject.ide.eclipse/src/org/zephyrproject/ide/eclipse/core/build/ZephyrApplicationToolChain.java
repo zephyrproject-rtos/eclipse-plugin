@@ -40,9 +40,8 @@ import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 /**
  * Wrapper of GCCToolChain to build Zephyr Applications.
  */
-public class ZephyrApplicationToolChain extends GCCToolChain {
+public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 
-	public static final String TOOLCHAIN_ID = "zephyr.default"; //$NON-NLS-1$
 	public static final String TOOLCHAIN_OS = "zephyr"; //$NON-NLS-1$
 
 	private String cCompilerPath;
@@ -51,17 +50,17 @@ public class ZephyrApplicationToolChain extends GCCToolChain {
 
 	private String makeProgramPath;
 
-	public ZephyrApplicationToolChain(IToolChainProvider provider) {
-		super(provider, TOOLCHAIN_ID, "");
+	public ZephyrApplicationToolChain(IToolChainProvider provider, String id) {
+		super(provider, id, "");
 		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
 		this.cCompilerPath = null;
 		this.cxxCompilerPath = null;
 		this.makeProgramPath = null;
 	}
 
-	ZephyrApplicationToolChain(IToolChainProvider provider,
+	public ZephyrApplicationToolChain(IToolChainProvider provider, String id,
 			IBuildConfiguration config) {
-		super(provider, TOOLCHAIN_ID, "");
+		super(provider, id, "");
 		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
 		this.cCompilerPath = null;
 		this.cxxCompilerPath = null;
@@ -75,6 +74,16 @@ public class ZephyrApplicationToolChain extends GCCToolChain {
 		this.cCompilerPath = null;
 		this.cxxCompilerPath = null;
 		this.makeProgramPath = null;
+	}
+
+	@Override
+	public String getProperty(String key) {
+		String value = super.getProperty(key);
+		if (value != null) {
+			return value;
+		}
+
+		return null;
 	}
 
 	@Override

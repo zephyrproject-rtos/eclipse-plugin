@@ -117,6 +117,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 		generator = new ZephyrApplicationNewProjectGenerator(
 				"templates/ZephyrApplication/template.xml"); //$NON-NLS-1$
 		generator.setProjectName(mainPage.getProjectName());
+		generator.setCMakeGenerator(mainPage.getCMakeGenerator());
 		if (!mainPage.useDefaults()) {
 			generator.setLocationURI(mainPage.getLocationURI());
 		}

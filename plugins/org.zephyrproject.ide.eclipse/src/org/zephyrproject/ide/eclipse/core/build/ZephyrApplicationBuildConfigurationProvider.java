@@ -19,6 +19,10 @@ import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.runtime.CoreException;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaToolChain;
 
 /**
  * Build configuration provider for Zephyr Application
@@ -56,26 +60,50 @@ public class ZephyrApplicationBuildConfigurationProvider
 	public ICBuildConfiguration getCBuildConfiguration(
 			IBuildConfiguration config, String name) throws CoreException {
 		try {
+			Map<String, String> properties = new HashMap<>();
+			properties.put(IToolChain.ATTR_OS,
+					ZephyrApplicationToolChain.TOOLCHAIN_OS);
+
 			if (config.getName().equals(
-					ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME)) {
-				Map<String, String> properties = new HashMap<>();
-				properties.put(IToolChain.ATTR_OS, "zephyr");
-				for (IToolChain toolChain : toolChainManager
-						.getToolChainsMatching(properties)) {
-					ICBuildConfiguration cBuildCfg =
-							new ZephyrApplicationBuildConfiguration(config,
-									name, toolChain);
+					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
+				properties.put(IToolChain.ATTR_PACKAGE,
+						ZephyrApplicationMakefilesToolChain.TOOLCHAIN_PKG);
+			} else if (config.getName().equals(
+					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME)) {
+				properties.put(IToolChain.ATTR_PACKAGE,
+						ZephyrApplicationNinjaToolChain.TOOLCHAIN_PKG);
+			} else {
+				return null;
+			}
 
-					ICBuildConfigurationManager configManager = CCorePlugin
-							.getService(ICBuildConfigurationManager.class);
-					configManager.addBuildConfiguration(config, cBuildCfg);
+			for (IToolChain toolChain : toolChainManager
+					.getToolChainsMatching(properties)) {
+				ICBuildConfiguration cBuildCfg = null;
 
-					return cBuildCfg;
+				if (config.getName().equals(
+						ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
+					cBuildCfg =
+							new ZephyrApplicationMakefilesBuildConfiguration(
+									config, config.getName(), toolChain);
+				} else if (config.getName().equals(
+						ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME)) {
+					cBuildCfg = new ZephyrApplicationNinjaBuildConfiguration(
+							config, config.getName(), toolChain);
+				} else {
+					return null;
 				}
+
+				ICBuildConfigurationManager configManager = CCorePlugin
+						.getService(ICBuildConfigurationManager.class);
+				configManager.addBuildConfiguration(config, cBuildCfg);
+
+				return cBuildCfg;
 			}
 
 			return null;
-		} catch (CoreException e) {
+		} catch (
+
+		CoreException e) {
 			// Failed to create the build config. Return null so it gets
 			// recreated.
 			e.printStackTrace();

@@ -30,7 +30,8 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.freemarker.FMProjectGenerator;
 import org.eclipse.tools.templates.freemarker.SourceRoot;
 import org.osgi.framework.Bundle;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 
 /**
  * New project generator for Zephyr Application.
@@ -39,8 +40,13 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurat
  */
 public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 
+	private String cmakeGenerator;
+
 	public ZephyrApplicationNewProjectGenerator(String manifestPath) {
 		super(manifestPath);
+
+		/* Default to use Ninja */
+		this.cmakeGenerator = ZephyrConstants.CMAKE_GENERATOR_NINJA;
 	}
 
 	/**
@@ -89,8 +95,15 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		/* Setup build configuration */
 		IProject project = getProject();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		IBuildConfiguration config = workspace.newBuildConfig(project.getName(),
-				ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME);
+		String cfgName = null;
+		if (cmakeGenerator.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+			cfgName = ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME;
+		} else if (cmakeGenerator
+				.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+			cfgName = ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME;
+		}
+		IBuildConfiguration config =
+				workspace.newBuildConfig(project.getName(), cfgName);
 
 		String[] configNames = {
 			config.getName()
@@ -160,4 +173,7 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		project.setDescription(desc, monitor);
 	}
 
+	public void setCMakeGenerator(String cmakeGenerator) {
+		this.cmakeGenerator = cmakeGenerator;
+	}
 }

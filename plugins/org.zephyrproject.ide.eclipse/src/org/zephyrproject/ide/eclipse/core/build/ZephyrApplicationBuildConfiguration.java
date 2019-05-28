@@ -59,11 +59,8 @@ import com.google.gson.Gson;
  *
  * Originally from org.eclipse.cdt.cmake.core.internal.CMakeBuildConfiguration.
  */
-public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
-
-	public static final String DEFAULT_CONFIG_NAME =
-			ZephyrApplicationBuildConfigurationProvider.ID
-					+ "/zephyr.app.build.config"; //$NON-NLS-1$
+public abstract class ZephyrApplicationBuildConfiguration
+		extends CBuildConfiguration {
 
 	private String cmakeMakeProgram;
 
@@ -72,11 +69,6 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 	private ScopedPreferenceStore pStore;
 
 	private ZephyrScannerInfoCache scannerInfoCache;
-
-	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
-			IToolChain toolChain) {
-		this(config, DEFAULT_CONFIG_NAME, toolChain);
-	}
 
 	public ZephyrApplicationBuildConfiguration(IBuildConfiguration config,
 			String name, IToolChain toolChain) {

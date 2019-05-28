@@ -105,6 +105,13 @@ public class ZephyrApplicationMainWizardPage
 	}
 
 	/**
+	 * @return The selected CMake Generator.
+	 */
+	public String getCMakeGenerator() {
+		return zCMakeGenerator.getText();
+	}
+
+	/**
 	 * @return The default Zephyr Base defined in preference page.
 	 */
 	private String getPrefZephyrBaseDefault() {

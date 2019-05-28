@@ -206,4 +206,14 @@ public final class ZephyrHelpers {
 		return ZephyrConstants.CMAKE_GENERATOR_NINJA;
 	}
 
+	public static String getCMakeGenerator(ScopedPreferenceStore pStore) {
+		return pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+	}
+
+	public static String getCMakeGenerator(IProject project) {
+		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
+				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		return getCMakeGenerator(pStore);
+	}
+
 }

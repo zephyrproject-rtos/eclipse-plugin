@@ -25,6 +25,8 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.zephyrproject.ide.eclipse.core.build.CMakeGeneratorBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
+import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
@@ -90,8 +92,17 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 					"Cannot get build configuration provider!", null));
 		}
 
-		ICBuildConfiguration buildCfg = provider.getCBuildConfiguration(config,
-				ZephyrApplicationBuildConfiguration.DEFAULT_CONFIG_NAME);
+		String cmake = ZephyrHelpers.getCMakeGenerator(config.getProject());
+		ICBuildConfiguration buildCfg = null;
+
+		if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+			buildCfg = provider.getCBuildConfiguration(config,
+					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
+		} else if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+			buildCfg = provider.getCBuildConfiguration(config,
+					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
+		}
+
 		if ((buildCfg == null)
 				|| !(buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
 			throw new CoreException(ZephyrHelpers.errorStatus(
