@@ -180,6 +180,12 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 		boardText.setFont(parent.getFont());
 		boardText.addListener(SWT.Modify, new zBoardTextModifyListener());
 
+		String prevBoard =
+				getDialogSettings().get(ZephyrConstants.ZEPHYR_BOARD);
+		if (prevBoard != null) {
+			boardText.setText(prevBoard);
+		}
+
 		/* Checkbox to enable choosing from lists */
 		useListsBtn = new Button(composite, SWT.CHECK | SWT.LEFT);
 		useListsBtn.setText("Select from available board configurations under "
@@ -342,6 +348,8 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 		pStore.putValue(ZephyrConstants.ZEPHYR_BOARD, board);
 
 		pStore.save();
+
+		getDialogSettings().put(ZephyrConstants.ZEPHYR_BOARD, board);
 	}
 
 	/**
