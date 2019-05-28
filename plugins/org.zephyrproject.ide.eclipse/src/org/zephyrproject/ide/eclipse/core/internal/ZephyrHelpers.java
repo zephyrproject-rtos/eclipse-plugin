@@ -202,4 +202,8 @@ public final class ZephyrHelpers {
 		env.put(tcVarName, tcVarValue);
 	}
 
+	public static String getDefaultCMakeGenerator() {
+		return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+	}
+
 }

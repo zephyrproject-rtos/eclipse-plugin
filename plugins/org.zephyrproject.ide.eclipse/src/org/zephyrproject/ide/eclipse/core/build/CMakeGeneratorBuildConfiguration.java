@@ -89,8 +89,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
 
 		if (generator.trim().isEmpty()) {
-			/* Default is ninja */
-			return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+			return ZephyrHelpers.getDefaultCMakeGenerator();
 		}
 
 		return generator;

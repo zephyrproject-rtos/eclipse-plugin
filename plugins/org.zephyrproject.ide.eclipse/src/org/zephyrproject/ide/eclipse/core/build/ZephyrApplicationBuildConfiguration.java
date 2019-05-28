@@ -39,6 +39,7 @@ import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
@@ -81,9 +82,14 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			String name, IToolChain toolChain) {
 		super(config, name, toolChain);
 
-		this.cmakeMakeProgram = "make"; //$NON-NLS-1$
 		this.cmakeCache = null;
 		this.scannerInfoCache = new ZephyrScannerInfoCache(config);
+
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			this.cmakeMakeProgram = "ninja.exe"; //$NON-NLS-1$
+		} else {
+			this.cmakeMakeProgram = "ninja"; //$NON-NLS-1$
+		}
 
 		this.pStore = new ScopedPreferenceStore(
 				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
@@ -124,8 +130,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
 
 		if (generator.trim().isEmpty()) {
-			/* Default is ninja */
-			return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+			return ZephyrHelpers.getDefaultCMakeGenerator();
 		}
 
 		return generator;
