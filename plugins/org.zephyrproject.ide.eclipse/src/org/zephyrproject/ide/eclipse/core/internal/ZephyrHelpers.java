@@ -216,4 +216,14 @@ public final class ZephyrHelpers {
 		return getCMakeGenerator(pStore);
 	}
 
+	public static String getBoardName(ScopedPreferenceStore pStore) {
+		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+	}
+
+	public static String getBoardName(IProject project) {
+		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
+				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		return getBoardName(pStore);
+	}
+
 }

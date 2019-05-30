@@ -303,6 +303,10 @@ version(s), and exceptions or additional permissions here}.&quot;
       <import plugin="org.eclipse.debug.ui" version="3.11.202" match="greaterOrEqual"/>
       <import plugin="org.eclipse.cdt.build.gcc.core" version="1.0.0" match="greaterOrEqual"/>
       <import plugin="com.google.gson"/>
+      <import plugin="org.eclipse.cdt.debug.core" version="8.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.cdt.debug.ui" version="8.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.launchbar.core" version="2.1.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.launchbar.ui" version="2.1.0" match="greaterOrEqual"/>
       <import feature="org.eclipse.cdt.cmake" version="9.2.1.201704050430" match="greaterOrEqual"/>
    </requires>
 

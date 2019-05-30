@@ -122,4 +122,33 @@
             id="org.zephyrproject.ide.eclipse.core.build.zephyrApplicationToolChainProvider">
       </provider>
    </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTypeImages">
+      <launchConfigurationTypeImage
+            configTypeID="org.zephyrproject.ide.eclipse.launch.applicationRunLaunchConfigurationType"
+            icon="icons/zephyr-kite-logo_16x16.png"
+            id="org.zephyrproject.ide.eclipse.launch.applicationRunLaunchConfigurationTypeImage">
+      </launchConfigurationTypeImage>
+   </extension>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationRunLaunchConfigDelegate"
+            id="org.zephyrproject.ide.eclipse.launch.applicationRunLaunchConfigurationType"
+            modes="run"
+            name="Zephyr Application"
+            public="true">
+      </launchConfigurationType>
+   </extension>
+   <extension
+         point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+      <launchConfigurationTabGroup
+            class="org.zephyrproject.ide.eclipse.ui.launch.ZephyrApplicationRunLaunchConfigurationTabGroup"
+            id="org.zephyrproject.ide.eclipse.launch.applicationRunLaunchConfigurationTabGroup"
+            type="org.zephyrproject.ide.eclipse.launch.applicationRunLaunchConfigurationType">
+         <launchMode
+               mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+   </extension>
 </plugin>

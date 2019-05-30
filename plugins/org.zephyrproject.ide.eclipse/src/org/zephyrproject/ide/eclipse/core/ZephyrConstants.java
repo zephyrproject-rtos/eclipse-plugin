@@ -98,4 +98,24 @@ public final class ZephyrConstants {
 		CMAKE_GENERATOR_NINJA,
 		CMAKE_GENERATOR_MAKEFILE
 	};
+
+	public static class Launch {
+		public static final String LAUNCH_ID =
+				ZephyrPlugin.PLUGIN_ID + ".ui.launch"; //$NON-NLS-1$
+
+		public static final String ATTR_COMMAND_SELECTION =
+				LAUNCH_ID + ".COMMAND_SELECTION"; //$NON-NLS-1$
+
+		public static final String COMMAND_SELECTION_EMULATOR =
+				"CMD_SEL_EMULATOR"; //$NON-NLS-1$
+
+		public static final String COMMAND_SELECTION_FLASHTGT =
+				"CMD_SEL_FLASHTGT"; //$NON-NLS-1$
+
+		public static final String COMMAND_SELECTION_CUSTOM = "CMD_SEL_CUSTOM"; //$NON-NLS-1$
+
+		public static final String ATTR_CUSTOM_COMMAND =
+				LAUNCH_ID + ".CUSTOM_COMMAND"; //$NON-NLS-1$
+	};
+
 }

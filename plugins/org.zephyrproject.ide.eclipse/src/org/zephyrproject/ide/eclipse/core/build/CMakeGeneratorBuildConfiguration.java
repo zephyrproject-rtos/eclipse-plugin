@@ -79,7 +79,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 	 * @return Name of board to be built for.
 	 */
 	private String getBoardName() {
-		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+		return ZephyrHelpers.getBoardName(pStore);
 	}
 
 	/**

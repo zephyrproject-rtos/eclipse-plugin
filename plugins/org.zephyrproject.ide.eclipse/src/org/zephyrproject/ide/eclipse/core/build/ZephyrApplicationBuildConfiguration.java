@@ -106,13 +106,13 @@ public abstract class ZephyrApplicationBuildConfiguration
 	 * @return Name of board to be built for.
 	 */
 	private String getBoardName() {
-		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+		return ZephyrHelpers.getBoardName(pStore);
 	}
 
 	@Override
 	public void setBuildEnvironment(Map<String, String> env) {
-		ZephyrHelpers.setupBuildCommandEnvironment(pStore, env);
 		super.setBuildEnvironment(env);
+		ZephyrHelpers.setupBuildCommandEnvironment(pStore, env);
 	}
 
 	/**
@@ -382,6 +382,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 		str = cache.getMakeProgram();
 		if (str != null) {
 			this.cmakeMakeProgram = str;
+			toolChain.setMakeProgram(this.cmakeMakeProgram);
 		}
 	}
 
