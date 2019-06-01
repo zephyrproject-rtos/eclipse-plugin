@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?pde version="3.8"?><target includeMode="feature" name="Zephyr Project Eclipse Plugin Target Platform - Neon" sequenceNumber="14">
+<locations>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="com.google.gson" version="2.2.4.v201311231704"/>
+<unit id="org.eclipse.cdt.feature.group" version="9.2.1.201704050430"/>
+<unit id="org.eclipse.cdt.cmake.feature.group" version="9.2.1.201704050430"/>
+<unit id="org.eclipse.tools.templates.core" version="1.1.0.201702141301"/>
+<repository location="http://download.eclipse.org/tools/cdt/releases/9.2/r.2"/>
+</location>
+<location includeAllPlatforms="false" includeConfigurePhase="false" includeMode="planner" includeSource="false" type="InstallableUnit">
+<unit id="org.eclipse.launchbar.feature.group" version="2.1.0.201612052026"/>
+<repository location="http://download.eclipse.org/releases/neon/201705151400"/>
+</location>
+</locations>
+</target>
