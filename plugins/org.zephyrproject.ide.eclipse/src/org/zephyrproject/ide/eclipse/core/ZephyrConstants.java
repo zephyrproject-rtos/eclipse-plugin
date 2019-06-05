@@ -116,6 +116,22 @@ public final class ZephyrConstants {
 
 		public static final String ATTR_CUSTOM_COMMAND =
 				LAUNCH_ID + ".CUSTOM_COMMAND"; //$NON-NLS-1$
+
+		public static final String LAUNCH_TARGET_EMULATOR_NAME =
+				"Emulator"; // $NON-NLS-1
+
+		public static final String LAUNCH_TARGET_HARDWARE_NAME =
+				"Hardware"; // $NON-NLS-1
+
+		public static final String LAUNCH_TARGET_EMULATOR_TYPE_ID =
+				"org.zephyrproject.ide.eclipse.core.launchTargetType.emulator"; //$NON-NLS-1$
+
+		public static final String LAUNCH_TARGET_HARDWARE_TYPE_ID =
+				"org.zephyrproject.ide.eclipse.core.launchTargetType.hardware"; //$NON-NLS-1$
+
+		public static final String LAUNCH_TARGET_OS = "zephyr"; //$NON-NLS-1$
+
+		public static final String LAUNCH_TARGET_ARCH = "zephyr"; //$NON-NLS-1$
 	};
 
 }

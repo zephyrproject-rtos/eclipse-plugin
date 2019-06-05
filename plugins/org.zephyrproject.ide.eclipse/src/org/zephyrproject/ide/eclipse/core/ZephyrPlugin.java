@@ -6,6 +6,7 @@
 
 package org.zephyrproject.ide.eclipse.core;
 
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -17,6 +18,12 @@ public class ZephyrPlugin extends AbstractUIPlugin {
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.zephyrproject.ide.eclipse"; //$NON-NLS-1$
+
+	public static final String IMG_ZEPHYR_KITE16 = PLUGIN_ID + "zephyr.kite.16"; //$NON-NLS-1$
+
+	public static final String IMG_ZEPHYR_KITE32 = PLUGIN_ID + "zephyr.kite.32"; //$NON-NLS-1$
+
+	public static final String IMG_ZEPHYR_KITE48 = PLUGIN_ID + "zephyr.kite.48"; //$NON-NLS-1$
 
 	// The shared instance
 	private static ZephyrPlugin plugin;
@@ -68,5 +75,21 @@ public class ZephyrPlugin extends AbstractUIPlugin {
 		BundleContext context = plugin.getBundle().getBundleContext();
 		ServiceReference<T> ref = context.getServiceReference(service);
 		return ref != null ? context.getService(ref) : null;
+	}
+
+	@Override
+	protected ImageRegistry createImageRegistry() {
+		ImageRegistry registry = super.createImageRegistry();
+
+		registry.put(IMG_ZEPHYR_KITE16, imageDescriptorFromPlugin(PLUGIN_ID,
+				"icons/zephyr-kite-logo_16x16.png")); //$NON-NLS-1$
+
+		registry.put(IMG_ZEPHYR_KITE32, imageDescriptorFromPlugin(PLUGIN_ID,
+				"icons/zephyr-kite-logo_32x32.png")); //$NON-NLS-1$
+
+		registry.put(IMG_ZEPHYR_KITE48, imageDescriptorFromPlugin(PLUGIN_ID,
+				"icons/zephyr-kite-logo_48x48.png")); //$NON-NLS-1$
+
+		return registry;
 	}
 }

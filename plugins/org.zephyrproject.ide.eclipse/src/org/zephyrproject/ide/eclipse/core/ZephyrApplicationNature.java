@@ -7,6 +7,7 @@
 package org.zephyrproject.ide.eclipse.core;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.IProjectDescription;
 import org.eclipse.core.resources.IProjectNature;
 import org.eclipse.core.runtime.CoreException;
 
@@ -36,6 +37,15 @@ public class ZephyrApplicationNature implements IProjectNature {
 	@Override
 	public void setProject(IProject project) {
 		this.project = project;
+	}
+
+	public static boolean hasNature(IProject project) throws CoreException {
+		IProjectDescription projDesc = project.getDescription();
+		for (String id : projDesc.getNatureIds()) {
+			if (id.equals(NATURE_ID))
+				return true;
+		}
+		return false;
 	}
 
 }

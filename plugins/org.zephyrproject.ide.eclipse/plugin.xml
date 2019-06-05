@@ -139,6 +139,20 @@
             name="Zephyr Application"
             public="true">
       </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationRunLaunchConfigDelegate"
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.emulator"
+            modes="run"
+            name="Emulator"
+            public="false">
+      </launchConfigurationType>
+      <launchConfigurationType
+            delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationRunLaunchConfigDelegate"
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.hardware"
+            modes="run"
+            name="Hardware"
+            public="false">
+      </launchConfigurationType>
    </extension>
    <extension
          point="org.eclipse.debug.ui.launchConfigurationTabGroups">
@@ -150,5 +164,57 @@
                mode="run">
          </launchMode>
       </launchConfigurationTabGroup>
+   </extension>
+   <extension
+         point="org.eclipse.launchbar.core.launchBarContributions">
+      <descriptorType
+            class="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchDescriptorType"
+            id="org.zephyrproject.ide.eclipse.launch.descriptorType.default"
+            priority="50">
+         <enablement>
+            <instanceof
+                  value="org.eclipse.core.resources.IProject">
+            </instanceof>
+            <test
+                  forcePluginActivation="true"
+                  property="org.eclipse.core.resources.projectNature"
+                  value="org.zephyrproject.ide.eclipse.zephyrApplicationNature">
+            </test>
+         </enablement>
+      </descriptorType>
+      <configProvider
+            class="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchConfigurationProvider"
+            descriptorType="org.zephyrproject.ide.eclipse.launch.descriptorType.default"
+            priority="50">
+      </configProvider>
+   </extension>
+   <extension
+         point="org.eclipse.launchbar.ui.launchBarUIContributions">
+      <descriptorUI
+            descriptorTypeId="org.zephyrproject.ide.eclipse.launch.descriptorType.default"
+            labelProvider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchBarConfigurationLabelProvider">
+      </descriptorUI>
+   </extension>
+   <extension
+         point="org.eclipse.launchbar.core.launchTargetTypes">
+      <launchTargetType
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.emulator"
+            provider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchTargetProvider">
+      </launchTargetType>
+      <launchTargetType
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.hardware"
+            provider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchTargetProvider">
+      </launchTargetType>
+   </extension>
+   <extension
+         point="org.eclipse.launchbar.ui.launchTargetTypeUI">
+      <launchTargetTypeUI
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.emulator"
+            labelProvider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchBarTargetLabelProvider">
+      </launchTargetTypeUI>
+      <launchTargetTypeUI
+            id="org.zephyrproject.ide.eclipse.core.launchTargetType.hardware"
+            labelProvider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchBarTargetLabelProvider">
+      </launchTargetTypeUI>
    </extension>
 </plugin>
