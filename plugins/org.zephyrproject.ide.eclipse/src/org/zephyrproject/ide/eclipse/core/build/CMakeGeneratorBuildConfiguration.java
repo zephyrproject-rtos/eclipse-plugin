@@ -38,6 +38,7 @@ import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
@@ -64,6 +65,8 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 	private ScopedPreferenceStore pStore;
 
+	private final String cmakeCmd;
+
 	public CMakeGeneratorBuildConfiguration(IBuildConfiguration config,
 			ZephyrApplicationBuildConfiguration zAppBuildCfg) {
 		this.config = config;
@@ -71,6 +74,12 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 		this.pStore = new ScopedPreferenceStore(
 				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
+
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			cmakeCmd = "cmake.exe"; //$NON-NLS-1$
+		} else {
+			cmakeCmd = "cmake"; // $NON-NLS-1$
+		}
 	}
 
 	/**
@@ -186,12 +195,18 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 
 				List<String> command = new ArrayList<>();
 
-				Path cmakePath = zAppBuildCfg.findCommand("cmake"); //$NON-NLS-1$
+				Path cmakePath = zAppBuildCfg.findCommand(cmakeCmd); // $NON-NLS-1$
 				if (cmakePath != null) {
 					command.add(cmakePath.toString());
 				} else {
-					throw new CoreException(ZephyrHelpers.errorStatus(
-							"Cannot find CMake executable", new Exception())); //$NON-NLS-1$
+					/*
+					 * CBuildConfiguration.findCommand() looks for "PATH" in
+					 * the environment to prepend paths. However, Windows
+					 * uses "Path" (not all caps), so findCommand() would fail.
+					 * So assume the environment has been setup correctly
+					 * and cmake can be called anywhere here.
+					 */
+					command.add(cmakeCmd);
 				}
 
 				command.add(String.format("-DBOARD=%s", boardName)); //$NON-NLS-1$
