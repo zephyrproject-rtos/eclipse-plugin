@@ -14,6 +14,7 @@ import java.util.Map;
 import org.eclipse.cdt.core.CCProjectNature;
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.CProjectNature;
+import org.eclipse.cdt.core.index.IndexerSetupParticipant;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IPathEntry;
@@ -42,11 +43,23 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 
 	private String cmakeGenerator;
 
+	private IndexerSetupParticipant indexerSetupParticipant;
+
+	private boolean projectCreationComplete;
+
 	public ZephyrApplicationNewProjectGenerator(String manifestPath) {
 		super(manifestPath);
 
 		/* Default to use Ninja */
 		this.cmakeGenerator = ZephyrConstants.CMAKE_GENERATOR_NINJA;
+
+		this.projectCreationComplete = false;
+		this.indexerSetupParticipant = new IndexerSetupParticipant() {
+			@Override
+			public boolean postponeIndexerSetup(ICProject project) {
+				return !projectCreationComplete;
+			}
+		};
 	}
 
 	/**
@@ -153,6 +166,10 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		IProject project = getProject();
 		ICProject cproject =
 				CCorePlugin.getDefault().getCoreModel().create(project);
+
+		CCorePlugin.getIndexManager()
+				.addIndexerSetupParticipant(indexerSetupParticipant);
+
 		List<IPathEntry> entries = new ArrayList<>(
 				Arrays.asList(CoreModel.getRawPathEntries(cproject)));
 
@@ -176,4 +193,12 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 	public void setCMakeGenerator(String cmakeGenerator) {
 		this.cmakeGenerator = cmakeGenerator;
 	}
+
+	public void notifyProjectCreationComplete(ICProject cproject) {
+		projectCreationComplete = true;
+		indexerSetupParticipant.notifyIndexerSetup(cproject);
+		CCorePlugin.getIndexManager()
+				.removeIndexerSetupParticipant(indexerSetupParticipant);
+	}
+
 }

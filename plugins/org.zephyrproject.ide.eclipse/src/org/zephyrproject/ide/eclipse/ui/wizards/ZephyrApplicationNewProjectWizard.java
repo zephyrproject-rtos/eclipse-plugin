@@ -340,6 +340,10 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			return false;
 		}
 
+		if (generator != null) {
+			generator.notifyProjectCreationComplete(cProj);
+		}
+
 		return true;
 	}
 
