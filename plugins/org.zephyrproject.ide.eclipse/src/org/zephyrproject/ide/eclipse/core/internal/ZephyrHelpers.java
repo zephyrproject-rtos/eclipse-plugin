@@ -20,15 +20,27 @@ import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAI
 import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.Set;
 
+import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.build.ICBuildConfiguration;
+import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
+import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
+import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 
 /**
  * Helper class
@@ -36,6 +48,112 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
  * Contains helper functions.
  */
 public final class ZephyrHelpers {
+
+	public static class Build {
+
+		private static void removeCBuildConfigManagerNoConfig(
+				ICBuildConfigurationManager configManager,
+				IBuildConfiguration config) {
+			/*
+			 * There are times when CBuildConfigurationManager cannot get
+			 * the Zephyr build configurations at start-up (possibly due to
+			 * start-up initialization latencies of plugins), and the project
+			 * build configuration is forever blacklisted. This affects all
+			 * the build, run and debug operations relying on the manager
+			 * returning a working CBuildConfiguration. There is currently
+			 * no methods to remove a blacklisted configuration. So here
+			 * we are to workaround this by forcing access to the blacklist
+			 * and manipulate it ourselves.
+			 */
+
+			try {
+				Field fNoConfigs =
+						configManager.getClass().getDeclaredField("noConfigs");
+				Field fConfigs =
+						configManager.getClass().getDeclaredField("configs");
+
+				boolean oldAccessNoCfg = fNoConfigs.isAccessible();
+				boolean oldAccessCfg = fConfigs.isAccessible();
+				fNoConfigs.setAccessible(true);
+				fConfigs.setAccessible(true);
+
+				try {
+					Object objNoCfg = fNoConfigs.get(configManager);
+					Object objCfg = fConfigs.get(configManager);
+					if (objNoCfg instanceof Set<?>) {
+						@SuppressWarnings("unchecked")
+						Set<IBuildConfiguration> ibcs =
+								(Set<IBuildConfiguration>) objNoCfg;
+						synchronized (objCfg) {
+							ibcs.remove(config);
+						}
+					}
+				} catch (Exception e) {
+				} finally {
+					fNoConfigs.setAccessible(oldAccessNoCfg);
+					fConfigs.setAccessible(oldAccessCfg);
+				}
+			} catch (Exception e) {
+			}
+		}
+
+		public static ICBuildConfiguration fixBuildConfig(
+				IBuildConfiguration config) throws CoreException {
+			ICBuildConfigurationManager configManager =
+					CCorePlugin.getService(ICBuildConfigurationManager.class);
+
+			if (configManager == null) {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Cannot get build configuration manager!", null));
+			}
+
+			/*
+			 * Remove from blacklist and ask CBuildConfigurationManager to
+			 * retry.
+			 */
+			removeCBuildConfigManagerNoConfig(configManager, config);
+
+			ICBuildConfiguration buildCfg =
+					configManager.getBuildConfiguration(config);
+
+			if ((buildCfg != null)
+					&& (buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+				return buildCfg;
+			}
+
+			/* Need to do it manually now... */
+			removeCBuildConfigManagerNoConfig(configManager, config);
+
+			ICBuildConfigurationProvider provider = configManager.getProvider(
+					ZephyrApplicationBuildConfigurationProvider.ID);
+
+			if (provider == null) {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Cannot get build configuration provider!", null));
+			}
+
+			String cmake = ZephyrHelpers.getCMakeGenerator(config.getProject());
+
+			if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+				buildCfg = provider.getCBuildConfiguration(config,
+						ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
+			} else if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				buildCfg = provider.getCBuildConfiguration(config,
+						ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
+			}
+
+			if ((buildCfg == null)
+					|| !(buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Unable to retrieve build configuration!", null));
+			}
+
+			configManager.addBuildConfiguration(config, buildCfg);
+
+			return buildCfg;
+		}
+
+	}
 
 	/**
 	 * Check if {@code path} is a valid directory.
