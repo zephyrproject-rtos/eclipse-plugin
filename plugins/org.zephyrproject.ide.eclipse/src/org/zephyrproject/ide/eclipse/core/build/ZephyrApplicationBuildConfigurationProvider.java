@@ -10,9 +10,7 @@ package org.zephyrproject.ide.eclipse.core.build;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
-import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
 import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
 import org.eclipse.cdt.core.build.IToolChain;
 import org.eclipse.cdt.core.build.IToolChainManager;
@@ -92,10 +90,6 @@ public class ZephyrApplicationBuildConfigurationProvider
 				} else {
 					return null;
 				}
-
-				ICBuildConfigurationManager configManager = CCorePlugin
-						.getService(ICBuildConfigurationManager.class);
-				configManager.addBuildConfiguration(config, cBuildCfg);
 
 				return cBuildCfg;
 			}
