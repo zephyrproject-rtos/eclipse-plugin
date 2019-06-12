@@ -8,11 +8,9 @@ public class ZephyrApplicationNinjaToolChain
 
 	public static final String TOOLCHAIN_ID = "zephyr.toolchain.ninja"; //$NON-NLS-1$
 
-	public static final String TOOLCHAIN_PKG = "ninja"; //$NON-NLS-1$
-
-	public ZephyrApplicationNinjaToolChain(IToolChainProvider provider) {
-		super(provider, TOOLCHAIN_ID);
-		super.setProperty(ATTR_PACKAGE, TOOLCHAIN_PKG);
+	public ZephyrApplicationNinjaToolChain(IToolChainProvider provider,
+			String id) {
+		super(provider, id);
 	}
 
 }

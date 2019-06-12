@@ -39,8 +39,6 @@ import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
-import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 
 /**
  * Helper class
@@ -132,15 +130,7 @@ public final class ZephyrHelpers {
 						"Cannot get build configuration provider!", null));
 			}
 
-			String cmake = ZephyrHelpers.getCMakeGenerator(config.getProject());
-
-			if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
-				buildCfg = provider.getCBuildConfiguration(config,
-						ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
-			} else if (cmake.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
-				buildCfg = provider.getCBuildConfiguration(config,
-						ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
-			}
+			buildCfg = provider.getCBuildConfiguration(config, null);
 
 			if ((buildCfg == null)
 					|| !(buildCfg instanceof ZephyrApplicationBuildConfiguration)) {

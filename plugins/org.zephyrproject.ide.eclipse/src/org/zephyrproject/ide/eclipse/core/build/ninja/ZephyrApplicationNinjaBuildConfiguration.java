@@ -19,11 +19,6 @@ public class ZephyrApplicationNinjaBuildConfiguration
 					+ "/zephyr.app.build.config.ninja"; //$NON-NLS-1$
 
 	public ZephyrApplicationNinjaBuildConfiguration(IBuildConfiguration config,
-			IToolChain toolChain) {
-		super(config, CONFIG_NAME, toolChain);
-	}
-
-	public ZephyrApplicationNinjaBuildConfiguration(IBuildConfiguration config,
 			String name, IToolChain toolChain) {
 		super(config, name, toolChain);
 	}

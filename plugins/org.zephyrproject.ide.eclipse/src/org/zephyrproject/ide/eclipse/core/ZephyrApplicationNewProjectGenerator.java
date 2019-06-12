@@ -108,15 +108,21 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		/* Setup build configuration */
 		IProject project = getProject();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
-		String cfgName = null;
+		StringBuilder cfgName = new StringBuilder();
 		if (cmakeGenerator.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
-			cfgName = ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME;
+			cfgName.append(
+					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
 		} else if (cmakeGenerator
 				.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
-			cfgName = ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME;
+			cfgName.append(
+					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
 		}
+
+		cfgName.append("#"); //$NON-NLS-1$
+		cfgName.append(project.getName());
+
 		IBuildConfiguration config =
-				workspace.newBuildConfig(project.getName(), cfgName);
+				workspace.newBuildConfig(project.getName(), cfgName.toString());
 
 		String[] configNames = {
 			config.getName()

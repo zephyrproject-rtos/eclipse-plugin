@@ -8,11 +8,9 @@ public class ZephyrApplicationMakefilesToolChain
 
 	public static final String TOOLCHAIN_ID = "zephyr.toolchain.makefiles"; //$NON-NLS-1$
 
-	public static final String TOOLCHAIN_PKG = "makefiles"; //$NON-NLS-1$
-
-	public ZephyrApplicationMakefilesToolChain(IToolChainProvider provider) {
-		super(provider, TOOLCHAIN_ID);
-		super.setProperty(ATTR_PACKAGE, TOOLCHAIN_PKG);
+	public ZephyrApplicationMakefilesToolChain(IToolChainProvider provider,
+			String id) {
+		super(provider, id);
 	}
 
 }

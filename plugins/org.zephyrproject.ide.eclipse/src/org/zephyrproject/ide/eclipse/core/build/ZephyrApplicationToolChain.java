@@ -35,6 +35,7 @@ import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 /**
@@ -51,20 +52,12 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 	private String makeProgramPath;
 
 	public ZephyrApplicationToolChain(IToolChainProvider provider, String id) {
-		super(provider, id, "");
-		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
-		this.cCompilerPath = null;
-		this.cxxCompilerPath = null;
-		this.makeProgramPath = null;
+		this(provider, id, ZephyrStrings.EMPTY_STRING);
 	}
 
 	public ZephyrApplicationToolChain(IToolChainProvider provider, String id,
 			IBuildConfiguration config) {
-		super(provider, id, "");
-		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
-		this.cCompilerPath = null;
-		this.cxxCompilerPath = null;
-		this.makeProgramPath = null;
+		this(provider, id, ZephyrStrings.EMPTY_STRING);
 	}
 
 	public ZephyrApplicationToolChain(IToolChainProvider provider, String id,

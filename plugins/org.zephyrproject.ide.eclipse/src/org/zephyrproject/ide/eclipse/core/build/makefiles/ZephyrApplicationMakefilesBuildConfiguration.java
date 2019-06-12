@@ -20,11 +20,6 @@ public class ZephyrApplicationMakefilesBuildConfiguration
 					+ "/zephyr.app.build.config.makefiles"; //$NON-NLS-1$
 
 	public ZephyrApplicationMakefilesBuildConfiguration(
-			IBuildConfiguration config, IToolChain toolChain) {
-		super(config, CONFIG_NAME, toolChain);
-	}
-
-	public ZephyrApplicationMakefilesBuildConfiguration(
 			IBuildConfiguration config, String name, IToolChain toolChain) {
 		super(config, name, toolChain);
 	}
