@@ -521,8 +521,8 @@ public final class ZephyrHelpers {
 	 */
 	public static void setupBuildCommandEnvironment(IProject project,
 			Map<String, String> env) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		ScopedPreferenceStore pStore =
+				ZephyrHelpers.getProjectPreferenceStore(project);
 		setupBuildCommandEnvironment(pStore, env);
 	}
 
@@ -564,6 +564,12 @@ public final class ZephyrHelpers {
 		env.put(tcVarName, tcVarValue);
 	}
 
+	public static ScopedPreferenceStore getProjectPreferenceStore(
+			IProject project) {
+		return new ScopedPreferenceStore(new ProjectScope(project),
+				ZephyrPlugin.PLUGIN_ID);
+	}
+
 	public static String getDefaultCMakeGenerator() {
 		return ZephyrConstants.CMAKE_GENERATOR_NINJA;
 	}
@@ -573,9 +579,7 @@ public final class ZephyrHelpers {
 	}
 
 	public static String getCMakeGenerator(IProject project) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-		return getCMakeGenerator(pStore);
+		return getCMakeGenerator(getProjectPreferenceStore(project));
 	}
 
 	public static String getBoardName(ScopedPreferenceStore pStore) {
@@ -583,9 +587,7 @@ public final class ZephyrHelpers {
 	}
 
 	public static String getBoardName(IProject project) {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
-		return getBoardName(pStore);
+		return getBoardName(getProjectPreferenceStore(project));
 	}
 
 }

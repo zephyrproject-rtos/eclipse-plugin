@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.jface.dialogs.Dialog;
@@ -36,7 +35,6 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
-import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 /**
@@ -342,8 +340,8 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 	public void performFinish(IProject project) throws IOException {
 		String board = boardText.getText();
 
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		ScopedPreferenceStore pStore =
+				ZephyrHelpers.getProjectPreferenceStore(project);
 
 		pStore.putValue(ZephyrConstants.ZEPHYR_BOARD, board);
 

@@ -35,7 +35,6 @@ import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAI
 import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.equinox.bidi.StructuredTextTypeHandlerFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -574,8 +573,8 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	 * @throws IOException
 	 */
 	public void performFinish(IProject project) throws IOException {
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		ScopedPreferenceStore pStore =
+				ZephyrHelpers.getProjectPreferenceStore(project);
 
 		String variant = tcVariant.getText();
 		pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT, variant);

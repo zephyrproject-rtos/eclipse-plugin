@@ -9,7 +9,6 @@ package org.zephyrproject.ide.eclipse.ui.wizards.internal;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.equinox.bidi.StructuredTextTypeHandlerFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -328,8 +327,8 @@ public class ZephyrApplicationMainWizardPage
 	public void performFinish(IProject project) throws IOException {
 		String zBaseLoc = zBaseTextField.getText();
 
-		ScopedPreferenceStore pStore = new ScopedPreferenceStore(
-				new ProjectScope(project), ZephyrPlugin.PLUGIN_ID);
+		ScopedPreferenceStore pStore =
+				ZephyrHelpers.getProjectPreferenceStore(project);
 
 		/* Save user specified Zephyr Base for use in the future */
 		if (!getZephyrBaseUseDefault()) {

@@ -35,14 +35,12 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
-import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
-import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 /**
@@ -72,8 +70,8 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 		this.config = config;
 		this.zAppBuildCfg = zAppBuildCfg;
 
-		this.pStore = new ScopedPreferenceStore(
-				new ProjectScope(config.getProject()), ZephyrPlugin.PLUGIN_ID);
+		this.pStore =
+				ZephyrHelpers.getProjectPreferenceStore(config.getProject());
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
 			cmakeCmd = "cmake.exe"; //$NON-NLS-1$
