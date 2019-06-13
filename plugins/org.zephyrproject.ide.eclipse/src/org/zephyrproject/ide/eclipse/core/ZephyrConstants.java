@@ -103,31 +103,38 @@ public final class ZephyrConstants {
 		public static final String LAUNCH_ID =
 				ZephyrPlugin.PLUGIN_ID + ".ui.launch"; //$NON-NLS-1$
 
-		public static final String ATTR_COMMAND_SELECTION =
-				LAUNCH_ID + ".COMMAND_SELECTION"; //$NON-NLS-1$
+		public static final String ATTR_EMULATOR_RUN_CMD_SEL =
+				LAUNCH_ID + ".EMULATOR_RUN_CMD_SEL"; //$NON-NLS-1$
 
-		public static final String COMMAND_SELECTION_EMULATOR =
-				"CMD_SEL_EMULATOR"; //$NON-NLS-1$
+		public static final String EMULATOR_RUN_CMD_SEL_DFLT =
+				"EMULATOR_RUN_CMD_SEL_DFLT"; //$NON-NLS-1$
 
-		public static final String COMMAND_SELECTION_FLASHTGT =
-				"CMD_SEL_FLASHTGT"; //$NON-NLS-1$
+		public static final String EMULATOR_RUN_CMD_SEL_CUSTOM_CMD =
+				"EMULATOR_RUN_CMD_SEL_CUSTOM_CMD"; //$NON-NLS-1$
 
-		public static final String COMMAND_SELECTION_CUSTOM = "CMD_SEL_CUSTOM"; //$NON-NLS-1$
+		public static final String ATTR_EMULATOR_RUN_CUSTOM_COMMAND =
+				LAUNCH_ID + ".EMULATOR_RUN_CUSTOM_COMMAND"; //$NON-NLS-1$
 
-		public static final String ATTR_CUSTOM_COMMAND =
-				LAUNCH_ID + ".CUSTOM_COMMAND"; //$NON-NLS-1$
+		public static final String ATTR_FLASH_CMD_SEL =
+				LAUNCH_ID + ".FLASH_CMD_SEL"; //$NON-NLS-1$
 
-		public static final String LAUNCH_TARGET_EMULATOR_NAME =
-				"Emulator"; // $NON-NLS-1
+		public static final String FLASH_CMD_SEL_DFLT = "FLASH_CMD_SEL_DFLT"; //$NON-NLS-1$
 
-		public static final String LAUNCH_TARGET_HARDWARE_NAME =
-				"Hardware"; // $NON-NLS-1
+		public static final String FLASH_CMD_SEL_CUSTOM_CMD =
+				"FLASH_CMD_SEL_CUSTOM_CMD"; //$NON-NLS-1$
 
-		public static final String LAUNCH_TARGET_EMULATOR_TYPE_ID =
-				"org.zephyrproject.ide.eclipse.core.launchTargetType.emulator"; //$NON-NLS-1$
+		public static final String ATTR_FLASH_CUSTOM_COMMAND =
+				LAUNCH_ID + ".FLASH_CUSTOM_COMMAND"; //$NON-NLS-1$
 
-		public static final String LAUNCH_TARGET_HARDWARE_TYPE_ID =
-				"org.zephyrproject.ide.eclipse.core.launchTargetType.hardware"; //$NON-NLS-1$
+		public static final String LAUNCH_TARGET_EMULATOR_RUN_NAME = "Emulator"; // $NON-NLS-1
+
+		public static final String LAUNCH_TARGET_HARDWARE_RUN_NAME = "Hardware"; // $NON-NLS-1
+
+		public static final String LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID =
+				ZephyrPlugin.PLUGIN_ID + ".core.launchTargetType.emulator.run"; //$NON-NLS-1$
+
+		public static final String LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID =
+				ZephyrPlugin.PLUGIN_ID + ".core.launchTargetType.hardware.run"; //$NON-NLS-1$
 
 		public static final String LAUNCH_TARGET_OS = "zephyr"; //$NON-NLS-1$
 

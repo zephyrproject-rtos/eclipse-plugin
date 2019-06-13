@@ -18,7 +18,6 @@ import org.eclipse.launchbar.core.ILaunchDescriptor;
 import org.eclipse.launchbar.core.ProjectPerTargetLaunchConfigProvider;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.ILaunchTargetManager;
-import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants.Launch;
 
 public class ZephyrApplicationLaunchConfigurationProvider
@@ -53,9 +52,10 @@ public class ZephyrApplicationLaunchConfigurationProvider
 	@Override
 	public boolean supports(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
-		if (Launch.LAUNCH_TARGET_EMULATOR_TYPE_ID.equals(target.getTypeId())) {
+		if (Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID
+				.equals(target.getTypeId())) {
 			return true;
-		} else if (Launch.LAUNCH_TARGET_HARDWARE_TYPE_ID
+		} else if (Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID
 				.equals(target.getTypeId())) {
 			return true;
 		}
@@ -75,13 +75,14 @@ public class ZephyrApplicationLaunchConfigurationProvider
 			project
 		});
 
-		if (target.getTypeId().equals(Launch.LAUNCH_TARGET_EMULATOR_TYPE_ID)) {
-			workingCopy.setAttribute(Launch.ATTR_COMMAND_SELECTION,
-					Launch.COMMAND_SELECTION_EMULATOR);
+		if (target.getTypeId()
+				.equals(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
+			workingCopy.setAttribute(Launch.ATTR_EMULATOR_RUN_CMD_SEL,
+					Launch.EMULATOR_RUN_CMD_SEL_DFLT);
 		} else if (target.getTypeId()
-				.equals(Launch.LAUNCH_TARGET_HARDWARE_TYPE_ID)) {
-			workingCopy.setAttribute(Launch.ATTR_COMMAND_SELECTION,
-					Launch.COMMAND_SELECTION_FLASHTGT);
+				.equals(Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
+			workingCopy.setAttribute(Launch.ATTR_FLASH_CMD_SEL,
+					Launch.FLASH_CMD_SEL_DFLT);
 		}
 	}
 
@@ -98,24 +99,16 @@ public class ZephyrApplicationLaunchConfigurationProvider
 			return target;
 		}
 
-		try {
-			String cmd = configuration.getAttribute(
-					Launch.ATTR_COMMAND_SELECTION, ZephyrStrings.EMPTY_STRING);
+		String type = configuration.getType().getIdentifier();
 
-			if ((cmd == null) || cmd.equals(ZephyrStrings.EMPTY_STRING)) {
-				return null;
-			}
-
-			if (cmd.equals(Launch.COMMAND_SELECTION_EMULATOR)) {
-				target = manager.getLaunchTarget(
-						Launch.LAUNCH_TARGET_EMULATOR_TYPE_ID,
-						Launch.LAUNCH_TARGET_EMULATOR_NAME);
-			} else if (cmd.equals(Launch.COMMAND_SELECTION_FLASHTGT)) {
-				target = manager.getLaunchTarget(
-						Launch.LAUNCH_TARGET_HARDWARE_TYPE_ID,
-						Launch.LAUNCH_TARGET_HARDWARE_NAME);
-			}
-		} catch (CoreException e) {
+		if (type.equals(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
+			target = manager.getLaunchTarget(
+					Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
+					Launch.LAUNCH_TARGET_EMULATOR_RUN_NAME);
+		} else if (type.equals(Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
+			target = manager.getLaunchTarget(
+					Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
+					Launch.LAUNCH_TARGET_HARDWARE_RUN_NAME);
 		}
 
 		return target;

@@ -33,22 +33,20 @@ import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 
-public class RunLaunchMainTab extends CAbstractMainTab {
+public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 
 	public static final String TAB_ID =
-			ZephyrPlugin.PLUGIN_ID + ".ui.launch.mainTab"; //$NON-NLS-1$
+			ZephyrPlugin.PLUGIN_ID + ".ui.launch.hardware.run.mainTab"; //$NON-NLS-1$
 
 	public static final String MENU_ID = "Main";
 
-	private Button btnRunEmulator;
+	private Button btnFlashTargetDefault;
 
-	private Button btnFlashTarget;
+	private Button btnFlashTargetCustomCmd;
 
-	private Button btnCustomCommand;
+	private Text flashTargetCustomCommandText;
 
-	private Text customCommandText;
-
-	public RunLaunchMainTab() {
+	public HardwareRunLaunchMainTab() {
 	}
 
 	@Override
@@ -98,7 +96,8 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 			/* To have a meaningful name instead of "New_configuration" */
 			if (cElement instanceof ICProject) {
 				String cfgName = getLaunchConfigurationDialog()
-						.generateName(cElement.getElementName());
+						.generateName(String.format("%s %s", //$NON-NLS-1$
+								cElement.getElementName(), "hardware")); //$NON-NLS-1$
 				configuration.rename(cfgName);
 			}
 		} else {
@@ -109,11 +108,11 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 		configuration.setAttribute(
 				ICDTLaunchConfigurationConstants.ATTR_BUILD_BEFORE_LAUNCH, 1);
 
+		/* Use default command to flash hardware target */
+		configuration.setAttribute(ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
+				ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT);
 		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_COMMAND_SELECTION,
-				ZephyrConstants.Launch.COMMAND_SELECTION_FLASHTGT);
-		configuration.setAttribute(ZephyrConstants.Launch.ATTR_CUSTOM_COMMAND,
-				EMPTY_STRING);
+				ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND, EMPTY_STRING);
 	}
 
 	@Override
@@ -122,28 +121,24 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 
 		try {
 			String cmdSel = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_COMMAND_SELECTION,
-					EMPTY_STRING);
+					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL, EMPTY_STRING);
 
-			if (cmdSel.equals(
-					ZephyrConstants.Launch.COMMAND_SELECTION_EMULATOR)) {
-				btnRunEmulator.setSelection(true);
-			} else if (cmdSel
-					.equals(ZephyrConstants.Launch.COMMAND_SELECTION_CUSTOM)) {
-				btnCustomCommand.setSelection(true);
-				customCommandText.setEnabled(true);
+			if (cmdSel
+					.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD)) {
+				btnFlashTargetCustomCmd.setSelection(true);
+				flashTargetCustomCommandText.setEnabled(true);
 			} else {
-				btnFlashTarget.setSelection(true);
+				btnFlashTargetDefault.setSelection(true);
 			}
 
 			String customCmd = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_CUSTOM_COMMAND, EMPTY_STRING);
-			customCommandText.setText(customCmd);
+					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND,
+					EMPTY_STRING);
+			flashTargetCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
-			btnRunEmulator.setSelection(false);
-			btnFlashTarget.setSelection(true);
-			btnCustomCommand.setSelection(false);
+			btnFlashTargetDefault.setSelection(true);
+			btnFlashTargetCustomCmd.setSelection(false);
 		}
 	}
 
@@ -182,28 +177,24 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 				ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME,
 				fProjText.getText());
 
-		if (btnCustomCommand.getSelection()) {
+		if (btnFlashTargetCustomCmd.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_COMMAND_SELECTION,
-					ZephyrConstants.Launch.COMMAND_SELECTION_CUSTOM);
+					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
+					ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD);
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_CUSTOM_COMMAND,
-					customCommandText.getText());
-		} else if (btnRunEmulator.getSelection()) {
+					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND,
+					flashTargetCustomCommandText.getText());
+		} else if (btnFlashTargetDefault.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_COMMAND_SELECTION,
-					ZephyrConstants.Launch.COMMAND_SELECTION_EMULATOR);
-		} else if (btnFlashTarget.getSelection()) {
-			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_COMMAND_SELECTION,
-					ZephyrConstants.Launch.COMMAND_SELECTION_FLASHTGT);
+					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
+					ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT);
 		}
 	}
 
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		if (btnCustomCommand.getSelection()) {
-			String customCmd = customCommandText.getText();
+		if (btnFlashTargetCustomCmd.getSelection()) {
+			String customCmd = flashTargetCustomCommandText.getText();
 			if (customCmd.trim().isEmpty()) {
 				return false;
 			}
@@ -235,44 +226,33 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 		gridData.horizontalSpan = 2;
 		cmdSelLabel.setLayoutData(gridData);
 
-		btnFlashTarget = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetDefault = new Button(cmdSelGrp, SWT.RADIO);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
-		btnFlashTarget.setLayoutData(gridData);
-		btnFlashTarget.setText("Default Command to Flash Hardware Target"); //$NON-NLS-1$
-		btnFlashTarget.addSelectionListener(new SelectionAdapter() {
+		btnFlashTargetDefault.setLayoutData(gridData);
+		btnFlashTargetDefault
+				.setText("Default Command to Flash Hardware Target"); //$NON-NLS-1$
+		btnFlashTargetDefault.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
 				updateCommandSelection();
 			}
 		});
 
-		btnRunEmulator = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetCustomCmd = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetCustomCmd.setText("Custom Command:"); //$NON-NLS-1$
+		btnFlashTargetCustomCmd.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				updateCommandSelection();
+			}
+		});
+
+		flashTargetCustomCommandText = new Text(cmdSelGrp, SWT.NONE);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 2;
-		btnRunEmulator.setLayoutData(gridData);
-		btnRunEmulator.setText("Default Command to Run Emulator"); //$NON-NLS-1$
-		btnRunEmulator.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				updateCommandSelection();
-			}
-		});
-
-		btnCustomCommand = new Button(cmdSelGrp, SWT.RADIO);
-		btnCustomCommand.setText("Custom Command:"); //$NON-NLS-1$
-		btnCustomCommand.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				updateCommandSelection();
-			}
-		});
-
-		customCommandText = new Text(cmdSelGrp, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		customCommandText.setLayoutData(gridData);
-		customCommandText.setEnabled(false);
-		customCommandText.addModifyListener(new ModifyListener() {
+		flashTargetCustomCommandText.setLayoutData(gridData);
+		flashTargetCustomCommandText.setEnabled(false);
+		flashTargetCustomCommandText.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				updateLaunchConfigurationDialog();
@@ -281,7 +261,8 @@ public class RunLaunchMainTab extends CAbstractMainTab {
 	}
 
 	private void updateCommandSelection() {
-		customCommandText.setEnabled(btnCustomCommand.getSelection());
+		flashTargetCustomCommandText
+				.setEnabled(btnFlashTargetCustomCmd.getSelection());
 
 		updateLaunchConfigurationDialog();
 	}

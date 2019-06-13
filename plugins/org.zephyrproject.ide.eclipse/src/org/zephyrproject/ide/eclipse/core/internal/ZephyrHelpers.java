@@ -19,8 +19,13 @@ import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAI
 import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR;
 import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,15 +33,24 @@ import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
 import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
+import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunch;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.model.IProcess;
+import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
 
@@ -141,6 +155,246 @@ public final class ZephyrHelpers {
 			configManager.addBuildConfiguration(config, buildCfg);
 
 			return buildCfg;
+		}
+
+	}
+
+	public static class Launch {
+
+		public static ZephyrApplicationBuildConfiguration getBuildConfiguration(
+				IProject project) throws CoreException {
+			ICBuildConfiguration appBuildCfg = project.getActiveBuildConfig()
+					.getAdapter(ICBuildConfiguration.class);
+
+			if ((appBuildCfg == null)
+					|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Build not configured properly.", //$NON-NLS-1$
+						new RuntimeException(
+								"Build configuration is not valid."))); //$NON-NLS-1$
+			}
+
+			return (ZephyrApplicationBuildConfiguration) appBuildCfg;
+		}
+
+		public static ZephyrApplicationBuildConfiguration getBuildConfiguration(
+				IProject project, String mode, ILaunchTarget target,
+				IProgressMonitor monitor) throws CoreException {
+			return getBuildConfiguration(project);
+		}
+
+		private static Map<String, String> getBuildEnvironmentMap(
+				ZephyrApplicationBuildConfiguration appBuildCfg) {
+			/* Fake a ProcessBuilder for its environment */
+			ProcessBuilder pb = new ProcessBuilder(ZephyrStrings.EMPTY_STRING);
+
+			Map<String, String> envMap = pb.environment();
+
+			/* Get build environment from CDT */
+			IEnvironmentVariable[] vars = CCorePlugin.getDefault()
+					.getBuildEnvironmentManager()
+					.getVariables(appBuildCfg.getBuildConfiguration(), true);
+			for (IEnvironmentVariable e : vars) {
+				envMap.put(e.getName(), e.getValue());
+			}
+
+			/* Append Zephyr build environment */
+			appBuildCfg.setBuildEnvironment(envMap);
+
+			/* Turn into "name=val" pairs */
+			List<String> envp = new ArrayList<>();
+			for (Map.Entry<String, String> entry : envMap.entrySet()) {
+				envp.add(String.format("%s=%s", entry.getKey(),
+						entry.getValue()));
+			}
+
+			return envMap;
+		}
+
+		private static String[] getBuildEnvironmentArray(
+				ZephyrApplicationBuildConfiguration appBuildCfg) {
+			Map<String, String> envMap = getBuildEnvironmentMap(appBuildCfg);
+
+			/* Turn into "name=val" pairs */
+			List<String> envp = new ArrayList<>();
+			for (Map.Entry<String, String> entry : envMap.entrySet()) {
+				envp.add(String.format("%s=%s", entry.getKey(),
+						entry.getValue()));
+			}
+
+			return envp.toArray(new String[0]);
+		}
+
+		public static void doMakefile(IProject project,
+				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+				String makeProgram, String mode) throws CoreException {
+			try {
+				String[] command = {
+					makeProgram,
+					mode
+				};
+
+				ProcessBuilder builder = new ProcessBuilder(command)
+						.directory(appBuildCfg.getBuildDirectory().toFile());
+				builder.environment()
+						.putAll(getBuildEnvironmentMap(appBuildCfg));
+				Process process = builder.start();
+				IProcess iproc = DebugPlugin.newProcess(launch, process,
+						ZephyrHelpers.getBoardName(project));
+				launch.addProcess(iproc);
+			} catch (IOException e) {
+				throw new CoreException(ZephyrHelpers
+						.errorStatus("Error running application.", e)); //$NON-NLS-1$
+			}
+		}
+
+		public static void doNinja(IProject project,
+				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+				String makeProgram, String mode) throws CoreException {
+			/*
+			 * TODO: Rework Ninja execution when using Java SE > 8.
+			 *
+			 * When Ninja gets SIGTERM, it won't spawn new processes but will
+			 * simply wait for already spawned processes to finish. So if one of
+			 * those spawned processes continues execution, Ninja won't
+			 * terminate. This issue is problematic with QEMU (and possibly
+			 * other emulators) as they will keep on running forever in
+			 * background. This is because the Process class sends SIGTERM to
+			 * Ninja (e.g. click on Terminate button in Eclipse's console) but
+			 * Ninja simply decides to spin waiting. This also applies to
+			 * flashing as the user will not be able to stop the flashing
+			 * process.
+			 *
+			 * This gets more complicated as Eclipse 4.6.x (which this plugins
+			 * is currently targeting) can only recognize Java SE 8 (the only
+			 * one available below Java SE 11 at time of writing this).
+			 * Searching online seems to indicate that Java SE 11 is only
+			 * supported on Eclipse 4.9+. As Java SE 8 does not support getting
+			 * children of a Process object, and thus unable to terminate Ninja
+			 * spawned processes correctly.
+			 *
+			 * So in the meantime, dry run Ninja to extract the necessary
+			 * commands and run those commands instead.
+			 */
+			try {
+				String[] command = {
+					makeProgram,
+					"-v", //$NON-NLS-1$
+					"-n", //$NON-NLS-1$
+					mode
+				};
+
+				/* First dry run Ninja to extract command to run */
+				ProcessBuilder builder = new ProcessBuilder(command)
+						.directory(appBuildCfg.getBuildDirectory().toFile());
+				builder.environment()
+						.putAll(getBuildEnvironmentMap(appBuildCfg));
+				Process process = builder.start();
+				process.waitFor();
+				if (process.exitValue() != 0) {
+					throw new CoreException(ZephyrHelpers.errorStatus(
+							"Error running Ninja to extract command.", //$NON-NLS-1$
+							new Exception(String.format("Ninja exit code %d", //$NON-NLS-1$
+									process.exitValue()))));
+				}
+
+				/*
+				 * Grab output from Ninja
+				 *
+				 * Currently only supports output of:
+				 * [0/1] <command> && <command>
+				 * or
+				 * [1/1] <command> && <command>
+				 */
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()));
+				String line;
+				List<String> ninjaOutput = new ArrayList<>();
+				while ((line = reader.readLine()) != null) {
+					ninjaOutput.add(line);
+				}
+				reader.close();
+
+				if (ninjaOutput.isEmpty()) {
+					throw new CoreException(ZephyrHelpers.errorStatus(
+							"Error running Ninja to extract command.", //$NON-NLS-1$
+							new Exception("Ninja output is empty."))); //$NON-NLS-1$
+				}
+				if (ninjaOutput.size() > 1) {
+					throw new CoreException(ZephyrHelpers.errorStatus(
+							"Error running Ninja to extract command.", //$NON-NLS-1$
+							new Exception("Ninja returns too many lines."))); //$NON-NLS-1$
+				}
+
+				line = ninjaOutput.get(0);
+				String cmdLine = null;
+				if (line.startsWith("[0/1]")) { //$NON-NLS-1$
+					cmdLine = line.substring("[0/1]".length() + 1).trim(); //$NON-NLS-1$
+				} else if (line.startsWith("[1/1]")) { //$NON-NLS-1$
+					cmdLine = line.substring("[1/1]".length() + 1).trim(); //$NON-NLS-1$
+				} else { // $NON-NLS-1$
+					throw new CoreException(ZephyrHelpers.errorStatus(
+							"Error running Ninja to extract command.", //$NON-NLS-1$
+							new Exception(String.format(
+									"Returned line does not start with '[0/1]': '%s'", //$NON-NLS-1$
+									line))));
+				}
+
+				/*
+				 * Command returned in Windows can be executed directly since
+				 * it runs cmd.exe.
+				 *
+				 * Others return "cd <...> && <command to execute>" so we need
+				 * to extract the second part.
+				 */
+				if (!Platform.getOS().equals(Platform.OS_WIN32)) {
+					String[] items = cmdLine.trim().split("&&");
+					if (items.length != 2) {
+						throw new CoreException(ZephyrHelpers.errorStatus(
+								"Error running Ninja to extract command.", //$NON-NLS-1$
+								new Exception(String.format(
+										"Returned line does not have correct number of items: '%s'", //$NON-NLS-1$
+										line))));
+					}
+
+					cmdLine = items[1].trim();
+				}
+
+				process = Runtime.getRuntime().exec(cmdLine,
+						getBuildEnvironmentArray(appBuildCfg),
+						appBuildCfg.getBuildDirectory().toFile());
+				IProcess iproc = DebugPlugin.newProcess(launch, process,
+						ZephyrHelpers.getBoardName(project));
+				launch.addProcess(iproc);
+			} catch (IOException | InterruptedException e) {
+				throw new CoreException(ZephyrHelpers
+						.errorStatus("Error running application.", e)); //$NON-NLS-1$
+			}
+		}
+
+		public static void doCustomCommand(IProject project,
+				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+				ILaunchConfiguration configuration, String attrCustomCmd)
+				throws CoreException {
+			try {
+				String cmdLine = configuration.getAttribute(attrCustomCmd,
+						ZephyrStrings.EMPTY_STRING);
+
+				if (cmdLine.trim().isEmpty()) {
+					/* Nothing to run */
+					return;
+				}
+
+				Process process = Runtime.getRuntime().exec(cmdLine,
+						getBuildEnvironmentArray(appBuildCfg),
+						appBuildCfg.getBuildDirectory().toFile());
+				IProcess iproc = DebugPlugin.newProcess(launch, process,
+						ZephyrHelpers.getBoardName(project));
+				launch.addProcess(iproc);
+			} catch (IOException e) {
+				throw new CoreException(ZephyrHelpers
+						.errorStatus("Error running application.", e)); //$NON-NLS-1$
+			}
 		}
 
 	}
