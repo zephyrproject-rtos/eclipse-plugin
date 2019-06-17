@@ -45,7 +45,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
-import org.eclipse.debug.core.model.IProcess;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
@@ -239,9 +238,8 @@ public final class ZephyrHelpers {
 				builder.environment()
 						.putAll(getBuildEnvironmentMap(appBuildCfg));
 				Process process = builder.start();
-				IProcess iproc = DebugPlugin.newProcess(launch, process,
+				DebugPlugin.newProcess(launch, process,
 						ZephyrHelpers.getBoardName(project));
-				launch.addProcess(iproc);
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running application.", e)); //$NON-NLS-1$
@@ -363,9 +361,8 @@ public final class ZephyrHelpers {
 				process = Runtime.getRuntime().exec(cmdLine,
 						getBuildEnvironmentArray(appBuildCfg),
 						appBuildCfg.getBuildDirectory().toFile());
-				IProcess iproc = DebugPlugin.newProcess(launch, process,
+				DebugPlugin.newProcess(launch, process,
 						ZephyrHelpers.getBoardName(project));
-				launch.addProcess(iproc);
 			} catch (IOException | InterruptedException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running application.", e)); //$NON-NLS-1$
@@ -388,9 +385,8 @@ public final class ZephyrHelpers {
 				Process process = Runtime.getRuntime().exec(cmdLine,
 						getBuildEnvironmentArray(appBuildCfg),
 						appBuildCfg.getBuildDirectory().toFile());
-				IProcess iproc = DebugPlugin.newProcess(launch, process,
+				DebugPlugin.newProcess(launch, process,
 						ZephyrHelpers.getBoardName(project));
-				launch.addProcess(iproc);
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running application.", e)); //$NON-NLS-1$
