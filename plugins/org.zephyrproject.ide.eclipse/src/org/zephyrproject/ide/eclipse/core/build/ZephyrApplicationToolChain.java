@@ -125,6 +125,14 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 		return cmakeCacheMap.get(CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
 
+	public String getGdbProgramPath() {
+		return cmakeCacheMap.get(CMakeCache.CMAKE_GDB);
+	}
+
+	public String getDebugRunner() {
+		return cmakeCacheMap.get(CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER);
+	}
+
 	private void addFromBaseScannerInfo(IExtendedScannerInfo baseScannerInfo,
 			List<String> commandLine) {
 		if (baseScannerInfo != null) {
@@ -332,6 +340,8 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_C_COMPILER);
 		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_CXX_COMPILER);
 		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_MAKE_PROGRAM);
+		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_GDB);
+		storeCMakeCacheVarHelper(pStore, CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER);
 	}
 
 }

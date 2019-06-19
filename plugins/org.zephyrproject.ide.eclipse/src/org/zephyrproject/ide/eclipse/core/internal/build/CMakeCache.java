@@ -26,6 +26,11 @@ public class CMakeCache {
 
 	public static final String CMAKE_MAKE_PROGRAM = "CMAKE_MAKE_PROGRAM"; //$NON-NLS-1$
 
+	public static final String CMAKE_GDB = "CMAKE_GDB"; //$NON-NLS-1$
+
+	public static final String ZEPHYR_BOARD_DEBUG_RUNNER =
+			"ZEPHYR_BOARD_DEBUG_RUNNER"; //$NON-NLS-1$
+
 	private IProject project;
 
 	private Map<String, String> variables;
@@ -98,6 +103,20 @@ public class CMakeCache {
 	 */
 	public String getMakeProgram() {
 		return getFilePath(CMAKE_MAKE_PROGRAM);
+	}
+
+	/**
+	 * @return Path to GDB as discovered by CMake
+	 */
+	public String getGdb() {
+		return getFilePath(CMAKE_GDB);
+	}
+
+	/**
+	 * @return Debug Runner
+	 */
+	public String getDebugRunner() {
+		return getString(ZEPHYR_BOARD_DEBUG_RUNNER);
 	}
 
 	/**

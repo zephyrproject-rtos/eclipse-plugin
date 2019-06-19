@@ -126,9 +126,19 @@
             id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.run.image">
       </launchConfigurationTypeImage>
       <launchConfigurationTypeImage
+            configTypeID="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.debug"
+            icon="icons/zephyr-kite-logo_16x16.png"
+            id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.debug.image">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
             configTypeID="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.run"
             icon="icons/zephyr-kite-logo_16x16.png"
             id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.run.image">
+      </launchConfigurationTypeImage>
+      <launchConfigurationTypeImage
+            configTypeID="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.debug"
+            icon="icons/zephyr-kite-logo_16x16.png"
+            id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.debug.image">
       </launchConfigurationTypeImage>
    </extension>
    <extension
@@ -140,8 +150,20 @@
             public="true">
       </launchConfigurationType>
       <launchConfigurationType
+            id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.debug"
+            modes="debug"
+            name="Zephyr Emulator Target"
+            public="true">
+      </launchConfigurationType>
+      <launchConfigurationType
             id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.run"
             modes="run"
+            name="Zephyr Hardware Target"
+            public="true">
+      </launchConfigurationType>
+      <launchConfigurationType
+            id="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.debug"
+            modes="debug"
             name="Zephyr Hardware Target"
             public="true">
       </launchConfigurationType>
@@ -170,11 +192,29 @@
             type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.run">
       </launchDelegate>
       <launchDelegate
+            delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationEmulatorDebugLaunchConfigDelegate"
+            id="org.zephyrproject.ide.eclipse.core.launchDelegate.emulator.debug"
+            modes="debug"
+            name="Zephyr Emulator Debug Delegate"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.debug">
+      </launchDelegate>
+      <launchDelegate
             delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationHardwareRunLaunchConfigDelegate"
             id="org.zephyrproject.ide.eclipse.core.launchDelegate.hardware.run"
             modes="run"
             name="Zephyr Hardware Run Delegate"
             type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.run">
+      </launchDelegate>
+      <launchDelegate
+            delegate="org.zephyrproject.ide.eclipse.core.launch.ZephyrApplicationHardwareDebugLaunchConfigDelegate"
+            id="org.zephyrproject.ide.eclipse.core.launchDelegate.hardware.debug"
+            modes="debug"
+            name="Zephyr Hardware Debug Delegate"
+            sourceLocatorId="org.eclipse.cdt.debug.core.sourceLocator"
+            sourcePathComputerId="org.eclipse.cdt.debug.core.sourcePathComputer"
+            type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.debug">
       </launchDelegate>
    </extension>
    <extension
@@ -188,11 +228,31 @@
          </launchMode>
       </launchConfigurationTabGroup>
       <launchConfigurationTabGroup
+            class="org.zephyrproject.ide.eclipse.ui.launch.ZephyrApplicationEmulatorDebugLaunchConfigurationTabGroup"
+            id="org.zephyrproject.ide.eclipse.launch.emulatorDebugLaunchConfigurationTabGroup"
+            type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.debug">
+         <launchMode
+               description="debug"
+               mode="debug"
+               perspective="org.eclipse.debug.ui.DebugPerspective">
+         </launchMode>
+      </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
             class="org.zephyrproject.ide.eclipse.ui.launch.ZephyrApplicationHardwareRunLaunchConfigurationTabGroup"
             id="org.zephyrproject.ide.eclipse.launch.hardwareRunLaunchConfigurationTabGroup"
             type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.run">
          <launchMode
                mode="run">
+         </launchMode>
+      </launchConfigurationTabGroup>
+      <launchConfigurationTabGroup
+            class="org.zephyrproject.ide.eclipse.ui.launch.ZephyrApplicationHardwareDebugLaunchConfigurationTabGroup"
+            id="org.zephyrproject.ide.eclipse.launch.hardwareDebugLaunchConfigurationTabGroup"
+            type="org.zephyrproject.ide.eclipse.core.launchConfigurationType.hardware.debug">
+         <launchMode
+               description="debug"
+               mode="debug"
+               perspective="org.eclipse.debug.ui.DebugPerspective">
          </launchMode>
       </launchConfigurationTabGroup>
    </extension>

@@ -333,6 +333,9 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 						cache.getCXXCompiler());
 				pStore.putValue(CMakeCache.CMAKE_MAKE_PROGRAM,
 						cache.getMakeProgram());
+				pStore.putValue(CMakeCache.CMAKE_GDB, cache.getGdb());
+				pStore.putValue(CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER,
+						cache.getDebugRunner());
 
 				pStore.save();
 			}
