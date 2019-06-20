@@ -42,6 +42,7 @@ import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 
 /**
  * CMake Generator Build Configuration
@@ -232,6 +233,15 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 				project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
 			}
 
+			/*
+			 * For previously created projects without those CMake variables
+			 * saved into project preference space, do this here to jumpstart
+			 * the process. Or else the actual build would fail as those
+			 * variables would result in NullPointerException inside
+			 * ZephyrApplicationBuildConfiguration.
+			 */
+			parseCMakeCache(project, buildDir);
+
 			monitor.worked(1);
 			monitor.done();
 
@@ -304,5 +314,33 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 	@Override
 	public IEnvironmentVariable[] getVariables() throws CoreException {
 		return null;
+	}
+
+	private void parseCMakeCache(IProject project, Path buildDir)
+			throws IOException, CoreException {
+		Path cachePath = buildDir.resolve("CMakeCache.txt"); //$NON-NLS-1$
+		boolean done = false;
+		if (Files.exists(cachePath)) {
+			CMakeCache cache = new CMakeCache(project);
+			done = cache.parseFile(cachePath.toFile());
+			if (done) {
+				ScopedPreferenceStore pStore =
+						ZephyrHelpers.getProjectPreferenceStore(project);
+
+				pStore.putValue(CMakeCache.CMAKE_C_COMPILER,
+						cache.getCCompiler());
+				pStore.putValue(CMakeCache.CMAKE_CXX_COMPILER,
+						cache.getCXXCompiler());
+				pStore.putValue(CMakeCache.CMAKE_MAKE_PROGRAM,
+						cache.getMakeProgram());
+
+				pStore.save();
+			}
+		}
+
+		if (!done) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Build not configured properly.", new Exception()));
+		}
 	}
 }

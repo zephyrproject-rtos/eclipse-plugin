@@ -33,10 +33,13 @@ import org.eclipse.cdt.core.parser.ExtendedScannerInfo;
 import org.eclipse.cdt.core.parser.IExtendedScannerInfo;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 
 /**
  * Wrapper of GCCToolChain to build Zephyr Applications.
@@ -45,11 +48,7 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 
 	public static final String TOOLCHAIN_OS = "zephyr"; //$NON-NLS-1$
 
-	private String cCompilerPath;
-
-	private String cxxCompilerPath;
-
-	private String makeProgramPath;
+	private HashMap<String, String> cmakeCacheMap;
 
 	public ZephyrApplicationToolChain(IToolChainProvider provider, String id) {
 		this(provider, id, ZephyrStrings.EMPTY_STRING);
@@ -64,9 +63,7 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 			String version) {
 		super(provider, id, version);
 		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
-		this.cCompilerPath = null;
-		this.cxxCompilerPath = null;
-		this.makeProgramPath = null;
+		this.cmakeCacheMap = new HashMap<>();
 	}
 
 	@Override
@@ -88,12 +85,12 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 	public String[] getCompileCommands() {
 		List<String> compilers = new ArrayList<>();
 
-		if (this.cCompilerPath != null) {
-			compilers.add(this.cCompilerPath);
+		if (cmakeCacheMap.containsKey(CMakeCache.CMAKE_C_COMPILER)) {
+			compilers.add(cmakeCacheMap.get(CMakeCache.CMAKE_C_COMPILER));
 		}
 
-		if (this.cxxCompilerPath != null) {
-			compilers.add(this.cxxCompilerPath);
+		if (cmakeCacheMap.containsKey(CMakeCache.CMAKE_CXX_COMPILER)) {
+			compilers.add(cmakeCacheMap.get(CMakeCache.CMAKE_CXX_COMPILER));
 		}
 
 		return compilers.toArray(new String[0]);
@@ -102,14 +99,14 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 	@Override
 	public String[] getCompileCommands(ILanguage language) {
 		if (GPPLanguage.ID.equals(language.getId())
-				&& (this.cxxCompilerPath != null)) {
+				&& (cmakeCacheMap.containsKey(CMakeCache.CMAKE_CXX_COMPILER))) {
 			return new String[] {
-				this.cxxCompilerPath
+				cmakeCacheMap.get(CMakeCache.CMAKE_CXX_COMPILER)
 			};
 		} else if (GCCLanguage.ID.equals(language.getId())
-				&& (this.cCompilerPath != null)) {
+				&& (cmakeCacheMap.containsKey(CMakeCache.CMAKE_C_COMPILER))) {
 			return new String[] {
-				this.cCompilerPath
+				cmakeCacheMap.get(CMakeCache.CMAKE_C_COMPILER)
 			};
 		} else {
 			return new String[0];
@@ -117,27 +114,15 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 	}
 
 	public String getCCompiler() {
-		return cCompilerPath;
-	}
-
-	public void setCCompiler(String cCompilerPath) {
-		this.cCompilerPath = cCompilerPath;
+		return cmakeCacheMap.get(CMakeCache.CMAKE_C_COMPILER);
 	}
 
 	public String getCXXCompiler() {
-		return cxxCompilerPath;
-	}
-
-	public void setCXXCompiler(String cxxCompilerPath) {
-		this.cxxCompilerPath = cxxCompilerPath;
+		return cmakeCacheMap.get(CMakeCache.CMAKE_CXX_COMPILER);
 	}
 
 	public String getMakeProgram() {
-		return makeProgramPath;
-	}
-
-	public void setMakeProgram(String makeProgramPath) {
-		this.makeProgramPath = makeProgramPath;
+		return cmakeCacheMap.get(CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
 
 	private void addFromBaseScannerInfo(IExtendedScannerInfo baseScannerInfo,
@@ -329,6 +314,24 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 				includePath.toArray(new String[0]),
 				macroFiles.toArray(new String[0]),
 				includeFiles.toArray(new String[0]));
+	}
+
+	private void storeCMakeCacheVarHelper(ScopedPreferenceStore pStore,
+			String key) {
+		String value = ZephyrHelpers.getPrefStringOrNull(pStore, key);
+
+		if (value != null) {
+			cmakeCacheMap.put(key, value);
+		}
+	}
+
+	public void initCMakeVarsFromProjectPerfStore(IProject project) {
+		ScopedPreferenceStore pStore =
+				ZephyrHelpers.getProjectPreferenceStore(project);
+
+		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_C_COMPILER);
+		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_CXX_COMPILER);
+		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
 
 }

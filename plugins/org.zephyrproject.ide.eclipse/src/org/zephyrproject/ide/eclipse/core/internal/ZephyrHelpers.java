@@ -586,4 +586,13 @@ public final class ZephyrHelpers {
 		return getBoardName(getProjectPreferenceStore(project));
 	}
 
+	public static String getPrefStringOrNull(ScopedPreferenceStore pStore,
+			String key) {
+		if (!pStore.contains(key)) {
+			return null;
+		}
+
+		return pStore.getString(key);
+	}
+
 }

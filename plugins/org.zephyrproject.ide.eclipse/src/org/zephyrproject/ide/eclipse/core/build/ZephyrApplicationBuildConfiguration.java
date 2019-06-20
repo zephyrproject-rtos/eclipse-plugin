@@ -34,7 +34,6 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -62,8 +61,6 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 	private String cmakeMakeProgram;
 
-	private CMakeCache cmakeCache;
-
 	private ScopedPreferenceStore pStore;
 
 	private ZephyrScannerInfoCache scannerInfoCache;
@@ -72,7 +69,6 @@ public abstract class ZephyrApplicationBuildConfiguration
 			String name, IToolChain toolChain) {
 		super(config, name, toolChain);
 
-		this.cmakeCache = null;
 		this.scannerInfoCache = new ZephyrScannerInfoCache(config);
 
 		if (Platform.getOS().equals(Platform.OS_WIN32)) {
@@ -126,25 +122,6 @@ public abstract class ZephyrApplicationBuildConfiguration
 		return generator;
 	}
 
-	private void parseCMakeCache(IProject project, Path buildDir)
-			throws IOException, CoreException {
-		Path cachePath = buildDir.resolve("CMakeCache.txt"); //$NON-NLS-1$
-		boolean done = false;
-		if (Files.exists(cachePath)) {
-			CMakeCache cache = new CMakeCache(project);
-			done = cache.parseFile(cachePath.toFile());
-			if (done) {
-				this.cmakeCache = cache;
-				updateToolChain(this.cmakeCache);
-			}
-		}
-
-		if (!done) {
-			throw new CoreException(ZephyrHelpers.errorStatus(
-					"Build not configured properly.", new Exception()));
-		}
-	}
-
 	/*
 	 * (non-Javadoc)
 	 *
@@ -169,10 +146,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 			Path buildDir = getBuildDirectory();
 			IFolder buildFolder = (IFolder) getBuildContainer();
 
-			if ((cmakeCache == null)
-					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
-				parseCMakeCache(project, buildDir);
-			}
+			updateToolChain();
 
 			String boardName = getBoardName();
 			String cmakeGenerator = getCMakeGenerator();
@@ -277,6 +251,8 @@ public abstract class ZephyrApplicationBuildConfiguration
 				return;
 			}
 
+			updateToolChain();
+
 			String cmakeGenerator = getCMakeGenerator();
 
 			if (cmakeGenerator
@@ -297,10 +273,6 @@ public abstract class ZephyrApplicationBuildConfiguration
 			} else {
 				throw new CoreException(ZephyrHelpers.errorStatus(
 						"Unknonw CMake Generator specified", new Exception()));
-			}
-
-			if (cmakeCache == null) {
-				parseCMakeCache(project, buildDir);
 			}
 
 			consoleOut.write(String.format("----- Cleaning in %s\n",
@@ -355,7 +327,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 		return cmd;
 	}
 
-	private void updateToolChain(CMakeCache cache) throws CoreException {
+	private void updateToolChain() throws CoreException {
 		/* Make sure it is of known toolchain class */
 		IToolChain iTC = getToolChain();
 		if ((iTC == null) || !(iTC instanceof ZephyrApplicationToolChain)) {
@@ -364,24 +336,10 @@ public abstract class ZephyrApplicationBuildConfiguration
 		}
 
 		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
+		toolChain.initCMakeVarsFromProjectPerfStore(getProject());
 
-		/* Populate compiler paths */
-		String str;
-		str = cache.getCCompiler();
-		if (str != null) {
-			toolChain.setCCompiler(str);
-		}
-
-		str = cache.getCXXCompiler();
-		if (str != null) {
-			toolChain.setCXXCompiler(str);
-		}
-
-		str = cache.getMakeProgram();
-		if (str != null) {
-			this.cmakeMakeProgram = str;
-			toolChain.setMakeProgram(this.cmakeMakeProgram);
-		}
+		this.cmakeMakeProgram = ZephyrHelpers.getPrefStringOrNull(pStore,
+				CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
 
 	@Override

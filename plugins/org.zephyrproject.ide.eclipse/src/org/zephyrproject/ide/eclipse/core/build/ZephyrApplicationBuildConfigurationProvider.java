@@ -62,6 +62,10 @@ public class ZephyrApplicationBuildConfigurationProvider
 					ZephyrStrings.EMPTY_STRING);
 
 			ICBuildConfiguration cBuildCfg = null;
+			ZephyrApplicationToolChain zToolChain =
+					(ZephyrApplicationToolChain) toolChain;
+
+			zToolChain.initCMakeVarsFromProjectPerfStore(config.getProject());
 
 			if (config.getName().startsWith(
 					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
