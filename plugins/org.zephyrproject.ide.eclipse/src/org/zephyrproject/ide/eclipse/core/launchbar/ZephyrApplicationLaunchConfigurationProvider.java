@@ -19,6 +19,7 @@ import org.eclipse.launchbar.core.ProjectPerTargetLaunchConfigProvider;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.ILaunchTargetManager;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants.Launch;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class ZephyrApplicationLaunchConfigurationProvider
 		extends ProjectPerTargetLaunchConfigProvider {
@@ -74,6 +75,10 @@ public class ZephyrApplicationLaunchConfigurationProvider
 		workingCopy.setMappedResources(new IResource[] {
 			project
 		});
+
+		/* Use our own process factory */
+		workingCopy.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
+				ZephyrProcessFactory.ID);
 
 		if (target.getTypeId()
 				.equals(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {

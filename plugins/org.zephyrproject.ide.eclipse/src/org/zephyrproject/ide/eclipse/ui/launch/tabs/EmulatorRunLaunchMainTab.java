@@ -16,6 +16,7 @@ import org.eclipse.cdt.debug.core.ICDTLaunchConfigurationConstants;
 import org.eclipse.cdt.launch.ui.CAbstractMainTab;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
@@ -32,6 +33,7 @@ import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 
@@ -115,6 +117,10 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 		configuration.setAttribute(
 				ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 				EMPTY_STRING);
+
+		/* Use our own process factory */
+		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
+				ZephyrProcessFactory.ID);
 	}
 
 	@Override

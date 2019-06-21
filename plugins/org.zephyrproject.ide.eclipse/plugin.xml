@@ -112,6 +112,13 @@
       </provider>
    </extension>
    <extension
+         point="org.eclipse.debug.core.processFactories">
+      <processFactory
+            class="org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory"
+            id="org.zephyrproject.ide.eclipse.processFactory">
+      </processFactory>
+   </extension>
+   <extension
          point="org.eclipse.debug.ui.launchConfigurationTypeImages">
       <launchConfigurationTypeImage
             configTypeID="org.zephyrproject.ide.eclipse.core.launchConfigurationType.emulator.run"
