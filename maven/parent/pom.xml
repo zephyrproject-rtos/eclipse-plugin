@@ -46,7 +46,7 @@
 					<target>
 						<artifact>
 							<groupId>org.zephyrproject</groupId>
-							<artifactId>org.zephyrproject.ide.eclipse.target</artifactId>
+							<artifactId>org.zephyrproject.ide.eclipse.target.neon</artifactId>
 							<version>0.0.1-SNAPSHOT</version>
 						</artifact>
 					</target>

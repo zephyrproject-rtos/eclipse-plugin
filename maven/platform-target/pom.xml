@@ -10,7 +10,7 @@
 		<relativePath>../parent</relativePath>
 	</parent>
 
-	<artifactId>org.zephyrproject.ide.eclipse.target</artifactId>
+	<artifactId>org.zephyrproject.ide.eclipse.target.neon</artifactId>
 	<packaging>eclipse-target-definition</packaging>
 
 	<name>Zephyr Project Eclipse Plugin Target</name>
