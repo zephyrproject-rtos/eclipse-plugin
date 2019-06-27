@@ -42,6 +42,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.BidiUtils;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -87,6 +88,9 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 	private Text tcVariant;
 
+	private Composite tcParams;
+	private StackLayout tcParamsLayout;
+
 	private Composite grpZephyr;
 	private Text zephyrSdkInstallDir;
 
@@ -119,66 +123,35 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	 */
 	private void handleToolchainSelection() {
 		String selection = tcSelection.getText();
-		GridData gridData;
-		boolean zephyr = false;
-		boolean xtools = false;
-		boolean gnuarmemb = false;
-		boolean issm = false;
-		boolean crossCompile = false;
-		boolean external = false;
 
 		if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC)) {
 			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR);
 			tcVariant.setEnabled(false);
-			zephyr = true;
+			tcParamsLayout.topControl = grpZephyr;
 		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC)) {
 			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS);
 			tcVariant.setEnabled(false);
-			xtools = true;
+			tcParamsLayout.topControl = grpXTools;
 		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC)) {
 			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB);
 			tcVariant.setEnabled(false);
-			gnuarmemb = true;
+			tcParamsLayout.topControl = grpGnuArmEmb;
 		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC)) {
 			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_ISSM);
 			tcVariant.setEnabled(false);
-			issm = true;
+			tcParamsLayout.topControl = grpISSM;
 		} else if (selection
 				.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC)) {
 			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE);
 			tcVariant.setEnabled(false);
-			crossCompile = true;
+			tcParamsLayout.topControl = grpCrossCompile;
 		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC)) {
 			tcVariant.setText(ZephyrStrings.EMPTY_STRING);
 			tcVariant.setEnabled(true);
-			external = true;
+			tcParamsLayout.topControl = grpCustom;
 		}
 
-		grpZephyr.setVisible(zephyr);
-		gridData = (GridData) grpZephyr.getLayoutData();
-		gridData.exclude = !zephyr;
-
-		grpXTools.setVisible(xtools);
-		gridData = (GridData) grpXTools.getLayoutData();
-		gridData.exclude = !xtools;
-
-		grpGnuArmEmb.setVisible(gnuarmemb);
-		gridData = (GridData) grpGnuArmEmb.getLayoutData();
-		gridData.exclude = !gnuarmemb;
-
-		grpISSM.setVisible(issm);
-		gridData = (GridData) grpISSM.getLayoutData();
-		gridData.exclude = !issm;
-
-		grpCrossCompile.setVisible(crossCompile);
-		gridData = (GridData) grpCrossCompile.getLayoutData();
-		gridData.exclude = !crossCompile;
-
-		grpCustom.setVisible(external);
-		gridData = (GridData) grpCustom.getLayoutData();
-		gridData.exclude = !external;
-
-		composite.layout(true, true);
+		tcParams.layout();
 
 		setPageComplete(validatePage());
 	}
@@ -188,14 +161,12 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	 *
 	 * @return A composite
 	 */
-	private Composite createOneControlGroup() {
-		Composite grp = new Composite(composite, SWT.NULL);
+	private Composite createOneControlGroup(Composite parent) {
+		Composite grp = new Composite(parent, SWT.NULL);
 
-		grp.setFont(composite.getFont());
+		grp.setFont(parent.getFont());
 
-		GridData gridData = new GridData(SWT.FILL, SWT.TOP, true, false);
-		gridData.horizontalSpan = 2;
-		grp.setLayoutData(gridData);
+		grp.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
 		GridLayout layout = new GridLayout();
 		layout.marginTop = 15;
@@ -399,21 +370,24 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		initializeDialogUnits(parent);
 
-		composite.setLayout(new GridLayout(2, false));
+		composite.setLayout(new GridLayout());
 		composite.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
 
+		/* Group for toolchain selection */
+		Composite grpSelection = new Composite(composite, SWT.NULL);
+		grpSelection.setLayout(new GridLayout(2, false));
+		grpSelection.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
 		/* Label: "Toolchain Variant" */
-		Label tcLabel = new Label(composite, SWT.NONE);
-		gridData = new GridData();
-		tcLabel.setLayoutData(gridData);
+		Label tcLabel = new Label(grpSelection, SWT.NONE);
+		tcLabel.setLayoutData(new GridData());
 		tcLabel.setText("Toolchain Variant:");
-		tcLabel.setFont(composite.getFont());
+		tcLabel.setFont(grpSelection.getFont());
 
 		/* Combo box for toolchain list */
-		tcSelection = new Combo(composite, SWT.BORDER | SWT.READ_ONLY);
-		gridData = new GridData();
-		tcSelection.setLayoutData(gridData);
-		tcSelection.setFont(composite.getFont());
+		tcSelection = new Combo(grpSelection, SWT.BORDER | SWT.READ_ONLY);
+		tcSelection.setLayoutData(new GridData());
+		tcSelection.setFont(grpSelection.getFont());
 		tcSelection.setItems(ZEPHYR_TOOLCHAIN_DESC_LIST);
 		tcSelection.select(0);
 		tcSelection.addSelectionListener(new SelectionAdapter() {
@@ -424,38 +398,42 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 		});
 
 		/* Label and Text for ZEPHYR_TOOLCHAIN_VARIANT */
-		Composite grpVariant = createOneControlGroup();
+		Composite grpVariant = createOneControlGroup(composite);
 
 		Label tcVariantLabel = new Label(grpVariant, SWT.NONE);
 		gridData = new GridData();
-		gridData.horizontalSpan = 2;
 		tcVariantLabel.setLayoutData(gridData);
 		tcVariantLabel.setText(ZEPHYR_TOOLCHAIN_VARIANT + " ="); //$NON-NLS-1$
 		tcVariantLabel.setFont(composite.getFont());
 
 		tcVariant = new Text(grpVariant, SWT.BORDER);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		gridData.horizontalSpan = 2;
 		tcVariant.setLayoutData(gridData);
 		tcVariant.setFont(composite.getFont());
 
+		tcParams = new Composite(composite, SWT.NO_TRIM | SWT.NO_FOCUS);
+		tcParamsLayout = new StackLayout();
+		tcParams.setLayout(tcParamsLayout);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		tcParams.setLayoutData(gridData);
+
 		/* Create various groups for toolchains */
-		grpZephyr = createOneControlGroup();
+		grpZephyr = createOneControlGroup(tcParams);
 		createGroupZephyrSDK();
 
-		grpXTools = createOneControlGroup();
+		grpXTools = createOneControlGroup(tcParams);
 		createGroupXtools();
 
-		grpGnuArmEmb = createOneControlGroup();
+		grpGnuArmEmb = createOneControlGroup(tcParams);
 		createGroupGnuArmEmb();
 
-		grpISSM = createOneControlGroup();
+		grpISSM = createOneControlGroup(tcParams);
 		createGroupISSM();
 
-		grpCrossCompile = createOneControlGroup();
+		grpCrossCompile = createOneControlGroup(tcParams);
 		createGroupCrossCompile();
 
-		grpCustom = createOneControlGroup();
+		grpCustom = createOneControlGroup(tcParams);
 		createGroupCustom();
 
 		handleToolchainSelection();
