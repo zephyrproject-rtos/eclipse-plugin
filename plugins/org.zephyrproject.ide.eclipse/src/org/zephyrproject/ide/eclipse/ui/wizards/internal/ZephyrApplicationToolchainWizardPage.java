@@ -458,7 +458,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 				setErrorMessage(null);
 				setMessage(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR
 						+ " must be specified");
-			} else {
+			} else if (!valid) {
 				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR
 						+ " is not valid");
 				setMessage(null);
@@ -472,7 +472,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 				setErrorMessage(null);
 				setMessage(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR
 						+ " must be specified");
-			} else {
+			} else if (!valid) {
 				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR
 						+ " is not valid");
 				setMessage(null);
@@ -486,7 +486,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 				setErrorMessage(null);
 				setMessage(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR
 						+ " must be specified");
-			} else {
+			} else if (!valid) {
 				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR
 						+ " is not valid");
 				setMessage(null);
@@ -500,7 +500,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 				setErrorMessage(null);
 				setMessage(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR
 						+ " must be specified");
-			} else {
+			} else if (!valid) {
 				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR
 						+ " is not valid");
 				setMessage(null);
