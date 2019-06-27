@@ -70,8 +70,8 @@ public class ZephyrScannerInfoCache {
 							}.getType();
 					cacheMap = gson.fromJson(reader, mapType);
 				}
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 
@@ -87,8 +87,8 @@ public class ZephyrScannerInfoCache {
 							}.getType();
 					defaultCacheMap = gson.fromJson(reader, mapType);
 				}
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
 	}
