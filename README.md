@@ -132,3 +132,20 @@ This will create a `Hello World` project.
      Change if it is not correct.
 6. Click `Debug` and the debug session should start.
 7. Follow Eclipse's debugging workflow to debug the application.
+
+## How to Build
+
+#### Prerequisites
+
+The minimum requirements for building the plugins are:
+
+* Java SE 8 Update 212 or later
+* Maven 3.3.9 or later
+
+#### Running Maven
+
+```bash
+$ mvn clean package
+```
+
+The resulting p2 repository is at `maven/repository/target/repository`.
