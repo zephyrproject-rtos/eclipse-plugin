@@ -28,6 +28,7 @@ public abstract class ZephyrAbstractRunLaunchConfigDelegate
 				monitor);
 	}
 
+	@Override
 	protected ICBuildConfiguration getBuildConfiguration(
 			ILaunchConfiguration configuration, String mode,
 			ILaunchTarget target, IProgressMonitor monitor)
