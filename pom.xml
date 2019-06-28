@@ -22,7 +22,6 @@
 	</organization>
 
 	<modules>
-		<module>maven/platform-target</module>
 		<module>plugins/org.zephyrproject.ide.eclipse</module>
 		<module>features/org.zephyrproject.ide.eclipse.feature</module>
 		<module>maven/repository</module>

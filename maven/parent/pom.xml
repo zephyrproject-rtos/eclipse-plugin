@@ -26,6 +26,14 @@
 		<maven.build.timestamp.format>yyyyMMddHHmm</maven.build.timestamp.format>
 	</properties>
 
+	<repositories>
+		<repository>
+			<id>eclipse-release</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/releases/neon/201705151400</url>
+		</repository>
+	</repositories>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -42,14 +50,6 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
-
-					<target>
-						<artifact>
-							<groupId>org.zephyrproject</groupId>
-							<artifactId>org.zephyrproject.ide.eclipse.target.neon</artifactId>
-							<version>0.0.1-SNAPSHOT</version>
-						</artifact>
-					</target>
 
 					<environments>
 						<environment>
@@ -152,6 +152,7 @@
 					<version>${tycho.version}</version>
 					<configuration>
 						<compress>true</compress>
+						<includeAllDependencies>true</includeAllDependencies>
 					</configuration>
 				</plugin>
 
