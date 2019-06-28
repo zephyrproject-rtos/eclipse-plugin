@@ -182,6 +182,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 				consoleOut.write(String.format(
 						"----- Building for board %s in %s\n", boardName,
 						buildFolder.getProjectRelativePath().toString()));
+				epm.setOutputStream(console.getOutputStream());
 
 				String[] command = {
 					this.cmakeMakeProgram
@@ -200,7 +201,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 				watchProcess(process, new IConsoleParser[] {
 					epm,
 					buildProgress
-				}, console);
+				});
 
 				consoleOut.write(String.format(
 						"----- Done building for board %s in %s\n", boardName,
@@ -293,7 +294,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 			setBuildEnvironment(processBuilder.environment());
 			Process process = processBuilder.start();
 			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
-			watchProcess(process, new IConsoleParser[0], console);
+			watchProcess(process, console);
 
 			consoleOut.write(String.format("----- Done cleaning in %s\n",
 					buildFolder.getProjectRelativePath().toString()));
