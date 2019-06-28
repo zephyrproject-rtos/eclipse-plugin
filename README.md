@@ -13,7 +13,7 @@ debugging.
 The minimum requirements for running the plugins are:
 
 * Java SE 8 Update 212 or later
-* Eclipse Neon.3 (4.6.3) with CDT 9.2.1
+* Eclipse 2019-03 (4.11.0) with CDT 9.7.0
 
 Also, please make sure the development host is setup to build Zephyr
 application by following the [Getting Started](https://docs.zephyrproject.org/latest/getting_started/index.html)
