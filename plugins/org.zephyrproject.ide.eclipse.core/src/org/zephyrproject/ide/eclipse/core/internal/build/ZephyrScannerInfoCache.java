@@ -12,6 +12,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.eclipse.cdt.core.parser.ExtendedScannerInfo;
 import org.eclipse.cdt.core.parser.IExtendedScannerInfo;
@@ -22,7 +23,6 @@ import org.eclipse.core.runtime.IPath;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 import com.google.gson.reflect.TypeToken;
 
 /**
@@ -39,8 +39,8 @@ public class ZephyrScannerInfoCache {
 	private IBuildConfiguration config;
 
 	public ZephyrScannerInfoCache(IBuildConfiguration config) {
-		this.cacheMap = new LinkedTreeMap<>();
-		this.defaultCacheMap = new LinkedTreeMap<>();
+		this.cacheMap = new TreeMap<>();
+		this.defaultCacheMap = new TreeMap<>();
 		this.config = config;
 
 		getScannerInfoCachePath().toFile().mkdirs();
