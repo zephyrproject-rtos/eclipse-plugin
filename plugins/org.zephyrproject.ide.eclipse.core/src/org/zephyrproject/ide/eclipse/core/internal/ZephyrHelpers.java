@@ -8,16 +8,15 @@ package org.zephyrproject.ide.eclipse.core.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
+import org.eclipse.cdt.core.build.ICBuildConfigurationManager2;
 import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
 import org.eclipse.core.resources.IBuildConfiguration;
@@ -57,67 +56,20 @@ public final class ZephyrHelpers {
 
 	public static class Build {
 
-		private static void removeCBuildConfigManagerNoConfig(
-				ICBuildConfigurationManager configManager,
-				IBuildConfiguration config) {
-			/*
-			 * There are times when CBuildConfigurationManager cannot get
-			 * the Zephyr build configurations at start-up (possibly due to
-			 * start-up initialization latencies of plugins), and the project
-			 * build configuration is forever blacklisted. This affects all
-			 * the build, run and debug operations relying on the manager
-			 * returning a working CBuildConfiguration. There is currently
-			 * no methods to remove a blacklisted configuration. So here
-			 * we are to workaround this by forcing access to the blacklist
-			 * and manipulate it ourselves.
-			 */
-
-			try {
-				Field fNoConfigs =
-						configManager.getClass().getDeclaredField("noConfigs");
-				Field fConfigs =
-						configManager.getClass().getDeclaredField("configs");
-
-				boolean oldAccessNoCfg = fNoConfigs.isAccessible();
-				boolean oldAccessCfg = fConfigs.isAccessible();
-				fNoConfigs.setAccessible(true);
-				fConfigs.setAccessible(true);
-
-				try {
-					Object objNoCfg = fNoConfigs.get(configManager);
-					Object objCfg = fConfigs.get(configManager);
-					if (objNoCfg instanceof Set<?>) {
-						@SuppressWarnings("unchecked")
-						Set<IBuildConfiguration> ibcs =
-								(Set<IBuildConfiguration>) objNoCfg;
-						synchronized (objCfg) {
-							ibcs.remove(config);
-						}
-					}
-				} catch (Exception e) {
-				} finally {
-					fNoConfigs.setAccessible(oldAccessNoCfg);
-					fConfigs.setAccessible(oldAccessCfg);
-				}
-			} catch (Exception e) {
-			}
-		}
-
 		public static ICBuildConfiguration fixBuildConfig(
 				IBuildConfiguration config) throws CoreException {
 			ICBuildConfigurationManager configManager =
 					CCorePlugin.getService(ICBuildConfigurationManager.class);
+			ICBuildConfigurationManager2 configManager2 =
+					(ICBuildConfigurationManager2) configManager;
 
 			if (configManager == null) {
 				throw new CoreException(ZephyrHelpers.errorStatus(
 						"Cannot get build configuration manager!", null));
 			}
 
-			/*
-			 * Remove from blacklist and ask CBuildConfigurationManager to
-			 * retry.
-			 */
-			removeCBuildConfigManagerNoConfig(configManager, config);
+			/* Ask CBuildConfigurationManager to retry. */
+			configManager2.recheckConfigs();
 
 			ICBuildConfiguration buildCfg =
 					configManager.getBuildConfiguration(config);
@@ -128,7 +80,7 @@ public final class ZephyrHelpers {
 			}
 
 			/* Need to do it manually now... */
-			removeCBuildConfigManagerNoConfig(configManager, config);
+			configManager2.recheckConfigs();
 
 			ICBuildConfigurationProvider provider = configManager.getProvider(
 					ZephyrApplicationBuildConfigurationProvider.ID);
