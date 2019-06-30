@@ -118,6 +118,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 				"templates/ZephyrApplication/template.xml"); //$NON-NLS-1$
 		generator.setProjectName(mainPage.getProjectName());
 		generator.setCMakeGenerator(mainPage.getCMakeGenerator());
+		generator.setSourceDirectory(mainPage.getSourceDirectory());
 		if (!mainPage.useDefaults()) {
 			generator.setLocationURI(mainPage.getLocationURI());
 		}
@@ -196,8 +197,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 		 * Create the build directory, and let CDT know where the build (output)
 		 * directory is, excluding CMake directories.
 		 */
-		IFolder buildFolder =
-				project.getFolder(ZephyrConstants.DEFAULT_BUILD_DIR);
+		IFolder buildFolder = project.getFolder(mainPage.getBuildDirectory());
 		if (!buildFolder.exists()) {
 			try {
 				buildFolder.create(IResource.FORCE | IResource.DERIVED, true,

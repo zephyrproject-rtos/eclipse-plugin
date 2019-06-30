@@ -34,6 +34,7 @@ import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
 import org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceConstants;
 
 /**
@@ -108,6 +109,14 @@ public class ZephyrApplicationMainWizardPage
 	 */
 	public String getCMakeGenerator() {
 		return zCMakeGenerator.getText();
+	}
+
+	public String getBuildDirectory() {
+		return ZephyrProjectPreferences.BUILD_DIR_DEFAULT;
+	}
+
+	public String getSourceDirectory() {
+		return ZephyrProjectPreferences.SOURCE_DIR_DEFAULT;
 	}
 
 	/**
@@ -337,6 +346,10 @@ public class ZephyrApplicationMainWizardPage
 		}
 
 		pStore.putValue(ZephyrConstants.ZEPHYR_BASE_LOCATION, zBaseLoc);
+		pStore.putValue(ZephyrProjectPreferences.BUILD_DIR,
+				getBuildDirectory());
+		pStore.putValue(ZephyrProjectPreferences.SOURCE_DIR,
+				getSourceDirectory());
 
 		/* Store the chosen CMake generator */
 		String generator = zCMakeGenerator.getText();

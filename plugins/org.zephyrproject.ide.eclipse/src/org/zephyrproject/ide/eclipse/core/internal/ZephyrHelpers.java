@@ -477,13 +477,32 @@ public final class ZephyrHelpers {
 		return getBoardName(getProjectPreferenceStore(project));
 	}
 
-	public static String getPrefStringOrNull(ScopedPreferenceStore pStore,
-			String key) {
-		if (!pStore.contains(key)) {
+	/**
+	 * Get the name-value pair of project preference.
+	 *
+	 * @param pStore Project ScopedPreferenceStore
+	 * @param name Name of the preference
+	 * @return Value of the named preference, or null if name-value pair does
+	 *         not exist
+	 */
+	public static String getProjectPreference(ScopedPreferenceStore pStore,
+			String name) {
+		if (!pStore.contains(name)) {
 			return null;
 		}
 
-		return pStore.getString(key);
+		return pStore.getString(name);
 	}
 
+	/**
+	 * Get the name-value pair of project preference.
+	 *
+	 * @param project Project
+	 * @param name Name of the preference
+	 * @return Value of the named preference, or null if name-value pair does
+	 *         not exist
+	 */
+	public static String getProjectPreference(IProject project, String key) {
+		return getProjectPreference(getProjectPreferenceStore(project), key);
+	}
 }

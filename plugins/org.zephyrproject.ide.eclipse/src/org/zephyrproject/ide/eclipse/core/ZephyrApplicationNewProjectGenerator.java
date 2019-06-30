@@ -47,6 +47,8 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 
 	private boolean projectCreationComplete;
 
+	public String sourceDir;
+
 	public ZephyrApplicationNewProjectGenerator(String manifestPath) {
 		super(manifestPath);
 
@@ -154,7 +156,7 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		super.populateModel(model);
 
 		/* Set the source directory parameter to be replaced in template */
-		model.put("srcDir", ZephyrConstants.DEFAULT_SRC_DIR); //$NON-NLS-1$
+		model.put("srcDir", sourceDir); //$NON-NLS-1$
 	}
 
 	/*
@@ -207,4 +209,7 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 				.removeIndexerSetupParticipant(indexerSetupParticipant);
 	}
 
+	public void setSourceDirectory(String srcDir) {
+		this.sourceDir = srcDir;
+	}
 }

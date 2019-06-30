@@ -46,6 +46,7 @@ import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
 import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
 import org.zephyrproject.ide.eclipse.core.internal.build.NinjaProgressMonitor;
 import org.zephyrproject.ide.eclipse.core.internal.build.ZephyrScannerInfoCache;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
 
 import com.google.gson.Gson;
 
@@ -84,8 +85,8 @@ public abstract class ZephyrApplicationBuildConfiguration
 	@Override
 	public IContainer getBuildContainer() throws CoreException {
 		IProject project = getProject();
-		IFolder buildFolder =
-				project.getFolder(ZephyrConstants.DEFAULT_BUILD_DIR);
+		IFolder buildFolder = project
+				.getFolder(ZephyrProjectPreferences.getBuildDirectory(project));
 		if (!buildFolder.exists()) {
 			buildFolder.create(IResource.FORCE | IResource.DERIVED, true,
 					new NullProgressMonitor());
@@ -338,7 +339,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
 		toolChain.initCMakeVarsFromProjectPerfStore(getProject());
 
-		this.cmakeMakeProgram = ZephyrHelpers.getPrefStringOrNull(pStore,
+		this.cmakeMakeProgram = ZephyrHelpers.getProjectPreference(pStore,
 				CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
 

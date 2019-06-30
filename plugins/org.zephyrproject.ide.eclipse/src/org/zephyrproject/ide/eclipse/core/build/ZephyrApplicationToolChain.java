@@ -326,7 +326,7 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 
 	private void storeCMakeCacheVarHelper(ScopedPreferenceStore pStore,
 			String key) {
-		String value = ZephyrHelpers.getPrefStringOrNull(pStore, key);
+		String value = ZephyrHelpers.getProjectPreference(pStore, key);
 
 		if (value != null) {
 			cmakeCacheMap.put(key, value);
