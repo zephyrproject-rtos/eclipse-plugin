@@ -34,10 +34,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class EmulatorDebugLaunchMainTab extends CMainTab2 {
@@ -119,11 +119,10 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 				ICDTLaunchConfigurationConstants.ATTR_BUILD_BEFORE_LAUNCH, 1);
 
 		/* Use default command to start debug server */
+		configuration.setAttribute(ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
 		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-				ZephyrConstants.Launch.DBGSERVER_CMD_SEL_DEFAULT);
-		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_DBGSERVER_CUSTOM_COMMAND,
+				ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
 				EMPTY_STRING);
 
 		/* Use our own process factory */
@@ -137,17 +136,17 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 
 		try {
 			String cmdSel = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrConstants.Launch.DBGSERVER_CMD_SEL_DEFAULT);
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
 
 			if (cmdSel.equals(
-					ZephyrConstants.Launch.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
 				btnDbgSrvNone.setSelection(false);
 				btnDbgSrvDefault.setSelection(false);
 				btnDbgSrvCustomCmd.setSelection(true);
 				dbgSrvCustomCommandText.setEnabled(true);
 			} else if (cmdSel
-					.equals(ZephyrConstants.Launch.DBGSERVER_CMD_SEL_NONE)) {
+					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
 				btnDbgSrvNone.setSelection(true);
 				btnDbgSrvDefault.setSelection(false);
 				btnDbgSrvCustomCmd.setSelection(false);
@@ -160,7 +159,7 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 			}
 
 			String customCmd = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 					EMPTY_STRING);
 			dbgSrvCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
@@ -178,19 +177,19 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 
 		if (btnDbgSrvCustomCmd.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrConstants.Launch.DBGSERVER_CMD_SEL_CUSTOM_COMMAND);
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND);
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
 					dbgSrvCustomCommandText.getText());
 		} else if (btnDbgSrvDefault.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrConstants.Launch.DBGSERVER_CMD_SEL_DEFAULT);
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
 		} else if (btnDbgSrvNone.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrConstants.Launch.DBGSERVER_CMD_SEL_NONE);
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE);
 		}
 	}
 

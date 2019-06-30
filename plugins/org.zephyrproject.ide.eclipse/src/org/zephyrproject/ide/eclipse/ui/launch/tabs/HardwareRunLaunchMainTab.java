@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class HardwareRunLaunchMainTab extends CAbstractMainTab {
@@ -111,10 +111,10 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 				ICDTLaunchConfigurationConstants.ATTR_BUILD_BEFORE_LAUNCH, 1);
 
 		/* Use default command to flash hardware target */
-		configuration.setAttribute(ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
-				ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT);
+		configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+				ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
 		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND, EMPTY_STRING);
+				ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND, EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -127,10 +127,9 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 
 		try {
 			String cmdSel = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL, EMPTY_STRING);
+					ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL, EMPTY_STRING);
 
-			if (cmdSel
-					.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD)) {
+			if (cmdSel.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
 				btnFlashTargetCustomCmd.setSelection(true);
 				flashTargetCustomCommandText.setEnabled(true);
 			} else {
@@ -138,7 +137,7 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 			}
 
 			String customCmd = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND,
 					EMPTY_STRING);
 			flashTargetCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
@@ -184,16 +183,14 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 				fProjText.getText());
 
 		if (btnFlashTargetCustomCmd.getSelection()) {
+			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+					ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD);
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
-					ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD);
-			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND,
 					flashTargetCustomCommandText.getText());
 		} else if (btnFlashTargetDefault.getSelection()) {
-			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
-					ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT);
+			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+					ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
 		}
 	}
 

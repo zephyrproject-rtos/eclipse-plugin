@@ -8,8 +8,8 @@ package org.zephyrproject.ide.eclipse.ui.preferences.internal;
 
 import org.eclipse.jface.preference.DirectoryFieldEditor;
 import org.eclipse.swt.widgets.Composite;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 
 /**
  * Directory field editor for specifying Zephyr Base as preference.
@@ -23,7 +23,8 @@ public class ZephyrBaseLocationDirectoryFieldEditor
 	public ZephyrBaseLocationDirectoryFieldEditor(String name, String labelText,
 			Composite parent) {
 		super(name, labelText, parent);
-		setErrorMessage("Not a valid " + ZephyrConstants.ZEPHYR_BASE_DESC_DIR);
+		setErrorMessage(
+				"Not a valid " + ZephyrBase.DIRECTORY_DESCRIPTION);
 	}
 
 	/**

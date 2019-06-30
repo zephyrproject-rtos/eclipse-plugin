@@ -17,9 +17,9 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.launch.ITargetedLaunch;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChain;
+import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationHardwareDebugLaunchConfigDelegate
@@ -68,22 +68,22 @@ public class ZephyrApplicationHardwareDebugLaunchConfigDelegate
 
 		/* Figure out whether to do run, flash or custom command */
 		String commandSelection = configuration.getAttribute(
-				ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
-				ZephyrConstants.Launch.FLASH_CMD_SEL_NONE);
+				ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+				ZephyrLaunchConstants.FLASH_CMD_SEL_NONE);
 		String cmdTarget = null;
 		Process process = null;
 		if (commandSelection
-				.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD)) {
+				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
 			/* Need to run custom command */
 			process = ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg,
 					launch, configuration,
-					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND);
+					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND);
 		} else {
 			if (commandSelection
-					.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT)) {
+					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT)) {
 				cmdTarget = CMD_FLASH;
 			} else if (commandSelection
-					.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_NONE)) {
+					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_NONE)) {
 				/* Instructed not to flash hardware target */
 				return;
 			}
@@ -95,11 +95,11 @@ public class ZephyrApplicationHardwareDebugLaunchConfigDelegate
 			}
 
 			if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				process = ZephyrHelpers.Launch.doMakefile(project, appBuildCfg,
 						launch, makeProgram, cmdTarget);
 			} else if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				process = ZephyrHelpers.Launch.doNinja(project, appBuildCfg,
 						launch, makeProgram, cmdTarget);
 			} else {
@@ -149,21 +149,21 @@ public class ZephyrApplicationHardwareDebugLaunchConfigDelegate
 
 		/* Figure out whether to do run, flash or custom command */
 		String commandSelection = configuration.getAttribute(
-				ZephyrConstants.Launch.ATTR_DBGSERVER_CMD_SEL,
-				ZephyrConstants.Launch.DBGSERVER_CMD_SEL_NONE);
+				ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE);
 		String cmdTarget = null;
 		if (commandSelection.equals(
-				ZephyrConstants.Launch.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
+				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
 			/* Need to run custom command */
 			ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg, launch,
 					configuration,
-					ZephyrConstants.Launch.ATTR_DBGSERVER_CUSTOM_COMMAND);
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND);
 			return;
 		} else if (commandSelection
-				.equals(ZephyrConstants.Launch.DBGSERVER_CMD_SEL_DEFAULT)) {
+				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT)) {
 			cmdTarget = CMD_DEBUGSERVER;
 		} else if (commandSelection
-				.equals(ZephyrConstants.Launch.DBGSERVER_CMD_SEL_NONE)) {
+				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
 			/* Instructed not to launch debugserver */
 			return;
 		}
@@ -174,11 +174,11 @@ public class ZephyrApplicationHardwareDebugLaunchConfigDelegate
 					new RuntimeException("Unknown Command to Run"))); //$NON-NLS-1$
 		}
 
-		if (cmakeGenerator.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 			ZephyrHelpers.Launch.doMakefile(project, appBuildCfg, launch,
 					makeProgram, cmdTarget);
 		} else if (cmakeGenerator
-				.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 			ZephyrHelpers.Launch.doNinja(project, appBuildCfg, launch,
 					makeProgram, cmdTarget);
 		} else {

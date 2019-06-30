@@ -35,9 +35,9 @@ import org.eclipse.tools.templates.core.IGenerator;
 import org.eclipse.tools.templates.ui.TemplateWizard;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNewProjectGenerator;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationBoardWizardPage;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationMainWizardPage;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationToolchainWizardPage;
@@ -218,7 +218,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 		 * Create a link to ZEPHYR_BASE so the indexer can also index the Zephyr
 		 * core code.
 		 */
-		IFolder zBase = project.getFolder(ZephyrConstants.ZEPHYR_BASE); // $NON-NLS-1$
+		IFolder zBase = project.getFolder(ZephyrBase.ZEPHYR_BASE); // $NON-NLS-1$
 		String zBaseLoc = mainPage.getZephyrBaseLocation();
 		IPath zBaseLink = new Path(zBaseLoc);
 
@@ -249,7 +249,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			} catch (CoreException e) {
 				showErrorDialogAndDeleteProject(
 						String.format("Error creating linked resource to %s",
-								ZephyrConstants.ZEPHYR_BASE_DESC_DIR),
+								ZephyrBase.DIRECTORY_DESCRIPTION),
 						e);
 				return false;
 			}
@@ -257,7 +257,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			RuntimeException e = new RuntimeException("Link not valid");
 			showErrorDialogAndDeleteProject(
 					String.format("Error creating linked resource to %s",
-							ZephyrConstants.ZEPHYR_BASE_DESC_DIR),
+							ZephyrBase.DIRECTORY_DESCRIPTION),
 					e);
 			return false;
 		}

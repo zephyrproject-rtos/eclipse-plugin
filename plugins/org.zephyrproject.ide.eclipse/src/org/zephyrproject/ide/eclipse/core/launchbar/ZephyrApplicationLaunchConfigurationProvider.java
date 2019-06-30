@@ -18,7 +18,7 @@ import org.eclipse.launchbar.core.ILaunchDescriptor;
 import org.eclipse.launchbar.core.ProjectPerTargetLaunchConfigProvider;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.ILaunchTargetManager;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants.Launch;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class ZephyrApplicationLaunchConfigurationProvider
@@ -53,10 +53,10 @@ public class ZephyrApplicationLaunchConfigurationProvider
 	@Override
 	public boolean supports(ILaunchDescriptor descriptor, ILaunchTarget target)
 			throws CoreException {
-		if (Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID
+		if (ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID
 				.equals(target.getTypeId())) {
 			return true;
-		} else if (Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID
+		} else if (ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID
 				.equals(target.getTypeId())) {
 			return true;
 		}
@@ -80,14 +80,15 @@ public class ZephyrApplicationLaunchConfigurationProvider
 		workingCopy.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
 				ZephyrProcessFactory.ID);
 
-		if (target.getTypeId()
-				.equals(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
-			workingCopy.setAttribute(Launch.ATTR_EMULATOR_RUN_CMD_SEL,
-					Launch.EMULATOR_RUN_CMD_SEL_DFLT);
-		} else if (target.getTypeId()
-				.equals(Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
-			workingCopy.setAttribute(Launch.ATTR_FLASH_CMD_SEL,
-					Launch.FLASH_CMD_SEL_DFLT);
+		if (target.getTypeId().equals(
+				ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
+			workingCopy.setAttribute(
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
+		} else if (target.getTypeId().equals(
+				ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
+			workingCopy.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+					ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
 		}
 	}
 
@@ -106,14 +107,16 @@ public class ZephyrApplicationLaunchConfigurationProvider
 
 		String type = configuration.getType().getIdentifier();
 
-		if (type.equals(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
+		if (type.equals(
+				ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
 			target = manager.getLaunchTarget(
-					Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
-					Launch.LAUNCH_TARGET_EMULATOR_RUN_NAME);
-		} else if (type.equals(Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
+					ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
+					ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_NAME);
+		} else if (type.equals(
+				ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
 			target = manager.getLaunchTarget(
-					Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
-					Launch.LAUNCH_TARGET_HARDWARE_RUN_NAME);
+					ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
+					ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_NAME);
 		}
 
 		return target;

@@ -14,10 +14,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.launch.ITargetedLaunch;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChain;
+import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationHardwareRunLaunchConfigDelegate
@@ -58,17 +58,17 @@ public class ZephyrApplicationHardwareRunLaunchConfigDelegate
 
 		/* Figure out whether to do run, flash or custom command */
 		String commandSelection = configuration.getAttribute(
-				ZephyrConstants.Launch.ATTR_FLASH_CMD_SEL,
+				ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 				ZephyrStrings.EMPTY_STRING);
 		String cmdToRun = null;
 		if (commandSelection
-				.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_CUSTOM_CMD)) {
+				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
 			/* Need to run custom command */
 			doCustomCommand(project, appBuildCfg, launch, configuration,
-					ZephyrConstants.Launch.ATTR_FLASH_CUSTOM_COMMAND);
+					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND);
 			return;
 		} else if (commandSelection
-				.equals(ZephyrConstants.Launch.FLASH_CMD_SEL_DFLT)) {
+				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT)) {
 			cmdToRun = CMD_FLASH;
 		}
 
@@ -78,10 +78,10 @@ public class ZephyrApplicationHardwareRunLaunchConfigDelegate
 					new RuntimeException("Unknown Command to Run"))); //$NON-NLS-1$
 		}
 
-		if (cmakeGenerator.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 			doMakefile(project, appBuildCfg, launch, makeProgram, cmdToRun);
 		} else if (cmakeGenerator
-				.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 			doNinja(project, appBuildCfg, launch, makeProgram, cmdToRun);
 		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(

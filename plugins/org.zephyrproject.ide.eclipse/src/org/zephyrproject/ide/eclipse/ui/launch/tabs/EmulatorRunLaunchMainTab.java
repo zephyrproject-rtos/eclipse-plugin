@@ -31,8 +31,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrProcessFactory;
 
 public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
@@ -112,10 +112,10 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 
 		/* Use default command to run emulator */
 		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CMD_SEL,
-				ZephyrConstants.Launch.EMULATOR_RUN_CMD_SEL_DFLT);
+				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
 		configuration.setAttribute(
-				ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
+				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 				EMPTY_STRING);
 
 		/* Use our own process factory */
@@ -129,11 +129,11 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 
 		try {
 			String cmdSel = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 					EMPTY_STRING);
 
 			if (cmdSel.equals(
-					ZephyrConstants.Launch.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD)) {
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD)) {
 				btnEmulatorRunCustomCmd.setSelection(true);
 				emulatorRunCustomCommandText.setEnabled(true);
 			} else {
@@ -141,7 +141,7 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 			}
 
 			String customCmd = configuration.getAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 					EMPTY_STRING);
 			emulatorRunCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
@@ -188,15 +188,15 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 
 		if (btnEmulatorRunCustomCmd.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CMD_SEL,
-					ZephyrConstants.Launch.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD);
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD);
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 					emulatorRunCustomCommandText.getText());
 		} else if (btnEmulatorRunDefault.getSelection()) {
 			configuration.setAttribute(
-					ZephyrConstants.Launch.ATTR_EMULATOR_RUN_CMD_SEL,
-					ZephyrConstants.Launch.EMULATOR_RUN_CMD_SEL_DFLT);
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
 		}
 	}
 

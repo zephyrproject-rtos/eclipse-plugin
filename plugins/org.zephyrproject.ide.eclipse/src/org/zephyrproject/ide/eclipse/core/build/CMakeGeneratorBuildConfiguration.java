@@ -40,7 +40,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 
@@ -94,7 +93,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 	 * @return The CMake Generator identifier
 	 */
 	private String getCMakeGenerator() {
-		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+		String generator = pStore.getString(CMakeConstants.CMAKE_GENERATOR);
 
 		if (generator.trim().isEmpty()) {
 			return ZephyrHelpers.getDefaultCMakeGenerator();

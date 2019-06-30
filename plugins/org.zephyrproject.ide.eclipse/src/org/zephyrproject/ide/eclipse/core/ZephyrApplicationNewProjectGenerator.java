@@ -31,6 +31,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.freemarker.FMProjectGenerator;
 import org.eclipse.tools.templates.freemarker.SourceRoot;
 import org.osgi.framework.Bundle;
+import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 
@@ -53,7 +54,7 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		super(manifestPath);
 
 		/* Default to use Ninja */
-		this.cmakeGenerator = ZephyrConstants.CMAKE_GENERATOR_NINJA;
+		this.cmakeGenerator = CMakeConstants.CMAKE_GENERATOR_NINJA;
 
 		this.projectCreationComplete = false;
 		this.indexerSetupParticipant = new IndexerSetupParticipant() {
@@ -111,11 +112,11 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		IProject project = getProject();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		StringBuilder cfgName = new StringBuilder();
-		if (cmakeGenerator.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 			cfgName.append(
 					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
 		} else if (cmakeGenerator
-				.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+				.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 			cfgName.append(
 					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
 		}

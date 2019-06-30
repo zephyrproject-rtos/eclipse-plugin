@@ -13,6 +13,8 @@ public class ZephyrStrings {
 
 	public static final String EMPTY_STRING = ""; //$NON-NLS-1$
 
+	public static final String ONE_EMPTY_SPACE = " "; //$NON-NLS-1$
+
 	public static final String PATH = "Path";
 
 	public static final String TOOLCHAIN = "Toolchain";

@@ -39,7 +39,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
@@ -114,7 +113,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 	 * @return The CMake Generator identifier
 	 */
 	private String getCMakeGenerator() {
-		String generator = pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+		String generator = pStore.getString(CMakeConstants.CMAKE_GENERATOR);
 
 		if (generator.trim().isEmpty()) {
 			return ZephyrHelpers.getDefaultCMakeGenerator();
@@ -154,7 +153,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 			IConsoleParser buildProgress = null;
 			if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
 					/* Makefile does not exist, 'make' won't work */
 					console.getErrorStream().write("Makefile does not exist\n");
@@ -163,7 +162,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 				buildProgress = new MakefileProgressMonitor(monitor);
 			} else if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
 					/* build.ninja does not exist, 'ninja' won't work */
 					console.getErrorStream()
@@ -257,14 +256,14 @@ public abstract class ZephyrApplicationBuildConfiguration
 			String cmakeGenerator = getCMakeGenerator();
 
 			if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_MAKEFILE)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
 					/* Makefile does not exist, 'make clean' won't work */
 					console.getErrorStream().write("Makefile does not exist\n");
 					return;
 				}
 			} else if (cmakeGenerator
-					.equals(ZephyrConstants.CMAKE_GENERATOR_NINJA)) {
+					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
 					/* build.ninja does not exist, 'ninja clean' won't work */
 					console.getErrorStream()

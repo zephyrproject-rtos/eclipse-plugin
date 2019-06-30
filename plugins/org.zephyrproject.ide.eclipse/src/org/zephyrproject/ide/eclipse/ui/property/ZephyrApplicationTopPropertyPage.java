@@ -16,8 +16,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
 
 public class ZephyrApplicationTopPropertyPage extends PropertyPage
 		implements IWorkbenchPropertyPage {
@@ -87,7 +87,8 @@ public class ZephyrApplicationTopPropertyPage extends PropertyPage
 		ScopedPreferenceStore pStore =
 				ZephyrHelpers.getProjectPreferenceStore(project);
 
-		pStore.setValue(ZephyrConstants.ZEPHYR_BOARD, boardNameText.getText());
+		pStore.setValue(ZephyrProjectPreferences.BOARD,
+				boardNameText.getText());
 
 		try {
 			pStore.save();

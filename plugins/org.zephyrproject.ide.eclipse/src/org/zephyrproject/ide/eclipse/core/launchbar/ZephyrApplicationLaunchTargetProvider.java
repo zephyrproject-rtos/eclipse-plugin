@@ -5,32 +5,38 @@ import org.eclipse.launchbar.core.target.ILaunchTargetManager;
 import org.eclipse.launchbar.core.target.ILaunchTargetProvider;
 import org.eclipse.launchbar.core.target.ILaunchTargetWorkingCopy;
 import org.eclipse.launchbar.core.target.TargetStatus;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants.Launch;
+import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
 
 public class ZephyrApplicationLaunchTargetProvider
 		implements ILaunchTargetProvider {
 
 	@Override
 	public void init(ILaunchTargetManager targetManager) {
-		if (targetManager.getLaunchTarget(Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
-				Launch.LAUNCH_TARGET_EMULATOR_RUN_NAME) == null) {
+		if (targetManager.getLaunchTarget(
+				ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
+				ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_NAME) == null) {
 			ILaunchTarget target = targetManager.addLaunchTarget(
-					Launch.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
-					Launch.LAUNCH_TARGET_EMULATOR_RUN_NAME);
+					ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID,
+					ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_NAME);
 			ILaunchTargetWorkingCopy wc = target.getWorkingCopy();
-			wc.setAttribute(ILaunchTarget.ATTR_OS, Launch.LAUNCH_TARGET_OS);
-			wc.setAttribute(ILaunchTarget.ATTR_ARCH, Launch.LAUNCH_TARGET_ARCH);
+			wc.setAttribute(ILaunchTarget.ATTR_OS,
+					ZephyrLaunchConstants.LAUNCH_TARGET_OS);
+			wc.setAttribute(ILaunchTarget.ATTR_ARCH,
+					ZephyrLaunchConstants.LAUNCH_TARGET_ARCH);
 			wc.save();
 		}
 
-		if (targetManager.getLaunchTarget(Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
-				Launch.LAUNCH_TARGET_HARDWARE_RUN_NAME) == null) {
+		if (targetManager.getLaunchTarget(
+				ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
+				ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_NAME) == null) {
 			ILaunchTarget target = targetManager.addLaunchTarget(
-					Launch.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
-					Launch.LAUNCH_TARGET_HARDWARE_RUN_NAME);
+					ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID,
+					ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_NAME);
 			ILaunchTargetWorkingCopy wc = target.getWorkingCopy();
-			wc.setAttribute(ILaunchTarget.ATTR_OS, Launch.LAUNCH_TARGET_OS);
-			wc.setAttribute(ILaunchTarget.ATTR_ARCH, Launch.LAUNCH_TARGET_ARCH);
+			wc.setAttribute(ILaunchTarget.ATTR_OS,
+					ZephyrLaunchConstants.LAUNCH_TARGET_OS);
+			wc.setAttribute(ILaunchTarget.ATTR_ARCH,
+					ZephyrLaunchConstants.LAUNCH_TARGET_ARCH);
 			wc.save();
 		}
 	}

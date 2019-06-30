@@ -8,9 +8,26 @@ package org.zephyrproject.ide.eclipse.core.preferences;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public final class ZephyrProjectPreferences {
+
+	public static class ZephyrBase {
+
+		public static final String ZEPHYR_BASE = "ZEPHYR_BASE"; //$NON-NLS-1$
+
+		public static final String DESCRIPTION = "Zephyr Base";
+
+		public static final String DIRECTORY_DESCRIPTION = String.join(
+				ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION, ZephyrStrings.PATH);
+
+		public static final String ZEPHYR_BASE_LOCATION =
+				"ZEPHYR_BASE_LOCATION"; //$NON-NLS-1$
+
+	}
+
+	public static final String BOARD = "BOARD"; //$NON-NLS-1$
 
 	public static final String BUILD_DIR = "BUILD_DIR"; //$NON-NLS-1$
 

@@ -1,30 +1,5 @@
 package org.zephyrproject.ide.eclipse.ui.property;
 
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC_PREFIX;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC_DIR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
-
 import java.io.IOException;
 import java.util.Arrays;
 
@@ -50,8 +25,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCompileToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
@@ -128,7 +109,8 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		gridData = new GridData();
 		tcSelection.setLayoutData(gridData);
 		tcSelection.setFont(grpSelection.getFont());
-		tcSelection.setItems(ZephyrConstants.ZEPHYR_TOOLCHAIN_DESC_LIST);
+		tcSelection
+				.setItems(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_DESC_LIST);
 		tcSelection.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent event) {
@@ -142,7 +124,8 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		Label tcVariantLabel = new Label(grpVariant, SWT.NONE);
 		gridData = new GridData();
 		tcVariantLabel.setLayoutData(gridData);
-		tcVariantLabel.setText(ZEPHYR_TOOLCHAIN_VARIANT + " ="); //$NON-NLS-1$
+		tcVariantLabel.setText(
+				ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT + " ="); //$NON-NLS-1$
 		tcVariantLabel.setFont(composite.getFont());
 
 		tcVariant = new Text(grpVariant, SWT.BORDER);
@@ -157,31 +140,26 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		tcParams.setLayoutData(gridData);
 
 		/* Selection the toolchain from project */
-		String storedTcVariant =
-				pStore.getString(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT);
+		String storedTcVariant = pStore
+				.getString(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT);
 		tcVariant.setText(storedTcVariant);
 		String tcDesc;
-		if (storedTcVariant
-				.equals(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR)) {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC;
-		} else if (storedTcVariant
-				.equals(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS)) {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC;
-		} else if (storedTcVariant
-				.equals(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB)) {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC;
-		} else if (storedTcVariant
-				.equals(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM)) {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC;
-		} else if (storedTcVariant.equals(
-				ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE)) {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC;
+		if (storedTcVariant.equals(ZephyrSdkToolChain.VARIANT)) {
+			tcDesc = ZephyrSdkToolChain.DESCRIPTION;
+		} else if (storedTcVariant.equals(CrosstoolsToolChain.VARIANT)) {
+			tcDesc = CrosstoolsToolChain.DESCRIPTION;
+		} else if (storedTcVariant.equals(GnuArmEmbToolChain.VARIANT)) {
+			tcDesc = GnuArmEmbToolChain.DESCRIPTION;
+		} else if (storedTcVariant.equals(IssmToolChain.VARIANT)) {
+			tcDesc = IssmToolChain.DESCRIPTION;
+		} else if (storedTcVariant.equals(CrossCompileToolChain.VARIANT)) {
+			tcDesc = CrossCompileToolChain.DESCRIPTION;
 		} else {
-			tcDesc = ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC;
+			tcDesc = CustomToolChain.DESCRIPTION;
 		}
-		int selection =
-				Arrays.asList(ZephyrConstants.ZEPHYR_TOOLCHAIN_DESC_LIST)
-						.indexOf(tcDesc);
+		int selection = Arrays
+				.asList(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_DESC_LIST)
+				.indexOf(tcDesc);
 		tcSelection.select(selection);
 
 		/* Create the toolchain parameter controls */
@@ -328,13 +306,12 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupZephyrSDK(ScopedPreferenceStore pStore) {
 		Composite grp = grpZephyr;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV + "):"); //$NON-NLS-1$
+		createLabel(grp, ZephyrSdkToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ ZephyrSdkToolChain.ENV + "):"); //$NON-NLS-1$
 
 		zephyrSdkInstallDir = createDirField(grp);
 
-		zephyrSdkInstallDir
-				.setText(pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV));
+		zephyrSdkInstallDir.setText(pStore.getString(ZephyrSdkToolChain.ENV));
 
 		createBrowseBtn(grp, zephyrSdkInstallDir);
 	};
@@ -345,13 +322,12 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupXtools(ScopedPreferenceStore pStore) {
 		Composite grp = grpXTools;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV + "):"); //$NON-NLS-1$
+		createLabel(grp, CrosstoolsToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ CrosstoolsToolChain.ENV + "):"); //$NON-NLS-1$
 
 		xtoolsDir = createDirField(grp);
 
-		xtoolsDir
-				.setText(pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV));
+		xtoolsDir.setText(pStore.getString(CrosstoolsToolChain.ENV));
 
 		createBrowseBtn(grp, xtoolsDir);
 	};
@@ -362,13 +338,12 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupGnuArmEmb(ScopedPreferenceStore pStore) {
 		Composite grp = grpGnuArmEmb;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV + "):"); //$NON-NLS-1$
+		createLabel(grp, GnuArmEmbToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ GnuArmEmbToolChain.ENV + "):"); //$NON-NLS-1$
 
 		gnuArmEmbDir = createDirField(grp);
 
-		gnuArmEmbDir.setText(
-				pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV));
+		gnuArmEmbDir.setText(pStore.getString(GnuArmEmbToolChain.ENV));
 
 		createBrowseBtn(grp, gnuArmEmbDir);
 	};
@@ -379,12 +354,12 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupISSM(ScopedPreferenceStore pStore) {
 		Composite grp = grpISSM;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV + "):"); //$NON-NLS-1$
+		createLabel(grp, IssmToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ IssmToolChain.ENV + "):"); //$NON-NLS-1$
 
 		issmDir = createDirField(grp);
 
-		issmDir.setText(pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV));
+		issmDir.setText(pStore.getString(IssmToolChain.ENV));
 
 		createBrowseBtn(grp, issmDir);
 	};
@@ -395,13 +370,12 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupCrossCompile(ScopedPreferenceStore pStore) {
 		Composite grp = grpCrossCompile;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC_PREFIX
-				+ " (" + ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV + "):"); //$NON-NLS-1$ //$NON-NLS-2$
+		createLabel(grp, CrossCompileToolChain.PREFIX_DESCRIPTION + " (" //$NON-NLS-1$
+				+ CrossCompileToolChain.ENV + "):"); //$NON-NLS-1$
 
 		crossCompilePrefix = createTextField(grp);
 
-		crossCompilePrefix.setText(
-				pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV));
+		crossCompilePrefix.setText(pStore.getString(CrossCompileToolChain.ENV));
 
 		createBrowseBtn(grp, crossCompilePrefix);
 	};
@@ -412,8 +386,8 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupCustom(ScopedPreferenceStore pStore) {
 		Composite grp = grpCustom;
 
-		createLabel(grp, ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV + "):"); //$NON-NLS-1$
+		createLabel(grp, CustomToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ CustomToolChain.ENV + "):"); //$NON-NLS-1$
 
 		customRoot = createTextField(grp);
 
@@ -430,28 +404,27 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void handleToolchainSelection() {
 		String selection = tcSelection.getText();
 
-		if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC)) {
-			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR);
+		if (selection.equals(ZephyrSdkToolChain.DESCRIPTION)) {
+			tcVariant.setText(ZephyrSdkToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpZephyr;
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC)) {
-			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS);
+		} else if (selection.equals(CrosstoolsToolChain.DESCRIPTION)) {
+			tcVariant.setText(CrosstoolsToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpXTools;
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC)) {
-			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB);
+		} else if (selection.equals(GnuArmEmbToolChain.DESCRIPTION)) {
+			tcVariant.setText(GnuArmEmbToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpGnuArmEmb;
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC)) {
-			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_ISSM);
+		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
+			tcVariant.setText(IssmToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpISSM;
-		} else if (selection
-				.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC)) {
-			tcVariant.setText(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE);
+		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
+			tcVariant.setText(CrossCompileToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpCrossCompile;
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC)) {
+		} else if (selection.equals(CustomToolChain.DESCRIPTION)) {
 			tcVariant.setText(ZephyrStrings.EMPTY_STRING);
 			tcVariant.setEnabled(true);
 			tcParamsLayout.topControl = grpCustom;
@@ -467,77 +440,76 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		String selection = tcSelection.getText();
 		boolean valid = false;
 
-		if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC)) {
+		if (selection.equals(ZephyrSdkToolChain.DESCRIPTION)) {
 			String dir = zephyrSdkInstallDir.getText();
 
 			valid = ZephyrHelpers.checkValidZephyrSdkInstallDir(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR
+				setErrorMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_DESC_DIR
+				setErrorMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
 						+ " is not valid");
 			}
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC)) {
+		} else if (selection.equals(CrosstoolsToolChain.DESCRIPTION)) {
 			String dir = xtoolsDir.getText();
 
 			valid = ZephyrHelpers.checkValidXToolsDirectory(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR
+				setErrorMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_DESC_DIR
+				setErrorMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
 						+ " is not valid");
 			}
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC)) {
+		} else if (selection.equals(GnuArmEmbToolChain.DESCRIPTION)) {
 			String dir = gnuArmEmbDir.getText();
 
 			valid = ZephyrHelpers.checkValidDirectory(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR
+				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_DESC_DIR
+				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
 						+ " is not valid");
 			}
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC)) {
+		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
 			String dir = issmDir.getText();
 
 			valid = ZephyrHelpers.checkValidDirectory(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR
+				setErrorMessage(IssmToolChain.DIRECTORY_DESCRIPTION
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_DESC_DIR
-						+ " is not valid");
+				setErrorMessage(
+						IssmToolChain.DIRECTORY_DESCRIPTION + " is not valid");
 			}
-		} else if (selection
-				.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC)) {
+		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
 			String prefix = crossCompilePrefix.getText();
 			if (!prefix.isEmpty()) {
 				valid = true;
 			} else {
-				setErrorMessage(
-						ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_DESC_PREFIX
-								+ " must be specified");
+				setErrorMessage(CrossCompileToolChain.PREFIX_DESCRIPTION
+						+ " must be specified");
 			}
-		} else if (selection.equals(ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC)) {
+		} else if (selection.equals(CustomToolChain.DESCRIPTION)) {
 			String variant = tcVariant.toString();
 			if (!variant.isEmpty()) {
 				String tcRoot = customRoot.getText();
 				if (!tcRoot.isEmpty()) {
 					valid = true;
 				} else {
-					setErrorMessage(ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_DESC_DIR
+					setErrorMessage(CustomToolChain.DIRECTORY_DESCRIPTION
 							+ " must be specified");
 				}
 			} else {
 				setErrorMessage(
-						ZEPHYR_TOOLCHAIN_VARIANT + " must be specified");
+						ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT
+								+ " must be specified");
 			}
 		}
 
@@ -555,26 +527,27 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 				ZephyrHelpers.getProjectPreferenceStore(project);
 
 		String variant = tcVariant.getText();
-		pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT, variant);
+		pStore.putValue(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT,
+				variant);
 
-		if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR)) {
+		if (variant.equals(ZephyrSdkToolChain.VARIANT)) {
 			String dir = zephyrSdkInstallDir.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV, dir);
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS)) {
+			pStore.putValue(ZephyrSdkToolChain.ENV, dir);
+		} else if (variant.equals(CrosstoolsToolChain.VARIANT)) {
 			String dir = xtoolsDir.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV, dir);
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB)) {
+			pStore.putValue(CrosstoolsToolChain.ENV, dir);
+		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
 			String dir = gnuArmEmbDir.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV, dir);
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM)) {
+			pStore.putValue(GnuArmEmbToolChain.ENV, dir);
+		} else if (variant.equals(IssmToolChain.VARIANT)) {
 			String dir = issmDir.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV, dir);
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE)) {
+			pStore.putValue(IssmToolChain.ENV, dir);
+		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
 			String prefix = crossCompilePrefix.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV, prefix);
+			pStore.putValue(CrossCompileToolChain.ENV, prefix);
 		} else {
 			String tcRoot = customRoot.getText();
-			pStore.putValue(ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV, tcRoot);
+			pStore.putValue(CustomToolChain.ENV, tcRoot);
 		}
 
 		try {

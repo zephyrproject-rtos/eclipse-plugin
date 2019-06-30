@@ -30,11 +30,12 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.WizardNewProjectCreationPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
+import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 import org.zephyrproject.ide.eclipse.ui.preferences.ZephyrPreferenceConstants;
 
 /**
@@ -73,8 +74,7 @@ public class ZephyrApplicationMainWizardPage
 	public void createControl(Composite parent) {
 		super.createControl(parent);
 
-		zbUserLoc =
-				getDialogSettings().get(ZephyrConstants.ZEPHYR_BASE_LOCATION);
+		zbUserLoc = getDialogSettings().get(ZephyrBase.ZEPHYR_BASE_LOCATION);
 		if (zbUserLoc == null) {
 			zbUserLoc = ZephyrStrings.EMPTY_STRING;
 		}
@@ -167,8 +167,8 @@ public class ZephyrApplicationMainWizardPage
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 3;
 		zBaseLabel.setLayoutData(gridData);
-		zBaseLabel.setText(ZephyrConstants.ZEPHYR_BASE_DESC_DIR + " (" //$NON-NLS-1$
-				+ ZephyrConstants.ZEPHYR_BASE + "):"); //$NON-NLS-1$
+		zBaseLabel.setText(ZephyrBase.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+				+ ZephyrBase.ZEPHYR_BASE + "):"); //$NON-NLS-1$
 		zBaseLabel.setFont(zBaseGroup.getFont());
 
 		/* Checkbox: "Use default" for Zephyr Base */
@@ -241,7 +241,7 @@ public class ZephyrApplicationMainWizardPage
 		Label generator = new Label(cmakeGroup, SWT.NONE);
 		gridData = new GridData();
 		generator.setLayoutData(gridData);
-		generator.setText(ZephyrConstants.CMAKE_GENERATOR_DESC + ":"); //$NON-NLS-1$
+		generator.setText(CMakeConstants.CMAKE_GENERATOR_DESC + ":"); //$NON-NLS-1$
 		generator.setFont(cmakeGroup.getFont());
 
 		/* Combo box for CMake Generator */
@@ -249,7 +249,7 @@ public class ZephyrApplicationMainWizardPage
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		zCMakeGenerator.setLayoutData(gridData);
-		zCMakeGenerator.setItems(ZephyrConstants.CMAKE_GENERATOR_LIST);
+		zCMakeGenerator.setItems(CMakeConstants.CMAKE_GENERATOR_LIST);
 		zCMakeGenerator.select(0);
 		zCMakeGenerator.setFont(cmakeGroup.getFont());
 
@@ -297,8 +297,8 @@ public class ZephyrApplicationMainWizardPage
 		/* Is ZEPHYR_BASE pointing to a valid repo? */
 		String zBaseLoc = zBaseTextField.getText();
 		if (zBaseLoc.isEmpty()) {
-			setErrorMessage(ZephyrConstants.ZEPHYR_BASE_DESC_DIR
-					+ " must be specified");
+			setErrorMessage(
+					ZephyrBase.DIRECTORY_DESCRIPTION + " must be specified");
 			return false;
 		}
 
@@ -306,13 +306,13 @@ public class ZephyrApplicationMainWizardPage
 			/* Check if VERSION file exists */
 			if (!ZephyrHelpers.checkValidZephyrBase(zBaseLoc)) {
 				setErrorMessage(
-						ZephyrConstants.ZEPHYR_BASE_DESC_DIR + " is not valid");
+						ZephyrBase.DIRECTORY_DESCRIPTION + " is not valid");
 				return false;
 			}
 		} catch (SecurityException se) {
 			/* No read access to the VERSION file */
 			setErrorMessage(
-					"Cannot access " + ZephyrConstants.ZEPHYR_BASE_DESC_DIR);
+					"Cannot access " + ZephyrBase.DIRECTORY_DESCRIPTION);
 			return false;
 		}
 
@@ -341,11 +341,10 @@ public class ZephyrApplicationMainWizardPage
 
 		/* Save user specified Zephyr Base for use in the future */
 		if (!getZephyrBaseUseDefault()) {
-			getDialogSettings().put(ZephyrConstants.ZEPHYR_BASE_LOCATION,
-					zBaseLoc);
+			getDialogSettings().put(ZephyrBase.ZEPHYR_BASE_LOCATION, zBaseLoc);
 		}
 
-		pStore.putValue(ZephyrConstants.ZEPHYR_BASE_LOCATION, zBaseLoc);
+		pStore.putValue(ZephyrBase.ZEPHYR_BASE_LOCATION, zBaseLoc);
 		pStore.putValue(ZephyrProjectPreferences.BUILD_DIR,
 				getBuildDirectory());
 		pStore.putValue(ZephyrProjectPreferences.SOURCE_DIR,
@@ -353,7 +352,7 @@ public class ZephyrApplicationMainWizardPage
 
 		/* Store the chosen CMake generator */
 		String generator = zCMakeGenerator.getText();
-		pStore.putValue(ZephyrConstants.CMAKE_GENERATOR, generator);
+		pStore.putValue(CMakeConstants.CMAKE_GENERATOR, generator);
 
 		pStore.save();
 	}

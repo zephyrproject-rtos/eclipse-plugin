@@ -6,19 +6,6 @@
 
 package org.zephyrproject.ide.eclipse.core.internal;
 
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR;
-import static org.zephyrproject.ide.eclipse.core.ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -44,13 +31,22 @@ import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
+import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCompileToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.launch.unix.ZephyrUnixLaunchHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.launch.windows.ZephyrWindowsLaunchHelpers;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 
 /**
  * Helper class
@@ -424,27 +420,28 @@ public final class ZephyrHelpers {
 
 		/* Set ZEPHYR_BASE */
 		String zephyrBase =
-				pStore.getString(ZephyrConstants.ZEPHYR_BASE_LOCATION);
+				pStore.getString(ZephyrBase.ZEPHYR_BASE_LOCATION);
 
-		env.put(ZephyrConstants.ZEPHYR_BASE, zephyrBase);
+		env.put(ZephyrBase.ZEPHYR_BASE, zephyrBase);
 
 		/* Set toolchain environment variables */
-		String variant = pStore.getString(ZEPHYR_TOOLCHAIN_VARIANT);
-		env.put(ZephyrConstants.ZEPHYR_TOOLCHAIN_VARIANT, variant);
+		String variant = pStore
+				.getString(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT);
+		env.put(ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT, variant);
 
 		String tcVarName;
-		if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ZEPHYR_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_XTOOLS_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_GNUARMEMB_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_ISSM)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_ISSM_ENV;
-		} else if (variant.equals(ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE)) {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CROSS_COMPILE_ENV;
+		if (variant.equals(ZephyrSdkToolChain.VARIANT)) {
+			tcVarName = ZephyrSdkToolChain.ENV;
+		} else if (variant.equals(CrosstoolsToolChain.VARIANT)) {
+			tcVarName = CrosstoolsToolChain.ENV;
+		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
+			tcVarName = GnuArmEmbToolChain.ENV;
+		} else if (variant.equals(IssmToolChain.VARIANT)) {
+			tcVarName = IssmToolChain.ENV;
+		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
+			tcVarName = CrossCompileToolChain.ENV;
 		} else {
-			tcVarName = ZEPHYR_TOOLCHAIN_VARIANT_CUSTOM_ENV;
+			tcVarName = CustomToolChain.ENV;
 		}
 
 		String tcVarValue = pStore.getString(tcVarName);
@@ -458,11 +455,11 @@ public final class ZephyrHelpers {
 	}
 
 	public static String getDefaultCMakeGenerator() {
-		return ZephyrConstants.CMAKE_GENERATOR_NINJA;
+		return CMakeConstants.CMAKE_GENERATOR_NINJA;
 	}
 
 	public static String getCMakeGenerator(ScopedPreferenceStore pStore) {
-		return pStore.getString(ZephyrConstants.CMAKE_GENERATOR);
+		return pStore.getString(CMakeConstants.CMAKE_GENERATOR);
 	}
 
 	public static String getCMakeGenerator(IProject project) {
@@ -470,7 +467,7 @@ public final class ZephyrHelpers {
 	}
 
 	public static String getBoardName(ScopedPreferenceStore pStore) {
-		return pStore.getString(ZephyrConstants.ZEPHYR_BOARD);
+		return pStore.getString(ZephyrProjectPreferences.BOARD);
 	}
 
 	public static String getBoardName(IProject project) {

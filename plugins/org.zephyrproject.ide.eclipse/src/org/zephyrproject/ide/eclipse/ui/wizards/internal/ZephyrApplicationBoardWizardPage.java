@@ -34,8 +34,9 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
-import org.zephyrproject.ide.eclipse.core.ZephyrConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 
 /**
  * Wizard page to specify which board to build for.
@@ -96,7 +97,7 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 			String zBase = mainPage.getZephyrBaseLocation();
 			if (!ZephyrHelpers.checkValidZephyrBase(zBase)) {
 				setErrorMessage(
-						ZephyrConstants.ZEPHYR_BASE_DESC_DIR + " is not valid");
+						ZephyrBase.DIRECTORY_DESCRIPTION + " is not valid");
 				return;
 			}
 
@@ -104,7 +105,7 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 			File zBaseBoards = new File(zBase, "boards"); //$NON-NLS-1$
 			if (!zBaseBoards.isDirectory()) {
 				setErrorMessage(
-						ZephyrConstants.ZEPHYR_BASE_DESC_DIR + " is not valid");
+						ZephyrBase.DIRECTORY_DESCRIPTION + " is not valid");
 				return;
 			}
 
@@ -179,7 +180,7 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 		boardText.addListener(SWT.Modify, new zBoardTextModifyListener());
 
 		String prevBoard =
-				getDialogSettings().get(ZephyrConstants.ZEPHYR_BOARD);
+				getDialogSettings().get(ZephyrProjectPreferences.BOARD);
 		if (prevBoard != null) {
 			boardText.setText(prevBoard);
 		}
@@ -187,7 +188,7 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 		/* Checkbox to enable choosing from lists */
 		useListsBtn = new Button(composite, SWT.CHECK | SWT.LEFT);
 		useListsBtn.setText("Select from available board configurations under "
-				+ ZephyrConstants.ZEPHYR_BASE_DESC_DIR);
+				+ ZephyrBase.DIRECTORY_DESCRIPTION);
 		useListsBtn.setSelection(false);
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
@@ -343,11 +344,11 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 		ScopedPreferenceStore pStore =
 				ZephyrHelpers.getProjectPreferenceStore(project);
 
-		pStore.putValue(ZephyrConstants.ZEPHYR_BOARD, board);
+		pStore.putValue(ZephyrProjectPreferences.BOARD, board);
 
 		pStore.save();
 
-		getDialogSettings().put(ZephyrConstants.ZEPHYR_BOARD, board);
+		getDialogSettings().put(ZephyrProjectPreferences.BOARD, board);
 	}
 
 	/**
