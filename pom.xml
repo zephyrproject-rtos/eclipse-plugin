@@ -10,7 +10,7 @@
 		<relativePath>maven/parent</relativePath>
 	</parent>
 
-	<artifactId>org.zephyrproject.ide.eclipse.plugins</artifactId>
+	<artifactId>org.zephyrproject.ide.eclipse.root</artifactId>
 	<packaging>pom</packaging>
 
 	<name>Zephyr Project Eclipse Plugin root</name>
@@ -22,7 +22,8 @@
 	</organization>
 
 	<modules>
-		<module>plugins/org.zephyrproject.ide.eclipse</module>
+		<module>plugins/org.zephyrproject.ide.eclipse.core</module>
+		<module>plugins/org.zephyrproject.ide.eclipse.ui</module>
 		<module>features/org.zephyrproject.ide.eclipse.feature</module>
 		<module>maven/repository</module>
 	</modules>
