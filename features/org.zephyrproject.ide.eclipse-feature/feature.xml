@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
-      id="org.zephyrproject.ide.eclipse.feature"
+      id="org.zephyrproject.ide.eclipse"
       label="Zephyr Project Development Support"
       version="0.1.0.qualifier"
       provider-name="Zephyr Project"

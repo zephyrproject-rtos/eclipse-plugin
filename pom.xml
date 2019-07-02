@@ -24,7 +24,7 @@
 	<modules>
 		<module>plugins/org.zephyrproject.ide.eclipse.core</module>
 		<module>plugins/org.zephyrproject.ide.eclipse.ui</module>
-		<module>features/org.zephyrproject.ide.eclipse.feature</module>
+		<module>features/org.zephyrproject.ide.eclipse-feature</module>
 		<module>maven/repository</module>
 	</modules>
 
