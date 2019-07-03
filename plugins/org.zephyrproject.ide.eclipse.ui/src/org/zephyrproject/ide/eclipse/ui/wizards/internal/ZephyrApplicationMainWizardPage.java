@@ -59,8 +59,14 @@ public class ZephyrApplicationMainWizardPage
 
 	private Combo zCMakeGenerator;
 
+	private Text buildFolderTextField;
+
+	private String buildFolder;
+
 	public ZephyrApplicationMainWizardPage(String pageName) {
 		super(pageName);
+
+		this.buildFolder = ZephyrProjectPreferences.BUILD_DIR_DEFAULT;
 	}
 
 	/*
@@ -81,6 +87,7 @@ public class ZephyrApplicationMainWizardPage
 
 		createZephyrBaseGroup((Composite) getControl());
 		createCMakeGeneratorGroup((Composite) getControl());
+		createFolderSelectionGroup((Composite) getControl());
 		setPageComplete(validatePage());
 		Dialog.applyDialogFont(getControl());
 	}
@@ -112,7 +119,7 @@ public class ZephyrApplicationMainWizardPage
 	}
 
 	public String getBuildDirectory() {
-		return ZephyrProjectPreferences.BUILD_DIR_DEFAULT;
+		return this.buildFolder;
 	}
 
 	public String getSourceDirectory() {
@@ -257,6 +264,40 @@ public class ZephyrApplicationMainWizardPage
 	}
 
 	/**
+	 * Create the controls to specify various folder names.
+	 *
+	 * @param parent
+	 */
+	private final void createFolderSelectionGroup(Composite parent) {
+		GridData gridData;
+		Composite zFolderGroup = new Composite(parent, SWT.NONE);
+
+		/* Create a grid with 3 columns */
+		GridLayout layout = new GridLayout(2, false);
+		layout.numColumns = 3;
+		zFolderGroup.setLayout(layout);
+		zFolderGroup.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+
+		/* Label: "Build folder" */
+		Label buildFolderLabel = new Label(zFolderGroup, SWT.NONE);
+		buildFolderLabel.setText("Build folder:");
+
+		/* Text field for the ZEPHYR_BASE location */
+		buildFolderTextField = new Text(zFolderGroup, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		gridData.widthHint = IDialogConstants.ENTRY_FIELD_WIDTH;
+		buildFolderTextField.setLayoutData(gridData);
+		buildFolderTextField.setFont(zFolderGroup.getFont());
+		BidiUtils.applyBidiProcessing(zBaseTextField,
+				StructuredTextTypeHandlerFactory.FILE);
+		buildFolderTextField.addListener(SWT.Modify,
+				new zBaseLocModifyListener());
+		buildFolderTextField.setText(this.buildFolder);
+
+		Dialog.applyDialogFont(zFolderGroup);
+	}
+
+	/**
 	 * Handle the event from the "Browse" button for ZEPHYR_BASE.
 	 */
 	private void handleZephyrBaseBrowseBtn() {
@@ -316,9 +357,16 @@ public class ZephyrApplicationMainWizardPage
 			return false;
 		}
 
+		/* Build folder is not empty */
+		String bFolder = buildFolderTextField.getText().trim();
+		if (bFolder.isEmpty()) {
+			return false;
+		}
+
 		/* TODO: actually verify content of VERSION */
 
 		this.zephyrBaseLocation = zBaseLoc;
+		this.buildFolder = bFolder;
 
 		setErrorMessage(null);
 		return true;
