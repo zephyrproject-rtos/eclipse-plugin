@@ -55,6 +55,21 @@
             id="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationNewProjectWizard"
             name="Zephyr Application"
             project="true">
+         <description>
+            Create a simple Hello World Zephyr Application project.
+         </description>
+      </wizard>
+      <wizard
+            category="org.zephyrproject.ide.eclipse.category.ui.wizards"
+            class="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationEmptyProjectWizard"
+            finalPerspective="org.eclipse.cdt.ui.CPerspective"
+            icon="icons/zephyr-kite-logo_32x32.png"
+            id="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationEmptyProjectWizard"
+            name="Empty Zephyr Application"
+            project="true">
+         <description>
+            Create an empty Zephyr Application project.
+         </description>
       </wizard>
    </extension>
    <extension
@@ -73,7 +88,22 @@
             label="Zephyr Application"
             wizard="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationNewProjectWizard">
          <description>
-            A new Zephyr Application
+            Create a simple Hello World Zephyr Application project.
+         </description>
+         <tagReference
+               id="org.zephyrproject.ide.eclipse.ui.tag">
+         </tagReference>
+         <tagReference
+               id="org.eclipse.cdt.ui.cdtTag">
+         </tagReference>
+      </template>
+      <template
+            icon="icons/zephyr-kite-logo_48x48.png"
+            id="org.zephyrproject.ide.eclipse.ui.ZephyrApplicationEmptyProjectTemplate"
+            label="Empty Zephyr Application"
+            wizard="org.zephyrproject.ide.eclipse.ui.wizards.ZephyrApplicationEmptyProjectWizard">
+         <description>
+            Create an empty Zephyr Application project.
          </description>
          <tagReference
                id="org.zephyrproject.ide.eclipse.ui.tag">

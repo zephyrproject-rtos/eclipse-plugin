@@ -30,6 +30,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.tools.templates.freemarker.FMProjectGenerator;
 import org.eclipse.tools.templates.freemarker.SourceRoot;
+import org.eclipse.tools.templates.freemarker.TemplateManifest;
 import org.osgi.framework.Bundle;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
@@ -182,14 +183,25 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		List<IPathEntry> entries = new ArrayList<>(
 				Arrays.asList(CoreModel.getRawPathEntries(cproject)));
 
-		/* Mark the source directories indicated in the template */
-		List<SourceRoot> srcRoots = getManifest().getSrcRoots();
-		for (SourceRoot srcRoot : srcRoots) {
-			IFolder sourceFolder = project.getFolder(srcRoot.getDir());
-			entries.add(CoreModel.newSourceEntry(sourceFolder.getFullPath()));
+		TemplateManifest manifest = getManifest();
+		if (manifest != null) {
+			/* Mark the source directories indicated in the template */
+			List<SourceRoot> srcRoots = getManifest().getSrcRoots();
+			for (SourceRoot srcRoot : srcRoots) {
+				IFolder sourceFolder = project.getFolder(srcRoot.getDir());
+				entries.add(
+						CoreModel.newSourceEntry(sourceFolder.getFullPath()));
+			}
+		} else {
+			/*
+			 * Since the generator is not creating the source files,
+			 * we do not know where the source files are. So treat the whole
+			 * project as source, and let the indexer figures it out.
+			 */
+			entries.add(CoreModel.newSourceEntry(project.getFullPath()));
 		}
 
-		/* Tell CDT source and build paths */
+		/* Tell CDT where to look for source */
 		cproject.setRawPathEntries(
 				entries.toArray(new IPathEntry[entries.size()]), monitor);
 

@@ -36,6 +36,7 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
@@ -167,6 +168,21 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 	public IProject[] build(int kind, Map<String, String> args,
 			IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = config.getProject();
+
+		IPath prjIPath = project.getLocation();
+
+		/* Make sure CMakeLists.txt is there */
+		if (!prjIPath.append("CMakeLists.txt").toFile().exists()) { //$NON-NLS-1$
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"File CMakeLists.txt does not exist under project root", //$NON-NLS-1$
+					null));
+		}
+
+		/* Make sure prj.conf is there */
+		if (!prjIPath.append("prj.conf").toFile().exists()) { //$NON-NLS-1$
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"File prj.txt does not exist under project root", null));//$NON-NLS-1$
+		}
 
 		try {
 			/* Remove C-related warnings/errors */
