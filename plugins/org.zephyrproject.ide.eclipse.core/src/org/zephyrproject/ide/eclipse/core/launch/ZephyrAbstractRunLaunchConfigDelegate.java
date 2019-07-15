@@ -6,6 +6,7 @@
 
 package org.zephyrproject.ide.eclipse.core.launch;
 
+import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.debug.core.launch.CoreBuildLaunchConfigDelegate;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -25,6 +26,14 @@ public abstract class ZephyrAbstractRunLaunchConfigDelegate
 			IProgressMonitor monitor) throws CoreException {
 		return ZephyrHelpers.Launch.getBuildConfiguration(project, mode, target,
 				monitor);
+	}
+
+	protected ICBuildConfiguration getBuildConfiguration(
+			ILaunchConfiguration configuration, String mode,
+			ILaunchTarget target, IProgressMonitor monitor)
+			throws CoreException {
+		return this.getBuildConfiguration(getProject(configuration), mode,
+				target, monitor);
 	}
 
 	protected void doMakefile(IProject project,
