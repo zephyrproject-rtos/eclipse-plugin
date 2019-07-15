@@ -56,10 +56,10 @@ public class ZephyrApplicationBuildConfigurationProvider
 	public ICBuildConfiguration getCBuildConfiguration(
 			IBuildConfiguration config, String name) throws CoreException {
 		try {
-			IToolChain toolChain = toolChainManager.getToolChain(
-					ZephyrApplicationToolChainProvider.ID,
-					getBuildConfigToolChainId(config),
-					ZephyrStrings.EMPTY_STRING);
+			IToolChain toolChain = toolChainManager
+					.getProvider(ZephyrApplicationToolChainProvider.ID)
+					.getToolChain(getBuildConfigToolChainId(config),
+							ZephyrStrings.EMPTY_STRING);
 
 			ICBuildConfiguration cBuildCfg = null;
 			ZephyrApplicationToolChain zToolChain =
