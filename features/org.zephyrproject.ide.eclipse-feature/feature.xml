@@ -2,7 +2,7 @@
 <feature
       id="org.zephyrproject.ide.eclipse"
       label="Zephyr Project Development Support"
-      version="0.1.0.qualifier"
+      version="0.1.99.qualifier"
       provider-name="Zephyr Project"
       plugin="org.zephyrproject.ide.eclipse.ui">
 

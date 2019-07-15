@@ -9,7 +9,7 @@
 
 	<groupId>org.zephyrproject</groupId>
 	<artifactId>org.zephyrproject.ide.eclipse.parent</artifactId>
-	<version>0.1.0-SNAPSHOT</version>
+	<version>0.1.99-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Zephyr Project Eclipse Plugin parent</name>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature id="org.zephyrproject.ide.eclipse" version="0.1.0.qualifier">
+   <feature id="org.zephyrproject.ide.eclipse" version="0.1.99.qualifier">
       <category name="org.zephyrproject"/>
    </feature>
-   <feature id="org.zephyrproject.ide.eclipse.source" version="0.1.0.qualifier">
+   <feature id="org.zephyrproject.ide.eclipse.source" version="0.1.99.qualifier">
       <category name="org.zephyrproject"/>
    </feature>
    <category-def name="org.zephyrproject" label="Zephyr Project"/>
