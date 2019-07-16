@@ -361,4 +361,12 @@ version(s), and exceptions or additional permissions here}.&quot;
          fragment="true"
          unpack="false"/>
 
+   <plugin
+         id="org.zephyrproject.ide.eclipse.core.java11"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         fragment="true"
+         unpack="false"/>
+
 </feature>

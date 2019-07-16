@@ -24,6 +24,7 @@
 	<modules>
 		<module>plugins/org.zephyrproject.ide.eclipse.core</module>
 		<module>plugins/org.zephyrproject.ide.eclipse.core.linux</module>
+		<module>plugins/org.zephyrproject.ide.eclipse.core.java11</module>
 		<module>plugins/org.zephyrproject.ide.eclipse.core.macosx</module>
 		<module>plugins/org.zephyrproject.ide.eclipse.core.win32</module>
 		<module>plugins/org.zephyrproject.ide.eclipse.ui</module>

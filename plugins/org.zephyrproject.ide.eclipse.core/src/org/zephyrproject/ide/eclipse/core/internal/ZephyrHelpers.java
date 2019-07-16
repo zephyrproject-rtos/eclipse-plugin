@@ -227,9 +227,20 @@ public final class ZephyrHelpers {
 				throws CoreException {
 			IZephyrLaunchHelper helper = null;
 			Class<?> launchHelperClass = null;
-			String className =
-					String.format("%s.internal.launch.%s.ZephyrLaunchHelpers", //$NON-NLS-1$
-							ZephyrPlugin.PLUGIN_ID, Platform.getOS());
+			String className;
+
+			Double jvmSpecVer = Double.parseDouble(
+					System.getProperty("java.specification.version"));
+			if (jvmSpecVer >= 11) {
+				className = String.format(
+						"%s.internal.launch.java11.ZephyrLaunchHelpers", //$NON-NLS-1$
+						ZephyrPlugin.PLUGIN_ID);
+			} else {
+				className = String.format(
+						"%s.internal.launch.%s.ZephyrLaunchHelpers", //$NON-NLS-1$
+						ZephyrPlugin.PLUGIN_ID, Platform.getOS());
+			}
+
 			try {
 				ClassLoader loader = ZephyrHelpers.class.getClassLoader();
 				launchHelperClass = loader.loadClass(className);

@@ -28,9 +28,20 @@ public class ZephyrProcessFactory implements IProcessFactory {
 	private static Constructor<?> getRuntimeProcessConstructor() {
 		Constructor<?> runtime = null;
 		Class<?> runtimeClass = null;
-		String className =
-				String.format("%s.internal.launch.%s.ZephyrRuntimeProcess", //$NON-NLS-1$
-						ZephyrPlugin.PLUGIN_ID, Platform.getOS());
+		String className;
+
+		Double jvmSpecVer = Double
+				.parseDouble(System.getProperty("java.specification.version"));
+		if (jvmSpecVer >= 11) {
+			className = String.format(
+					"%s.internal.launch.java11.ZephyrRuntimeProcess", //$NON-NLS-1$
+					ZephyrPlugin.PLUGIN_ID);
+		} else {
+			className =
+					String.format("%s.internal.launch.%s.ZephyrRuntimeProcess", //$NON-NLS-1$
+							ZephyrPlugin.PLUGIN_ID, Platform.getOS());
+		}
+
 		try {
 			ClassLoader loader = ZephyrHelpers.class.getClassLoader();
 			runtimeClass = loader.loadClass(className);

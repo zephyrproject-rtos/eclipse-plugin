@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Zephyr Project Development Support - Core - Java11
+Bundle-SymbolicName: org.zephyrproject.ide.eclipse.core.java11;singleton:=true
+Bundle-Version: 0.1.99.qualifier
+Fragment-Host: org.zephyrproject.ide.eclipse.core;bundle-version="0.1.99"
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Export-Package: org.zephyrproject.ide.eclipse.core.internal.launch.java11
+Bundle-Vendor: Zephyr Project
+Automatic-Module-Name: org.zephyrproject.ide.eclipse.core.java11

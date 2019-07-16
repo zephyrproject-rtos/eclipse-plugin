@@ -139,7 +139,7 @@ This will create a `Hello World` project.
 
 The minimum requirements for building the plugins are:
 
-* Java SE 8 Update 212 or later
+* Java SE 11.0.3
 * Maven 3.3.9 or later (except 3.6.1)
 
 #### Running Maven
