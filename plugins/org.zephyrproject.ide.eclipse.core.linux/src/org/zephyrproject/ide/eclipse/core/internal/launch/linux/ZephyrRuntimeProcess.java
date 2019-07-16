@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.internal.launch.unix;
+package org.zephyrproject.ide.eclipse.core.internal.launch.linux;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -18,10 +18,10 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.RuntimeProcess;
 
-public class ZephyrUnixRuntimeProcess extends RuntimeProcess {
+public class ZephyrRuntimeProcess extends RuntimeProcess {
 
-	public ZephyrUnixRuntimeProcess(ILaunch launch, Process process,
-			String name, Map<String, String> attributes) {
+	public ZephyrRuntimeProcess(ILaunch launch, Process process, String name,
+			Map<String, String> attributes) {
 		super(launch, process, name, attributes);
 	}
 
@@ -29,8 +29,10 @@ public class ZephyrUnixRuntimeProcess extends RuntimeProcess {
 	public void terminate() throws DebugException {
 		Process process = getSystemProcess();
 
-		if (!isTerminated() && process.getClass().getName()
-				.equals("java.lang.UNIXProcess")) {
+		if (!isTerminated()
+				&& (process.getClass().getName().equals("java.lang.UNIXProcess")
+						|| process.getClass().getName()
+								.equals("java.lang.ProcessImpl"))) {
 			/* For Linux and macOS */
 			try {
 				/* Grab the PID from root of process tree */

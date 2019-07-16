@@ -30,8 +30,6 @@ Export-Package: org.zephyrproject.ide.eclipse.core,
  org.zephyrproject.ide.eclipse.core.build.ninja,
  org.zephyrproject.ide.eclipse.core.internal,
  org.zephyrproject.ide.eclipse.core.internal.build,
- org.zephyrproject.ide.eclipse.core.internal.launch.unix,
- org.zephyrproject.ide.eclipse.core.internal.launch.windows,
  org.zephyrproject.ide.eclipse.core.launch,
  org.zephyrproject.ide.eclipse.core.launchbar,
  org.zephyrproject.ide.eclipse.core.preferences

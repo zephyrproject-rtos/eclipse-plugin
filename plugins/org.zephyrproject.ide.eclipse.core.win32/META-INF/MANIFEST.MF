@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Zephyr Project Development Support - Core - Windows
+Bundle-SymbolicName: org.zephyrproject.ide.eclipse.core.win32;singleton:=true
+Bundle-Version: 0.1.99.qualifier
+Fragment-Host: org.zephyrproject.ide.eclipse.core;bundle-version="0.1.99"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-PlatformFilter: (osgi.os=win32)
+Export-Package: org.zephyrproject.ide.eclipse.core.internal.launch.win32
+Bundle-Vendor: Zephyr Project
+Automatic-Module-Name: org.zephyrproject.ide.eclipse.core.win32

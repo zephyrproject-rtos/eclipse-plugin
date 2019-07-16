@@ -9,6 +9,7 @@ package org.zephyrproject.ide.eclipse.core.internal;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,8 +44,7 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomT
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
-import org.zephyrproject.ide.eclipse.core.internal.launch.unix.ZephyrUnixLaunchHelpers;
-import org.zephyrproject.ide.eclipse.core.internal.launch.windows.ZephyrWindowsLaunchHelpers;
+import org.zephyrproject.ide.eclipse.core.launch.IZephyrLaunchHelper;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 
@@ -223,16 +223,13 @@ public final class ZephyrHelpers {
 				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 				String makeProgram, String mode) throws CoreException {
 			try {
-				if (Platform.getOS().equals(Platform.OS_LINUX)
-						|| Platform.getOS().equals(Platform.OS_MACOSX)) {
-					return ZephyrUnixLaunchHelpers.doMakefile(project,
-							appBuildCfg, launch, makeProgram, mode);
-				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					return ZephyrWindowsLaunchHelpers.doMakefile(project,
-							appBuildCfg, launch, makeProgram, mode);
-				} else {
-					return null;
+				IZephyrLaunchHelper helper = getLaunchHelper();
+				if (helper != null) {
+					return helper.doMakefile(project, appBuildCfg, launch,
+							makeProgram, mode);
 				}
+
+				return null;
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running Makefile command.", e)); //$NON-NLS-1$
@@ -243,16 +240,13 @@ public final class ZephyrHelpers {
 				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 				String makeProgram, String mode) throws CoreException {
 			try {
-				if (Platform.getOS().equals(Platform.OS_LINUX)
-						|| Platform.getOS().equals(Platform.OS_MACOSX)) {
-					return ZephyrUnixLaunchHelpers.doNinja(project, appBuildCfg,
-							launch, makeProgram, mode);
-				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					return ZephyrWindowsLaunchHelpers.doNinja(project,
-							appBuildCfg, launch, makeProgram, mode);
-				} else {
-					return null;
+				IZephyrLaunchHelper helper = getLaunchHelper();
+				if (helper != null) {
+					return helper.doNinja(project, appBuildCfg, launch,
+							makeProgram, mode);
 				}
+
+				return null;
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running Ninja command.", e)); //$NON-NLS-1$
@@ -264,22 +258,48 @@ public final class ZephyrHelpers {
 				ILaunchConfiguration configuration, String attrCustomCmd)
 				throws CoreException {
 			try {
-				if (Platform.getOS().equals(Platform.OS_LINUX)
-						|| Platform.getOS().equals(Platform.OS_MACOSX)) {
-					return ZephyrUnixLaunchHelpers.doCustomCommand(project,
-							appBuildCfg, launch, configuration, attrCustomCmd);
-				} else if (Platform.getOS().equals(Platform.OS_WIN32)) {
-					return ZephyrWindowsLaunchHelpers.doCustomCommand(project,
-							appBuildCfg, launch, configuration, attrCustomCmd);
-				} else {
-					return null;
+				IZephyrLaunchHelper helper = getLaunchHelper();
+				if (helper != null) {
+					return helper.doCustomCommand(project, appBuildCfg, launch,
+							configuration, attrCustomCmd);
 				}
+
+				return null;
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running custom command.", e)); //$NON-NLS-1$
 			}
 		}
 
+		private static IZephyrLaunchHelper getLaunchHelper()
+				throws CoreException {
+			IZephyrLaunchHelper helper = null;
+			Class<?> launchHelperClass = null;
+			String className =
+					String.format("%s.internal.launch.%s.ZephyrLaunchHelpers", //$NON-NLS-1$
+							ZephyrPlugin.PLUGIN_ID, Platform.getOS());
+			try {
+				ClassLoader loader = ZephyrHelpers.class.getClassLoader();
+				launchHelperClass = loader.loadClass(className);
+			} catch (ClassNotFoundException cnfe) {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						String.format("Cannot find class %s", className), //$NON-NLS-1$
+						cnfe));
+			}
+
+			if (launchHelperClass != null) {
+				try {
+					helper = (IZephyrLaunchHelper) launchHelperClass
+							.getConstructor().newInstance();
+				} catch (InstantiationException | IllegalAccessException
+						| IllegalArgumentException | InvocationTargetException
+						| NoSuchMethodException | SecurityException e) {
+					helper = null;
+				}
+			}
+
+			return helper;
+		}
 	}
 
 	/**

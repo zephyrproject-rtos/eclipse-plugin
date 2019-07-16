@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.internal.launch.windows;
+package org.zephyrproject.ide.eclipse.core.internal.launch.win32;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -20,11 +20,15 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.launch.IZephyrLaunchHelper;
 
-public final class ZephyrWindowsLaunchHelpers {
+public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 
 	private static final String BAT_FILE_PREFIX = ".zephyr-eclipse-"; //$NON-NLS-1$
 	private static final String BAT_FILE_SUFFIX = ".bat"; //$NON-NLS-1$
+
+	public ZephyrLaunchHelpers() {
+	}
 
 	private static Path createBatchFile(
 			ZephyrApplicationBuildConfiguration appBuildCfg, String cmd)
@@ -62,7 +66,7 @@ public final class ZephyrWindowsLaunchHelpers {
 		Path batFile = createBatchFile(appBuildCfg, cmd);
 
 		cmd = String.format("cmd.exe /c start \"%s\" /WAIT %s",
-				ZephyrWindowsRuntimeProcess.WINDOWTITLE,
+				ZephyrRuntimeProcess.WINDOWTITLE,
 				batFile.toAbsolutePath().toString());
 
 		Process process = Runtime.getRuntime().exec(cmd,
@@ -74,21 +78,21 @@ public final class ZephyrWindowsLaunchHelpers {
 		return process;
 	}
 
-	public static Process doMakefile(IProject project,
+	public Process doMakefile(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String makeProgram, String mode) throws CoreException, IOException {
 		String cmd = String.format("%s %s", makeProgram, mode);
 		return runCmd(project, appBuildCfg, launch, cmd);
 	}
 
-	public static Process doNinja(IProject project,
+	public Process doNinja(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String makeProgram, String mode) throws CoreException, IOException {
 		String cmd = String.format("%s %s", makeProgram, mode);
 		return runCmd(project, appBuildCfg, launch, cmd);
 	}
 
-	public static Process doCustomCommand(IProject project,
+	public Process doCustomCommand(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			ILaunchConfiguration configuration, String attrCustomCmd)
 			throws CoreException, IOException {

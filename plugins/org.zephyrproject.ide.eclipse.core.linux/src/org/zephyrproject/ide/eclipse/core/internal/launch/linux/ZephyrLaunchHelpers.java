@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.internal.launch.unix;
+package org.zephyrproject.ide.eclipse.core.internal.launch.linux;
 
 import java.io.IOException;
 
@@ -16,10 +16,14 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.launch.IZephyrLaunchHelper;
 
-public final class ZephyrUnixLaunchHelpers {
+public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 
-	public static Process doMakefile(IProject project,
+	public ZephyrLaunchHelpers() {
+	}
+
+	public Process doMakefile(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String makeProgram, String mode) throws CoreException, IOException {
 		String[] command = {
@@ -38,7 +42,7 @@ public final class ZephyrUnixLaunchHelpers {
 		return process;
 	}
 
-	public static Process doNinja(IProject project,
+	public Process doNinja(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String makeProgram, String mode) throws CoreException, IOException {
 		String[] command = {
@@ -57,7 +61,7 @@ public final class ZephyrUnixLaunchHelpers {
 		return process;
 	}
 
-	public static Process doCustomCommand(IProject project,
+	public Process doCustomCommand(IProject project,
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			ILaunchConfiguration configuration, String attrCustomCmd)
 			throws CoreException, IOException {

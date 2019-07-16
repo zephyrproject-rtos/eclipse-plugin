@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.internal.launch.windows;
+package org.zephyrproject.ide.eclipse.core.internal.launch.win32;
 
 import java.util.Map;
 
@@ -12,12 +12,12 @@ import org.eclipse.debug.core.DebugException;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.model.RuntimeProcess;
 
-public class ZephyrWindowsRuntimeProcess extends RuntimeProcess {
+public class ZephyrRuntimeProcess extends RuntimeProcess {
 
 	public static final String WINDOWTITLE = "zephyr-eclipse"; //$NON-NLS-1$
 
-	public ZephyrWindowsRuntimeProcess(ILaunch launch, Process process,
-			String name, Map<String, String> attributes) {
+	public ZephyrRuntimeProcess(ILaunch launch, Process process, String name,
+			Map<String, String> attributes) {
 		super(launch, process, name, attributes);
 	}
 
