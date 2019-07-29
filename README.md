@@ -149,3 +149,19 @@ $ mvn clean package
 ```
 
 The resulting p2 repository is at `maven/repository/target/repository`.
+
+## OpenOCD and Thread awareness
+
+The OpenOCD in the Zephyr SDK can export information on threads for GDB.
+To utilize this capability, `CONFIG_OPENOCD_SUPPORT` must be enabled in
+the project configuration file to export information on threads.
+Also, the board's openocd configuration file must have the following line:
+
+```
+$_TARGETNAME configure -rtos auto
+```
+
+This line tells OpenOCD to search for exported information on threads.
+
+With the correct configuration mentioned above, information on available
+threads will be displayed in Eclipse's debug perspective.
