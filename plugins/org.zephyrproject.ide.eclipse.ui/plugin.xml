@@ -24,7 +24,7 @@
          <enabledWhen>
             <adapt type="org.eclipse.core.resources.IProject">
                <test property="org.eclipse.core.resources.projectNature"
-                     value="org.zephyrproject.ide.eclipse.zephyrApplicationNature"/>
+                     value="org.zephyrproject.ide.eclipse.core.zephyrApplicationNature"/>
             </adapt>
          </enabledWhen>
       </page>
@@ -36,7 +36,7 @@
          <enabledWhen>
             <adapt type="org.eclipse.core.resources.IProject">
                <test property="org.eclipse.core.resources.projectNature"
-                     value="org.zephyrproject.ide.eclipse.zephyrApplicationNature"/>
+                     value="org.zephyrproject.ide.eclipse.core.zephyrApplicationNature"/>
             </adapt>
          </enabledWhen>
       </page>
