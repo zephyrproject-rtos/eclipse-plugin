@@ -28,7 +28,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.debug.core.ILaunch;
-import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
@@ -202,24 +201,6 @@ public final class ZephyrHelpers {
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running Ninja command.", e)); //$NON-NLS-1$
-			}
-		}
-
-		public static Process doCustomCommand(IProject project,
-				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
-				ILaunchConfiguration configuration, String attrCustomCmd)
-				throws CoreException {
-			try {
-				IZephyrLaunchHelper helper = getLaunchHelper();
-				if (helper != null) {
-					return helper.doCustomCommand(project, appBuildCfg, launch,
-							configuration, attrCustomCmd);
-				}
-
-				return null;
-			} catch (IOException e) {
-				throw new CoreException(ZephyrHelpers
-						.errorStatus("Error running custom command.", e)); //$NON-NLS-1$
 			}
 		}
 

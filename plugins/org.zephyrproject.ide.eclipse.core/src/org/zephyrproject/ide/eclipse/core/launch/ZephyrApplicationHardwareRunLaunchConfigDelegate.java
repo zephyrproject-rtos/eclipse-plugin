@@ -62,11 +62,6 @@ public class ZephyrApplicationHardwareRunLaunchConfigDelegate
 				ZephyrStrings.EMPTY_STRING);
 		String cmdToRun = null;
 		if (commandSelection
-				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
-			/* Need to run custom command */
-			doCustomCommand(project, appBuildCfg, launch, configuration,
-					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND);
-		} else if (commandSelection
 				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
 			cmdToRun = CMD_FLASH;
 

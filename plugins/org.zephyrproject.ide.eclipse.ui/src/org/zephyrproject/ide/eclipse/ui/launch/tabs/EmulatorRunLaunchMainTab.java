@@ -20,8 +20,6 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -29,7 +27,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
@@ -43,10 +40,6 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 	public static final String MENU_ID = "Main";
 
 	private Button btnEmulatorRunBuildSys;
-
-	private Button btnEmulatorRunCustomCmd;
-
-	private Text emulatorRunCustomCommandText;
 
 	public EmulatorRunLaunchMainTab() {
 	}
@@ -114,9 +107,6 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
-		configuration.setAttribute(
-				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
-				EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -133,21 +123,14 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 					EMPTY_STRING);
 
 			if (cmdSel.equals(
-					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD)) {
-				btnEmulatorRunCustomCmd.setSelection(true);
-				emulatorRunCustomCommandText.setEnabled(true);
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS)) {
+				btnEmulatorRunBuildSys.setSelection(true);
 			} else {
 				btnEmulatorRunBuildSys.setSelection(true);
 			}
-
-			String customCmd = configuration.getAttribute(
-					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
-					EMPTY_STRING);
-			emulatorRunCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
 			btnEmulatorRunBuildSys.setSelection(true);
-			btnEmulatorRunCustomCmd.setSelection(false);
 		}
 	}
 
@@ -186,29 +169,19 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 				ICDTLaunchConfigurationConstants.ATTR_PROJECT_NAME,
 				fProjText.getText());
 
-		if (btnEmulatorRunCustomCmd.getSelection()) {
-			configuration.setAttribute(
-					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
-					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD);
-			configuration.setAttribute(
-					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
-					emulatorRunCustomCommandText.getText());
-		} else if (btnEmulatorRunBuildSys.getSelection()) {
+		if (btnEmulatorRunBuildSys.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
+		} else {
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_NONE);
 		}
 	}
 
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		if (btnEmulatorRunCustomCmd.getSelection()) {
-			String customCmd = emulatorRunCustomCommandText.getText();
-			if (customCmd.trim().isEmpty()) {
-				return false;
-			}
-		}
-
 		return true;
 	}
 
@@ -247,32 +220,9 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 				updateCommandSelection();
 			}
 		});
-
-		btnEmulatorRunCustomCmd = new Button(cmdSelGrp, SWT.RADIO);
-		btnEmulatorRunCustomCmd.setText("Custom Command:"); //$NON-NLS-1$
-		btnEmulatorRunCustomCmd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				updateCommandSelection();
-			}
-		});
-
-		emulatorRunCustomCommandText = new Text(cmdSelGrp, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		emulatorRunCustomCommandText.setLayoutData(gridData);
-		emulatorRunCustomCommandText.setEnabled(false);
-		emulatorRunCustomCommandText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				updateLaunchConfigurationDialog();
-			}
-		});
 	}
 
 	private void updateCommandSelection() {
-		emulatorRunCustomCommandText
-				.setEnabled(btnEmulatorRunCustomCmd.getSelection());
-
 		updateLaunchConfigurationDialog();
 	}
 }

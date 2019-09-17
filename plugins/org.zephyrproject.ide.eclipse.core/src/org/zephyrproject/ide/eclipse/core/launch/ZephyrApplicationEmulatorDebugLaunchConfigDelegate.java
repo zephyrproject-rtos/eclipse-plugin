@@ -65,13 +65,7 @@ public class ZephyrApplicationEmulatorDebugLaunchConfigDelegate
 				ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE);
 		String cmdTarget = null;
-		if (commandSelection.equals(
-				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
-			/* Need to run custom command */
-			ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg, launch,
-					configuration,
-					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND);
-		} else if (commandSelection
+		if (commandSelection
 				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS)) {
 			cmdTarget = CMD_DEBUGSERVER;
 

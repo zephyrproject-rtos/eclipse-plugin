@@ -23,8 +23,6 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -32,7 +30,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
@@ -51,17 +48,9 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 
 	private Button btnFlashTargetBuildSys;
 
-	private Button btnFlashTargetCustomCmd;
-
-	private Text flashTargetCustomCommandText;
-
 	private Button btnDbgSrvNone;
 
 	private Button btnDbgSrvBuildSys;
-
-	private Button btnDbgSrvCustomCmd;
-
-	private Text dbgSrvCustomCommandText;
 
 	public HardwareDebugLaunchMainTab() {
 		super(0);
@@ -132,15 +121,10 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 		/* Use default command to flash hardware target */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 				ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
-		configuration.setAttribute(
-				ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND, EMPTY_STRING);
 
 		/* Use default command to start debug server */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
-		configuration.setAttribute(
-				ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
-				EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -156,35 +140,19 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
 
-			if (cmdSel.equals(
-					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
-				btnDbgSrvNone.setSelection(false);
-				btnDbgSrvBuildSys.setSelection(false);
-				btnDbgSrvCustomCmd.setSelection(true);
-				dbgSrvCustomCommandText.setEnabled(true);
-			} else if (cmdSel
-					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
-				btnDbgSrvNone.setSelection(true);
-				btnDbgSrvBuildSys.setSelection(false);
-				btnDbgSrvCustomCmd.setSelection(false);
-				dbgSrvCustomCommandText.setEnabled(false);
-			} else {
+			if (cmdSel
+					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS)) {
 				btnDbgSrvNone.setSelection(false);
 				btnDbgSrvBuildSys.setSelection(true);
-				btnDbgSrvCustomCmd.setSelection(false);
-				dbgSrvCustomCommandText.setEnabled(false);
+			} else {
+				/* Also "DBGSERVER_CMD_SEL_NONE" */
+				btnDbgSrvNone.setSelection(true);
+				btnDbgSrvBuildSys.setSelection(false);
 			}
-
-			String customCmd = configuration.getAttribute(
-					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
-					EMPTY_STRING);
-			dbgSrvCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
-			btnDbgSrvNone.setSelection(false);
-			btnDbgSrvBuildSys.setSelection(true);
-			btnDbgSrvCustomCmd.setSelection(false);
-			dbgSrvCustomCommandText.setEnabled(false);
+			btnDbgSrvNone.setSelection(true);
+			btnDbgSrvBuildSys.setSelection(false);
 		}
 
 		try {
@@ -192,34 +160,19 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 					ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
 
-			if (cmdSel.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
-				btnFlashTargetNone.setSelection(false);
-				btnFlashTargetBuildSys.setSelection(false);
-				btnFlashTargetCustomCmd.setSelection(true);
-				flashTargetCustomCommandText.setEnabled(true);
-			} else if (cmdSel
-					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_NONE)) {
-				btnFlashTargetNone.setSelection(true);
-				btnFlashTargetBuildSys.setSelection(false);
-				btnFlashTargetCustomCmd.setSelection(false);
-				flashTargetCustomCommandText.setEnabled(false);
-			} else {
+			if (cmdSel
+					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
 				btnFlashTargetNone.setSelection(false);
 				btnFlashTargetBuildSys.setSelection(true);
-				btnFlashTargetCustomCmd.setSelection(false);
-				flashTargetCustomCommandText.setEnabled(false);
+			} else {
+				/* Also "FLASH_CMD_SEL_NONE" */
+				btnFlashTargetNone.setSelection(true);
+				btnFlashTargetBuildSys.setSelection(false);
 			}
-
-			String customCmd = configuration.getAttribute(
-					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND,
-					EMPTY_STRING);
-			flashTargetCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
-			btnFlashTargetNone.setSelection(false);
-			btnFlashTargetBuildSys.setSelection(true);
-			btnFlashTargetCustomCmd.setSelection(false);
-			flashTargetCustomCommandText.setEnabled(false);
+			btnFlashTargetNone.setSelection(true);
+			btnFlashTargetBuildSys.setSelection(false);
 		}
 	}
 
@@ -227,14 +180,7 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		super.performApply(configuration);
 
-		if (btnDbgSrvCustomCmd.getSelection()) {
-			configuration.setAttribute(
-					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND);
-			configuration.setAttribute(
-					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
-					dbgSrvCustomCommandText.getText());
-		} else if (btnDbgSrvBuildSys.getSelection()) {
+		if (btnDbgSrvBuildSys.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
@@ -244,16 +190,10 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE);
 		}
 
-		if (btnFlashTargetCustomCmd.getSelection()) {
-			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
-					ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD);
-			configuration.setAttribute(
-					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND,
-					flashTargetCustomCommandText.getText());
-		} else if (btnFlashTargetBuildSys.getSelection()) {
+		if (btnFlashTargetBuildSys.getSelection()) {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
-		} else if (btnFlashTargetNone.getSelection()) {
+		} else {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_NONE);
 		}
@@ -261,20 +201,6 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 
 	@Override
 	public boolean isValid(ILaunchConfiguration launchConfig) {
-		if (btnDbgSrvCustomCmd.getSelection()) {
-			String customCmd = dbgSrvCustomCommandText.getText();
-			if (customCmd.trim().isEmpty()) {
-				return false;
-			}
-		}
-
-		if (btnFlashTargetCustomCmd.getSelection()) {
-			String customCmd = flashTargetCustomCommandText.getText();
-			if (customCmd.trim().isEmpty()) {
-				return false;
-			}
-		}
-
 		return true;
 	}
 
@@ -340,26 +266,6 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				updateCommandSelection();
 			}
 		});
-
-		btnDbgSrvCustomCmd = new Button(cmdSelGrp, SWT.RADIO);
-		btnDbgSrvCustomCmd.setText("Custom command:"); //$NON-NLS-1$
-		btnDbgSrvCustomCmd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				updateCommandSelection();
-			}
-		});
-
-		dbgSrvCustomCommandText = new Text(cmdSelGrp, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		dbgSrvCustomCommandText.setLayoutData(gridData);
-		dbgSrvCustomCommandText.setEnabled(false);
-		dbgSrvCustomCommandText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				updateLaunchConfigurationDialog();
-			}
-		});
 	}
 
 	private void createFlashTargetCommandSelectionGroup(Composite parent,
@@ -406,33 +312,9 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				updateCommandSelection();
 			}
 		});
-
-		btnFlashTargetCustomCmd = new Button(cmdSelGrp, SWT.RADIO);
-		btnFlashTargetCustomCmd.setText("Custom command:"); //$NON-NLS-1$
-		btnFlashTargetCustomCmd.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent evt) {
-				updateCommandSelection();
-			}
-		});
-
-		flashTargetCustomCommandText = new Text(cmdSelGrp, SWT.NONE);
-		gridData = new GridData(GridData.FILL_HORIZONTAL);
-		flashTargetCustomCommandText.setLayoutData(gridData);
-		flashTargetCustomCommandText.setEnabled(false);
-		flashTargetCustomCommandText.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				updateLaunchConfigurationDialog();
-			}
-		});
 	}
 
 	private void updateCommandSelection() {
-		dbgSrvCustomCommandText.setEnabled(btnDbgSrvCustomCmd.getSelection());
-		flashTargetCustomCommandText
-				.setEnabled(btnFlashTargetCustomCmd.getSelection());
-
 		updateLaunchConfigurationDialog();
 	}
 

@@ -73,20 +73,8 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 		String cmdTarget = null;
 		Process process = null;
 		if (commandSelection
-				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_CUSTOM_CMD)) {
-			/* Need to run custom command */
-			process = ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg,
-					launch, configuration,
-					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND);
-		} else {
-			if (commandSelection
 					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
-				cmdTarget = CMD_FLASH;
-			} else if (commandSelection
-					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_NONE)) {
-				/* Instructed not to flash hardware target */
-				return;
-			}
+			cmdTarget = CMD_FLASH;
 
 			if (cmdTarget == null) {
 				throw new CoreException(ZephyrHelpers.errorStatus(
@@ -107,6 +95,9 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 						"Project is not correctly configured.", //$NON-NLS-1$
 						new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
 			}
+		} else {
+			/* None selected */
+			return;
 		}
 
 		if (process != null) {
@@ -152,13 +143,7 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 				ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE);
 		String cmdTarget = null;
-		if (commandSelection.equals(
-				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
-			/* Need to run custom command */
-			ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg, launch,
-					configuration,
-					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND);
-		} else if (commandSelection
+		if (commandSelection
 				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS)) {
 			cmdTarget = CMD_DEBUGSERVER;
 

@@ -61,12 +61,7 @@ public class ZephyrApplicationEmulatorRunLaunchConfigDelegate
 				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 				ZephyrStrings.EMPTY_STRING);
 		String cmdToRun = null;
-		if (commandSelection.equals(
-				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_CUSTOM_CMD)) {
-			/* Need to run custom command */
-			doCustomCommand(project, appBuildCfg, launch, configuration,
-					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND);
-		} else if (commandSelection
+		if (commandSelection
 				.equals(ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS)) {
 			cmdToRun = CMD_RUN;
 

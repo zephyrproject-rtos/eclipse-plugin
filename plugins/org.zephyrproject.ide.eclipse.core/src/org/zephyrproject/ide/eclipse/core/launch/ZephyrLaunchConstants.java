@@ -19,14 +19,11 @@ public final class ZephyrLaunchConstants {
 	public static final String ATTR_EMULATOR_RUN_CMD_SEL =
 			LAUNCH_ID + ".EMULATOR_RUN_CMD_SEL"; //$NON-NLS-1$
 
+	public static final String EMULATOR_RUN_CMD_SEL_NONE =
+			"EMULATOR_RUN_CMD_SEL_NONE"; //$NON-NLS-1$
+
 	public static final String EMULATOR_RUN_CMD_SEL_BUILDSYS =
 			"EMULATOR_RUN_CMD_SEL_BUILDSYS"; //$NON-NLS-1$
-
-	public static final String EMULATOR_RUN_CMD_SEL_CUSTOM_CMD =
-			"EMULATOR_RUN_CMD_SEL_CUSTOM_CMD"; //$NON-NLS-1$
-
-	public static final String ATTR_EMULATOR_RUN_CUSTOM_COMMAND =
-			LAUNCH_ID + ".EMULATOR_RUN_CUSTOM_COMMAND"; //$NON-NLS-1$
 
 	public static final String ATTR_FLASH_CMD_SEL =
 			LAUNCH_ID + ".FLASH_CMD_SEL"; //$NON-NLS-1$
@@ -36,12 +33,6 @@ public final class ZephyrLaunchConstants {
 	public static final String FLASH_CMD_SEL_BUILDSYS =
 			"FLASH_CMD_SEL_BUILDSYS"; //$NON-NLS-1$
 
-	public static final String FLASH_CMD_SEL_CUSTOM_CMD =
-			"FLASH_CMD_SEL_CUSTOM_CMD"; //$NON-NLS-1$
-
-	public static final String ATTR_FLASH_CUSTOM_COMMAND =
-			LAUNCH_ID + ".FLASH_CUSTOM_COMMAND"; //$NON-NLS-1$
-
 	public static final String ATTR_DBGSERVER_CMD_SEL =
 			LAUNCH_ID + ".DBGSERVER_CMD_SEL"; //$NON-NLS-1$
 
@@ -50,12 +41,6 @@ public final class ZephyrLaunchConstants {
 
 	public static final String DBGSERVER_CMD_SEL_BUILDSYS =
 			"DBGSERVER_CMD_SEL_BUILDSYS"; //$NON-NLS-1$
-
-	public static final String DBGSERVER_CMD_SEL_CUSTOM_COMMAND =
-			"DBGSERVER_CMD_SEL_CUSTOM_COMMAND"; //$NON-NLS-1$
-
-	public static final String ATTR_DBGSERVER_CUSTOM_COMMAND =
-			LAUNCH_ID + ".DBGSERVER_CUSTOM_COMMAND"; //$NON-NLS-1$
 
 	public static final String LAUNCH_TARGET_EMULATOR_RUN_NAME = "Emulator"; // $NON-NLS-1
 

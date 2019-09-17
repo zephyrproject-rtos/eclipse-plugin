@@ -51,12 +51,4 @@ public abstract class ZephyrAbstractRunLaunchConfigDelegate
 				mode);
 	}
 
-	protected void doCustomCommand(IProject project,
-			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
-			ILaunchConfiguration configuration, String attrCustomCmd)
-			throws CoreException {
-		ZephyrHelpers.Launch.doCustomCommand(project, appBuildCfg, launch,
-				configuration, attrCustomCmd);
-	}
-
 }
