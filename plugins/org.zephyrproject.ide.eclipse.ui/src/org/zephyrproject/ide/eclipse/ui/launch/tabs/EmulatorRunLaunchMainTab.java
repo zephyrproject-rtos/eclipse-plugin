@@ -42,7 +42,7 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 
 	public static final String MENU_ID = "Main";
 
-	private Button btnEmulatorRunDefault;
+	private Button btnEmulatorRunBuildSys;
 
 	private Button btnEmulatorRunCustomCmd;
 
@@ -113,7 +113,7 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 		/* Use default command to run emulator */
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
-				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
+				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 				EMPTY_STRING);
@@ -137,7 +137,7 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 				btnEmulatorRunCustomCmd.setSelection(true);
 				emulatorRunCustomCommandText.setEnabled(true);
 			} else {
-				btnEmulatorRunDefault.setSelection(true);
+				btnEmulatorRunBuildSys.setSelection(true);
 			}
 
 			String customCmd = configuration.getAttribute(
@@ -146,7 +146,7 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 			emulatorRunCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
-			btnEmulatorRunDefault.setSelection(true);
+			btnEmulatorRunBuildSys.setSelection(true);
 			btnEmulatorRunCustomCmd.setSelection(false);
 		}
 	}
@@ -193,10 +193,10 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CUSTOM_COMMAND,
 					emulatorRunCustomCommandText.getText());
-		} else if (btnEmulatorRunDefault.getSelection()) {
+		} else if (btnEmulatorRunBuildSys.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
-					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
 		}
 	}
 
@@ -235,12 +235,13 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 		gridData.horizontalSpan = 2;
 		cmdSelLabel.setLayoutData(gridData);
 
-		btnEmulatorRunDefault = new Button(cmdSelGrp, SWT.RADIO);
+		btnEmulatorRunBuildSys = new Button(cmdSelGrp, SWT.RADIO);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
-		btnEmulatorRunDefault.setLayoutData(gridData);
-		btnEmulatorRunDefault.setText("Default Command to Run Emulator"); //$NON-NLS-1$
-		btnEmulatorRunDefault.addSelectionListener(new SelectionAdapter() {
+		btnEmulatorRunBuildSys.setLayoutData(gridData);
+		btnEmulatorRunBuildSys
+				.setText("Invoke build system to run emulator"); //$NON-NLS-1$
+		btnEmulatorRunBuildSys.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
 				updateCommandSelection();

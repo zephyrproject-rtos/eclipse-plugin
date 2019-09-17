@@ -49,7 +49,7 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 
 	private Button btnDbgSrvNone;
 
-	private Button btnDbgSrvDefault;
+	private Button btnDbgSrvBuildSys;
 
 	private Button btnDbgSrvCustomCmd;
 
@@ -120,7 +120,7 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 
 		/* Use default command to start debug server */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
-				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
+				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
 				EMPTY_STRING);
@@ -137,23 +137,23 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 		try {
 			String cmdSel = configuration.getAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
 
 			if (cmdSel.equals(
 					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_CUSTOM_COMMAND)) {
 				btnDbgSrvNone.setSelection(false);
-				btnDbgSrvDefault.setSelection(false);
+				btnDbgSrvBuildSys.setSelection(false);
 				btnDbgSrvCustomCmd.setSelection(true);
 				dbgSrvCustomCommandText.setEnabled(true);
 			} else if (cmdSel
 					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
 				btnDbgSrvNone.setSelection(true);
-				btnDbgSrvDefault.setSelection(false);
+				btnDbgSrvBuildSys.setSelection(false);
 				btnDbgSrvCustomCmd.setSelection(false);
 				dbgSrvCustomCommandText.setEnabled(false);
 			} else {
 				btnDbgSrvNone.setSelection(false);
-				btnDbgSrvDefault.setSelection(true);
+				btnDbgSrvBuildSys.setSelection(true);
 				btnDbgSrvCustomCmd.setSelection(false);
 				dbgSrvCustomCommandText.setEnabled(false);
 			}
@@ -165,7 +165,7 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 		} catch (CoreException e) {
 			/* Default */
 			btnDbgSrvNone.setSelection(false);
-			btnDbgSrvDefault.setSelection(true);
+			btnDbgSrvBuildSys.setSelection(true);
 			btnDbgSrvCustomCmd.setSelection(false);
 			dbgSrvCustomCommandText.setEnabled(false);
 		}
@@ -182,10 +182,10 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CUSTOM_COMMAND,
 					dbgSrvCustomCommandText.getText());
-		} else if (btnDbgSrvDefault.getSelection()) {
+		} else if (btnDbgSrvBuildSys.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
-					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_DEFAULT);
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
 		} else if (btnDbgSrvNone.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
@@ -255,12 +255,12 @@ public class EmulatorDebugLaunchMainTab extends CMainTab2 {
 			}
 		});
 
-		btnDbgSrvDefault = new Button(cmdSelGrp, SWT.RADIO);
+		btnDbgSrvBuildSys = new Button(cmdSelGrp, SWT.RADIO);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
-		btnDbgSrvDefault.setLayoutData(gridData);
-		btnDbgSrvDefault.setText("Use default command to start debug server"); //$NON-NLS-1$
-		btnDbgSrvDefault.addSelectionListener(new SelectionAdapter() {
+		btnDbgSrvBuildSys.setLayoutData(gridData);
+		btnDbgSrvBuildSys.setText("Invoke build system to start debug server"); //$NON-NLS-1$
+		btnDbgSrvBuildSys.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
 				updateCommandSelection();

@@ -84,11 +84,11 @@ public class ZephyrApplicationLaunchConfigurationProvider
 				ZephyrLaunchConstants.LAUNCH_TARGET_EMULATOR_RUN_TYPE_ID)) {
 			workingCopy.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
-					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_DFLT);
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
 		} else if (target.getTypeId().equals(
 				ZephyrLaunchConstants.LAUNCH_TARGET_HARDWARE_RUN_TYPE_ID)) {
 			workingCopy.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
-					ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
+					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
 		}
 	}
 

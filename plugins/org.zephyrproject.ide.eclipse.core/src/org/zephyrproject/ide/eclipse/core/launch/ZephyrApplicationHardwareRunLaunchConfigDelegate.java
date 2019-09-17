@@ -66,27 +66,25 @@ public class ZephyrApplicationHardwareRunLaunchConfigDelegate
 			/* Need to run custom command */
 			doCustomCommand(project, appBuildCfg, launch, configuration,
 					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND);
-			return;
 		} else if (commandSelection
-				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT)) {
+				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
 			cmdToRun = CMD_FLASH;
-		}
 
-		if (cmdToRun == null) {
-			throw new CoreException(ZephyrHelpers.errorStatus(
-					"Project is not correctly configured.", //$NON-NLS-1$
-					new RuntimeException("Unknown Command to Run"))); //$NON-NLS-1$
-		}
-
-		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
-			doMakefile(project, appBuildCfg, launch, makeProgram, cmdToRun);
-		} else if (cmakeGenerator
-				.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
-			doNinja(project, appBuildCfg, launch, makeProgram, cmdToRun);
+			if (cmakeGenerator
+					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
+				doMakefile(project, appBuildCfg, launch, makeProgram, cmdToRun);
+			} else if (cmakeGenerator
+					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
+				doNinja(project, appBuildCfg, launch, makeProgram, cmdToRun);
+			} else {
+				throw new CoreException(ZephyrHelpers.errorStatus(
+						"Project is not correctly configured.", //$NON-NLS-1$
+						new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
+			}
 		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Project is not correctly configured.", //$NON-NLS-1$
-					new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
+					new RuntimeException("Unknown Command to Run"))); //$NON-NLS-1$
 		}
 	}
 

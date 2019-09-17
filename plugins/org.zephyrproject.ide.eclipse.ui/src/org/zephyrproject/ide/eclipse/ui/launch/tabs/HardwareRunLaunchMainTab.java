@@ -42,7 +42,7 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 
 	public static final String MENU_ID = "Main";
 
-	private Button btnFlashTargetDefault;
+	private Button btnFlashTargetBuildSys;
 
 	private Button btnFlashTargetCustomCmd;
 
@@ -112,7 +112,7 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 
 		/* Use default command to flash hardware target */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
-				ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
+				ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND, EMPTY_STRING);
 
@@ -133,7 +133,7 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 				btnFlashTargetCustomCmd.setSelection(true);
 				flashTargetCustomCommandText.setEnabled(true);
 			} else {
-				btnFlashTargetDefault.setSelection(true);
+				btnFlashTargetBuildSys.setSelection(true);
 			}
 
 			String customCmd = configuration.getAttribute(
@@ -142,7 +142,7 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 			flashTargetCustomCommandText.setText(customCmd);
 		} catch (CoreException e) {
 			/* Default */
-			btnFlashTargetDefault.setSelection(true);
+			btnFlashTargetBuildSys.setSelection(true);
 			btnFlashTargetCustomCmd.setSelection(false);
 		}
 	}
@@ -188,9 +188,9 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_FLASH_CUSTOM_COMMAND,
 					flashTargetCustomCommandText.getText());
-		} else if (btnFlashTargetDefault.getSelection()) {
+		} else if (btnFlashTargetBuildSys.getSelection()) {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
-					ZephyrLaunchConstants.FLASH_CMD_SEL_DFLT);
+					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
 		}
 	}
 
@@ -229,13 +229,13 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 		gridData.horizontalSpan = 2;
 		cmdSelLabel.setLayoutData(gridData);
 
-		btnFlashTargetDefault = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetBuildSys = new Button(cmdSelGrp, SWT.RADIO);
 		gridData = new GridData(GridData.FILL_HORIZONTAL);
 		gridData.horizontalSpan = 2;
-		btnFlashTargetDefault.setLayoutData(gridData);
-		btnFlashTargetDefault
-				.setText("Default Command to Flash Hardware Target"); //$NON-NLS-1$
-		btnFlashTargetDefault.addSelectionListener(new SelectionAdapter() {
+		btnFlashTargetBuildSys.setLayoutData(gridData);
+		btnFlashTargetBuildSys
+				.setText("Invoke build system to flash hardware target"); //$NON-NLS-1$
+		btnFlashTargetBuildSys.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent evt) {
 				updateCommandSelection();
