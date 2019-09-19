@@ -90,4 +90,23 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 		return runCmd(project, appBuildCfg, launch, cmd);
 	}
 
+	public Process runWest(IProject project,
+			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+			String action, String args) throws CoreException, IOException {
+		String westPath = ZephyrHelpers.getWestPath(project);
+
+		if ((westPath == null) || (westPath.trim().isEmpty())) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Project is not correctly configured.", //$NON-NLS-1$
+					new RuntimeException("Cannot get path for West."))); //$NON-NLS-1$
+		}
+
+		if (args == null) {
+			String cmd = String.format("%s %s", westPath, action);
+			return runCmd(project, appBuildCfg, launch, cmd);
+		} else {
+			String cmd = String.format("%s %s %s", westPath, action, args);
+			return runCmd(project, appBuildCfg, launch, cmd);
+		}
+	}
 }

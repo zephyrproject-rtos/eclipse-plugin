@@ -350,6 +350,8 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 						cache.getMakeProgram());
 				pStore.putValue(CMakeCache.CMAKE_GDB, cache.getGdb());
 
+				pStore.putValue(CMakeCache.WEST, cache.getWest());
+
 				String val = cache.getDebugRunner();
 				if ((val != null) && !val.isEmpty()) {
 					pStore.putValue(CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER,

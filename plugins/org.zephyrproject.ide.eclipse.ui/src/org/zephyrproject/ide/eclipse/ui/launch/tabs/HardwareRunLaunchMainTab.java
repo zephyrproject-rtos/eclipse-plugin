@@ -20,6 +20,8 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -27,6 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
@@ -40,6 +43,10 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 	public static final String MENU_ID = "Main";
 
 	private Button btnFlashTargetBuildSys;
+
+	private Button btnFlashTargetWest;
+
+	private Text westFlashArgsText;
 
 	public HardwareRunLaunchMainTab() {
 	}
@@ -106,6 +113,8 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 		/* Use default command to flash hardware target */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 				ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
+		configuration.setAttribute(
+				ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS, EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -122,12 +131,28 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 
 			if (cmdSel.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
 				btnFlashTargetBuildSys.setSelection(true);
+				btnFlashTargetWest.setSelection(false);
+				westFlashArgsText.setEnabled(false);
+			} else if (cmdSel
+					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_WEST)) {
+				btnFlashTargetBuildSys.setSelection(false);
+				btnFlashTargetWest.setSelection(true);
+				westFlashArgsText.setEnabled(true);
 			} else {
 				btnFlashTargetBuildSys.setSelection(true);
+				btnFlashTargetWest.setSelection(false);
+				westFlashArgsText.setEnabled(false);
 			}
+
+			String westArgs = configuration.getAttribute(
+					ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS,
+					EMPTY_STRING);
+			westFlashArgsText.setText(westArgs);
 		} catch (CoreException e) {
 			/* Default */
 			btnFlashTargetBuildSys.setSelection(true);
+			btnFlashTargetWest.setSelection(false);
+			westFlashArgsText.setEnabled(false);
 		}
 	}
 
@@ -169,6 +194,13 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 		if (btnFlashTargetBuildSys.getSelection()) {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
+		} else if (btnFlashTargetWest.getSelection()) {
+			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+					ZephyrLaunchConstants.FLASH_CMD_SEL_WEST);
+
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS,
+					westFlashArgsText.getText());
 		} else {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_NONE);
@@ -215,9 +247,32 @@ public class HardwareRunLaunchMainTab extends CAbstractMainTab {
 				updateCommandSelection();
 			}
 		});
+
+		btnFlashTargetWest = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetWest.setText("Invoke West to flash hardware target:"); //$NON-NLS-1$
+		btnFlashTargetWest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				updateCommandSelection();
+			}
+		});
+
+		westFlashArgsText = new Text(cmdSelGrp, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		westFlashArgsText.setLayoutData(gridData);
+		westFlashArgsText.setEnabled(false);
+		westFlashArgsText.setMessage("(additional arguments to West)"); //$NON-NLS-1$
+		westFlashArgsText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				updateLaunchConfigurationDialog();
+			}
+		});
 	}
 
 	private void updateCommandSelection() {
+		westFlashArgsText.setEnabled(btnFlashTargetWest.getSelection());
+
 		updateLaunchConfigurationDialog();
 	}
 }

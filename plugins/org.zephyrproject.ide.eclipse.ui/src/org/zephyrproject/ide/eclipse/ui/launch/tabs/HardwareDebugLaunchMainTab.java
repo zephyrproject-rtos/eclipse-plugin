@@ -23,6 +23,8 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -30,6 +32,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
@@ -48,9 +51,17 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 
 	private Button btnFlashTargetBuildSys;
 
+	private Button btnFlashTargetWest;
+
+	private Text westFlashArgsText;
+
 	private Button btnDbgSrvNone;
 
 	private Button btnDbgSrvBuildSys;
+
+	private Button btnDbgSrvWest;
+
+	private Text westDbgSrvArgsText;
 
 	public HardwareDebugLaunchMainTab() {
 		super(0);
@@ -125,6 +136,11 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 		/* Use default command to start debug server */
 		configuration.setAttribute(ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 				ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
+		configuration.setAttribute(
+				ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS, EMPTY_STRING);
+		configuration.setAttribute(
+				ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_WEST_ARGS,
+				EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -144,15 +160,27 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS)) {
 				btnDbgSrvNone.setSelection(false);
 				btnDbgSrvBuildSys.setSelection(true);
+				btnDbgSrvWest.setSelection(false);
+				westDbgSrvArgsText.setEnabled(false);
+			} else if (cmdSel
+					.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_WEST)) {
+				btnDbgSrvNone.setSelection(false);
+				btnDbgSrvBuildSys.setSelection(false);
+				btnDbgSrvWest.setSelection(true);
+				westDbgSrvArgsText.setEnabled(true);
 			} else {
 				/* Also "DBGSERVER_CMD_SEL_NONE" */
 				btnDbgSrvNone.setSelection(true);
 				btnDbgSrvBuildSys.setSelection(false);
+				btnDbgSrvWest.setSelection(false);
+				westDbgSrvArgsText.setEnabled(false);
 			}
 		} catch (CoreException e) {
 			/* Default */
 			btnDbgSrvNone.setSelection(true);
 			btnDbgSrvBuildSys.setSelection(false);
+			btnDbgSrvWest.setSelection(false);
+			westDbgSrvArgsText.setEnabled(false);
 		}
 
 		try {
@@ -164,15 +192,27 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
 				btnFlashTargetNone.setSelection(false);
 				btnFlashTargetBuildSys.setSelection(true);
+				btnFlashTargetWest.setSelection(false);
+				westFlashArgsText.setEnabled(false);
+			} else if (cmdSel
+					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_WEST)) {
+				btnFlashTargetNone.setSelection(false);
+				btnFlashTargetBuildSys.setSelection(false);
+				btnFlashTargetWest.setSelection(true);
+				westFlashArgsText.setEnabled(true);
 			} else {
 				/* Also "FLASH_CMD_SEL_NONE" */
 				btnFlashTargetNone.setSelection(true);
 				btnFlashTargetBuildSys.setSelection(false);
+				btnFlashTargetWest.setSelection(false);
+				westFlashArgsText.setEnabled(false);
 			}
 		} catch (CoreException e) {
 			/* Default */
 			btnFlashTargetNone.setSelection(true);
 			btnFlashTargetBuildSys.setSelection(false);
+			btnFlashTargetWest.setSelection(false);
+			westFlashArgsText.setEnabled(false);
 		}
 	}
 
@@ -184,6 +224,14 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
 					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_BUILDSYS);
+		} else if (btnDbgSrvWest.getSelection()) {
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
+					ZephyrLaunchConstants.DBGSERVER_CMD_SEL_WEST);
+
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_WEST_ARGS,
+					westDbgSrvArgsText.getText());
 		} else if (btnDbgSrvNone.getSelection()) {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_SEL,
@@ -193,6 +241,13 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 		if (btnFlashTargetBuildSys.getSelection()) {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS);
+		} else if (btnFlashTargetWest.getSelection()) {
+			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
+					ZephyrLaunchConstants.FLASH_CMD_SEL_WEST);
+
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS,
+					westFlashArgsText.getText());
 		} else {
 			configuration.setAttribute(ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 					ZephyrLaunchConstants.FLASH_CMD_SEL_NONE);
@@ -266,6 +321,27 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				updateCommandSelection();
 			}
 		});
+
+		btnDbgSrvWest = new Button(cmdSelGrp, SWT.RADIO);
+		btnDbgSrvWest.setText("Invoke West to start debug server:"); //$NON-NLS-1$
+		btnDbgSrvWest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				updateCommandSelection();
+			}
+		});
+
+		westDbgSrvArgsText = new Text(cmdSelGrp, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		westDbgSrvArgsText.setLayoutData(gridData);
+		westDbgSrvArgsText.setEnabled(false);
+		westDbgSrvArgsText.setMessage("(additional arguments to West)"); //$NON-NLS-1$
+		westDbgSrvArgsText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				updateLaunchConfigurationDialog();
+			}
+		});
 	}
 
 	private void createFlashTargetCommandSelectionGroup(Composite parent,
@@ -312,9 +388,33 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				updateCommandSelection();
 			}
 		});
+
+		btnFlashTargetWest = new Button(cmdSelGrp, SWT.RADIO);
+		btnFlashTargetWest.setText("Invoke West to flash hardware target:"); //$NON-NLS-1$
+		btnFlashTargetWest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				updateCommandSelection();
+			}
+		});
+
+		westFlashArgsText = new Text(cmdSelGrp, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		westFlashArgsText.setLayoutData(gridData);
+		westFlashArgsText.setEnabled(false);
+		westFlashArgsText.setMessage("(additional arguments to West)"); //$NON-NLS-1$
+		westFlashArgsText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				updateLaunchConfigurationDialog();
+			}
+		});
 	}
 
 	private void updateCommandSelection() {
+		westFlashArgsText.setEnabled(btnFlashTargetWest.getSelection());
+		westDbgSrvArgsText.setEnabled(btnDbgSrvWest.getSelection());
+
 		updateLaunchConfigurationDialog();
 	}
 

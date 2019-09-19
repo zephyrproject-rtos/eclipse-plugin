@@ -76,6 +76,16 @@ public class ZephyrApplicationEmulatorRunLaunchConfigDelegate
 						"Project is not correctly configured.", //$NON-NLS-1$
 						new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
 			}
+		} else if (commandSelection
+				.equals(ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_WEST)) {
+			String args = configuration.getAttribute(
+					ZephyrLaunchConstants.ATTR_RUN_CMD_WEST_ARGS,
+					ZephyrStrings.EMPTY_STRING);
+			if (args.trim().isEmpty()) {
+				args = null;
+			}
+
+			runWest(project, appBuildCfg, launch, CMD_RUN, args);
 		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Project is not correctly configured.", //$NON-NLS-1$

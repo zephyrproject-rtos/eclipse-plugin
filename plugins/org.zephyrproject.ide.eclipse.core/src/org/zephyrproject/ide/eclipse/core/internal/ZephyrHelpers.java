@@ -42,6 +42,7 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomT
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
+import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.launch.IZephyrLaunchHelper;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
@@ -201,6 +202,23 @@ public final class ZephyrHelpers {
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers
 						.errorStatus("Error running Ninja command.", e)); //$NON-NLS-1$
+			}
+		}
+
+		public static Process runWest(IProject project,
+				ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+				String action, String args) throws CoreException {
+			try {
+				IZephyrLaunchHelper helper = getLaunchHelper();
+				if (helper != null) {
+					return helper.runWest(project, appBuildCfg, launch, action,
+							args);
+				}
+
+				return null;
+			} catch (IOException e) {
+				throw new CoreException(
+						ZephyrHelpers.errorStatus("Error running West.", e)); //$NON-NLS-1$
 			}
 		}
 
@@ -435,6 +453,14 @@ public final class ZephyrHelpers {
 
 	public static String getBoardName(IProject project) {
 		return getBoardName(getProjectPreferenceStore(project));
+	}
+
+	public static String getWestPath(ScopedPreferenceStore pStore) {
+		return pStore.getString(CMakeCache.WEST);
+	}
+
+	public static String getWestPath(IProject project) {
+		return getWestPath(getProjectPreferenceStore(project));
 	}
 
 	/**

@@ -28,6 +28,8 @@ public class CMakeCache {
 
 	public static final String CMAKE_GDB = "CMAKE_GDB"; //$NON-NLS-1$
 
+	public static final String WEST = "WEST"; //$NON-NLS-1$
+
 	public static final String ZEPHYR_BOARD_DEBUG_RUNNER =
 			"ZEPHYR_BOARD_DEBUG_RUNNER"; //$NON-NLS-1$
 
@@ -110,6 +112,13 @@ public class CMakeCache {
 	 */
 	public String getGdb() {
 		return getFilePath(CMAKE_GDB);
+	}
+
+	/**
+	 * @return Path to West as discovered by CMake
+	 */
+	public String getWest() {
+		return getFilePath(WEST);
 	}
 
 	/**

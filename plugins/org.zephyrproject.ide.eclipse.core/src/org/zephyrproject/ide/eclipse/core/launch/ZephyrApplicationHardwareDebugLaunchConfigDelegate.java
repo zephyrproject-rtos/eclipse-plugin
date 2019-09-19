@@ -19,6 +19,7 @@ import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.launch.ITargetedLaunch;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChain;
+import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
@@ -95,6 +96,17 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 						"Project is not correctly configured.", //$NON-NLS-1$
 						new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
 			}
+		} else if (commandSelection
+				.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_WEST)) {
+			String args = configuration.getAttribute(
+					ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS,
+					ZephyrStrings.EMPTY_STRING);
+			if (args.trim().isEmpty()) {
+				args = null;
+			}
+
+			process = ZephyrHelpers.Launch.runWest(project, appBuildCfg, launch,
+					CMD_FLASH, args);
 		} else {
 			/* None selected */
 			return;
@@ -159,6 +171,17 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 						"Project is not correctly configured.", //$NON-NLS-1$
 						new RuntimeException("Unknown CMake Generator."))); //$NON-NLS-1$
 			}
+		} else if (commandSelection
+				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_WEST)) {
+			String args = configuration.getAttribute(
+					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_WEST_ARGS,
+					ZephyrStrings.EMPTY_STRING);
+			if (args.trim().isEmpty()) {
+				args = null;
+			}
+
+			ZephyrHelpers.Launch.runWest(project, appBuildCfg, launch,
+					CMD_DEBUGSERVER, args);
 		} else if (commandSelection
 				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
 			/* Instructed not to launch debugserver */

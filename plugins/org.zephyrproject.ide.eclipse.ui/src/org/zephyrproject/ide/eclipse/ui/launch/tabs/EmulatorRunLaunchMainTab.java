@@ -20,6 +20,8 @@ import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
@@ -27,6 +29,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNature;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.launch.ZephyrLaunchConstants;
@@ -40,6 +43,10 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 	public static final String MENU_ID = "Main";
 
 	private Button btnEmulatorRunBuildSys;
+
+	private Button btnEmulatorRunWest;
+
+	private Text westRunArgsText;
 
 	public EmulatorRunLaunchMainTab() {
 	}
@@ -107,6 +114,8 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 		configuration.setAttribute(
 				ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 				ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
+		configuration.setAttribute(ZephyrLaunchConstants.ATTR_RUN_CMD_WEST_ARGS,
+				EMPTY_STRING);
 
 		/* Use our own process factory */
 		configuration.setAttribute(DebugPlugin.ATTR_PROCESS_FACTORY_ID,
@@ -125,12 +134,27 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 			if (cmdSel.equals(
 					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS)) {
 				btnEmulatorRunBuildSys.setSelection(true);
+				btnEmulatorRunWest.setSelection(false);
+				westRunArgsText.setEnabled(false);
+			} else if (cmdSel
+					.equals(ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_WEST)) {
+				btnEmulatorRunBuildSys.setSelection(false);
+				btnEmulatorRunWest.setSelection(true);
+				westRunArgsText.setEnabled(true);
 			} else {
 				btnEmulatorRunBuildSys.setSelection(true);
+				btnEmulatorRunWest.setSelection(false);
+				westRunArgsText.setEnabled(false);
 			}
+
+			String westArgs = configuration.getAttribute(
+					ZephyrLaunchConstants.ATTR_RUN_CMD_WEST_ARGS, EMPTY_STRING);
+			westRunArgsText.setText(westArgs);
 		} catch (CoreException e) {
 			/* Default */
 			btnEmulatorRunBuildSys.setSelection(true);
+			btnEmulatorRunWest.setSelection(false);
+			westRunArgsText.setEnabled(false);
 		}
 	}
 
@@ -173,6 +197,14 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
 					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_BUILDSYS);
+		} else if (btnEmulatorRunWest.getSelection()) {
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
+					ZephyrLaunchConstants.EMULATOR_RUN_CMD_SEL_WEST);
+
+			configuration.setAttribute(
+					ZephyrLaunchConstants.ATTR_RUN_CMD_WEST_ARGS,
+					westRunArgsText.getText());
 		} else {
 			configuration.setAttribute(
 					ZephyrLaunchConstants.ATTR_EMULATOR_RUN_CMD_SEL,
@@ -220,9 +252,32 @@ public class EmulatorRunLaunchMainTab extends CAbstractMainTab {
 				updateCommandSelection();
 			}
 		});
+
+		btnEmulatorRunWest = new Button(cmdSelGrp, SWT.RADIO);
+		btnEmulatorRunWest.setText("Invoke West to run emulator:"); //$NON-NLS-1$
+		btnEmulatorRunWest.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent evt) {
+				updateCommandSelection();
+			}
+		});
+
+		westRunArgsText = new Text(cmdSelGrp, SWT.BORDER);
+		gridData = new GridData(GridData.FILL_HORIZONTAL);
+		westRunArgsText.setLayoutData(gridData);
+		westRunArgsText.setEnabled(false);
+		westRunArgsText.setMessage("(additional arguments to West)"); //$NON-NLS-1$
+		westRunArgsText.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				updateLaunchConfigurationDialog();
+			}
+		});
 	}
 
 	private void updateCommandSelection() {
+		westRunArgsText.setEnabled(btnEmulatorRunWest.getSelection());
+
 		updateLaunchConfigurationDialog();
 	}
 }

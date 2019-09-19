@@ -7,6 +7,7 @@
 package org.zephyrproject.ide.eclipse.core.internal.launch.java11;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -47,6 +48,37 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 			makeProgram,
 			mode
 		};
+
+		ProcessBuilder builder = new ProcessBuilder(command)
+				.directory(appBuildCfg.getBuildDirectory().toFile());
+		builder.environment().putAll(
+				ZephyrHelpers.Launch.getBuildEnvironmentMap(appBuildCfg));
+		Process process = builder.start();
+		DebugPlugin.newProcess(launch, process,
+				ZephyrHelpers.getBoardName(project));
+
+		return process;
+	}
+
+	public Process runWest(IProject project,
+			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+			String action, String args) throws CoreException, IOException {
+		String westPath = ZephyrHelpers.getWestPath(project);
+
+		if ((westPath == null) || (westPath.trim().isEmpty())) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Project is not correctly configured.", //$NON-NLS-1$
+					new RuntimeException("Cannot get path for West."))); //$NON-NLS-1$
+		}
+
+		ArrayList<String> cmds = new ArrayList<String>();
+		cmds.add(westPath);
+		cmds.add(action);
+		if (args != null) {
+			cmds.add(args);
+		}
+
+		String[] command = cmds.toArray(new String[0]);
 
 		ProcessBuilder builder = new ProcessBuilder(command)
 				.directory(appBuildCfg.getBuildDirectory().toFile());

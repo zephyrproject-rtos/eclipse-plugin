@@ -23,4 +23,8 @@ public interface IZephyrLaunchHelper {
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String makeProgram, String mode) throws CoreException, IOException;
 
+	Process runWest(IProject project,
+			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+			String action, String args) throws CoreException, IOException;
+
 }

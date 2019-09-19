@@ -51,4 +51,10 @@ public abstract class ZephyrAbstractRunLaunchConfigDelegate
 				mode);
 	}
 
+	protected void runWest(IProject project,
+			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
+			String action, String args) throws CoreException {
+		ZephyrHelpers.Launch.runWest(project, appBuildCfg, launch, action,
+				args);
+	}
 }
