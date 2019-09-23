@@ -134,26 +134,27 @@ public class CMakeCache {
 	 * @throws IOException
 	 */
 	public boolean parseFile(File f) throws IOException {
-		BufferedReader reader = new BufferedReader(new FileReader(f));
+		try (BufferedReader reader = new BufferedReader(new FileReader(f))) {
 
-		/* Clear the mappings before reading new ones */
-		variables.clear();
+			/* Clear the mappings before reading new ones */
+			variables.clear();
 
-		String line;
-		while ((line = reader.readLine()) != null) {
-			String l = line.trim();
-			if (l.startsWith("#") || l.startsWith("/") || l.isEmpty()) { //$NON-NLS-1$ //$NON-NLS-2$
-				continue;
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String l = line.trim();
+				if (l.startsWith("#") || l.startsWith("/") || l.isEmpty()) { //$NON-NLS-1$ //$NON-NLS-2$
+					continue;
+				}
+
+				String[] pair = l.split(":", 2);
+				if (pair.length == 2) {
+					variables.put(pair[0], pair[1]);
+				}
 			}
 
-			String[] pair = l.split(":", 2);
-			if (pair.length == 2) {
-				variables.put(pair[0], pair[1]);
-			}
+			reader.close();
+
+			return !variables.isEmpty();
 		}
-
-		reader.close();
-
-		return !variables.isEmpty();
 	}
 }

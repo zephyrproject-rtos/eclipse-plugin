@@ -37,23 +37,23 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 				BAT_FILE_SUFFIX);
 		tmpFile.toFile().deleteOnExit();
 
-		BufferedWriter writer =
-				new BufferedWriter(new FileWriter(tmpFile.toFile()));
+		try (BufferedWriter writer =
+				new BufferedWriter(new FileWriter(tmpFile.toFile()))) {
 
-		writer.write("@echo off"); //$NON-NLS-1$
-		writer.newLine();
+			writer.write("@echo off"); //$NON-NLS-1$
+			writer.newLine();
 
-		writer.write(String.format("CALL %s", cmd)); //$NON-NLS-1$
-		writer.newLine();
+			writer.write(String.format("CALL %s", cmd)); //$NON-NLS-1$
+			writer.newLine();
 
-		writer.write("pause"); //$NON-NLS-1$
-		writer.newLine();
+			writer.write("pause"); //$NON-NLS-1$
+			writer.newLine();
 
-		writer.write("exit"); //$NON-NLS-1$
-		writer.newLine();
+			writer.write("exit"); //$NON-NLS-1$
+			writer.newLine();
 
-		writer.flush();
-		writer.close();
+			writer.flush();
+		}
 
 		return tmpFile;
 	}
