@@ -396,6 +396,9 @@ public abstract class ZephyrApplicationBuildConfiguration
 		if (resources != null) {
 			for (IResource resource : resources) {
 				Path commandPath = findCommand(command.get(0));
+				if (commandPath == null) {
+					continue;
+				}
 				command.set(0, commandPath.toString());
 
 				/*
