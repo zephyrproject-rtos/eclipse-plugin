@@ -178,7 +178,9 @@ public class ZephyrScannerInfoCache {
 
 			if (info == null) {
 				/* The ".c" scanner is the default one. */
-				info = defaultCacheMap.get("c"); //$NON-NLS-1$
+				synchronized (this) {
+					info = defaultCacheMap.get("c"); //$NON-NLS-1$
+				}
 			}
 
 			return info;
