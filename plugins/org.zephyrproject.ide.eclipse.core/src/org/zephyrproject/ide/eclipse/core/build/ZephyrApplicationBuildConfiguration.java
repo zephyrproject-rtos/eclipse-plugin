@@ -156,7 +156,8 @@ public abstract class ZephyrApplicationBuildConfiguration
 					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
 					/* Makefile does not exist, 'make' won't work */
-					console.getErrorStream().write("Makefile does not exist\n");
+					console.getErrorStream().write(
+							"Makefile does not exist" + System.lineSeparator());
 					return null;
 				}
 
@@ -165,8 +166,8 @@ public abstract class ZephyrApplicationBuildConfiguration
 					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
 					/* build.ninja does not exist, 'ninja' won't work */
-					console.getErrorStream()
-							.write("build.ninja does not exist\n");
+					console.getErrorStream().write("build.ninja does not exist"
+							+ System.lineSeparator());
 					return null;
 				}
 
@@ -180,7 +181,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 					new ErrorParserManager(project, getBuildDirectoryURI(),
 							this, getToolChain().getErrorParserIds())) {
 				consoleOut.write(String.format(
-						"----- Building for board %s in %s\n", boardName,
+						"----- Building for board %s in %s%n", boardName,
 						buildFolder.getProjectRelativePath().toString()));
 				epm.setOutputStream(console.getOutputStream());
 
@@ -197,14 +198,15 @@ public abstract class ZephyrApplicationBuildConfiguration
 						.directory(buildDir.toFile());
 				setBuildEnvironment(processBuilder.environment());
 				Process process = processBuilder.start();
-				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+				consoleOut.write(
+						String.join(" ", command) + System.lineSeparator());
 				watchProcess(process, new IConsoleParser[] {
 					epm,
 					buildProgress
 				});
 
 				consoleOut.write(String.format(
-						"----- Done building for board %s in %s\n", boardName,
+						"----- Done building for board %s in %s%n", boardName,
 						buildFolder.getProjectRelativePath().toString()));
 			}
 
@@ -247,8 +249,8 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 			if (!Files.exists(buildDir.resolve("CMakeFiles"))) {
 				/* Haven't run CMake yet, so nothing to clean */
-				console.getErrorStream()
-						.write("----- Need to run CMake first.\n");
+				console.getErrorStream().write("----- Need to run CMake first."
+						+ System.lineSeparator());
 				return;
 			}
 
@@ -260,15 +262,16 @@ public abstract class ZephyrApplicationBuildConfiguration
 					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				if (!Files.exists(buildDir.resolve("Makefile"))) { //$NON-NLS-1$
 					/* Makefile does not exist, 'make clean' won't work */
-					console.getErrorStream().write("Makefile does not exist\n");
+					console.getErrorStream().write(
+							"Makefile does not exist" + System.lineSeparator());
 					return;
 				}
 			} else if (cmakeGenerator
 					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				if (!Files.exists(buildDir.resolve("build.ninja"))) { //$NON-NLS-1$
 					/* build.ninja does not exist, 'ninja clean' won't work */
-					console.getErrorStream()
-							.write("build.ninja does not exist\n");
+					console.getErrorStream().write("build.ninja does not exist"
+							+ System.lineSeparator());
 					return;
 				}
 			} else {
@@ -276,7 +279,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 						"Unknonw CMake Generator specified", new Exception()));
 			}
 
-			consoleOut.write(String.format("----- Cleaning in %s\n",
+			consoleOut.write(String.format("----- Cleaning in %s%n",
 					buildFolder.getProjectRelativePath().toString()));
 
 			String[] command = {
@@ -293,10 +296,11 @@ public abstract class ZephyrApplicationBuildConfiguration
 					new ProcessBuilder(command).directory(buildDir.toFile());
 			setBuildEnvironment(processBuilder.environment());
 			Process process = processBuilder.start();
-			consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+			consoleOut
+					.write(String.join(" ", command) + System.lineSeparator());
 			watchProcess(process, console);
 
-			consoleOut.write(String.format("----- Done cleaning in %s\n",
+			consoleOut.write(String.format("----- Done cleaning in %s%n",
 					buildFolder.getProjectRelativePath().toString()));
 
 			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);

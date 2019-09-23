@@ -203,7 +203,7 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
 
 				consoleOut.write(String.format(
-						"----- Generating CMake files for board %s in %s\n",
+						"----- Generating CMake files for board %s in %s%n",
 						boardName,
 						buildFolder.getProjectRelativePath().toString()));
 
@@ -236,12 +236,13 @@ public class CMakeGeneratorBuildConfiguration extends PlatformObject
 						.directory(buildDir.toFile());
 				setBuildEnvironment(processBuilder.environment());
 				Process process = processBuilder.start();
-				consoleOut.write(String.join(" ", command) + '\n'); //$NON-NLS-1$
+				consoleOut.write(
+						String.join(" ", command) + System.lineSeparator());
 
 				watchProcess(process, new IConsoleParser[0], console);
 
 				consoleOut.write(String.format(
-						"----- Done generating CMake files for board %s in %s\n",
+						"----- Done generating CMake files for board %s in %s%n",
 						boardName,
 						buildFolder.getProjectRelativePath().toString()));
 
