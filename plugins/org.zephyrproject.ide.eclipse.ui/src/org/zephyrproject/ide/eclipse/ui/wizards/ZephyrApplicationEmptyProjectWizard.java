@@ -50,7 +50,7 @@ public class ZephyrApplicationEmptyProjectWizard extends TemplateWizard {
 
 	private ZephyrApplicationBoardWizardPage boardPage;
 
-	private final String wizardName =
+	private static final String WIZARD_NAME =
 			ZephyrStrings.ZEPHYR_APPLICATION_PROJECT + " Wizard";
 
 	private ZephyrApplicationNewProjectGenerator generator;
@@ -81,22 +81,20 @@ public class ZephyrApplicationEmptyProjectWizard extends TemplateWizard {
 	 */
 	@Override
 	public void addPages() {
-		mainPage = new ZephyrApplicationMainWizardPage(this.wizardName);
+		mainPage = new ZephyrApplicationMainWizardPage(WIZARD_NAME);
 		mainPage.setTitle(ZephyrStrings.ZEPHYR_APPLICATION_PROJECT);
 		mainPage.setDescription(
 				"Create a new " + ZephyrStrings.ZEPHYR_APPLICATION);
 		addPage(mainPage);
 
-		toolchainPage =
-				new ZephyrApplicationToolchainWizardPage(this.wizardName);
+		toolchainPage = new ZephyrApplicationToolchainWizardPage(WIZARD_NAME);
 		toolchainPage.setTitle(ZephyrStrings.ZEPHYR_APPLICATION_PROJECT
 				+ " - Toolchain Selection");
 		toolchainPage.setDescription(
 				"Specify the Toolchain to Build this Application");
 		addPage(toolchainPage);
 
-		boardPage =
-				new ZephyrApplicationBoardWizardPage(this.wizardName, mainPage);
+		boardPage = new ZephyrApplicationBoardWizardPage(WIZARD_NAME, mainPage);
 		boardPage.setTitle(ZephyrStrings.ZEPHYR_APPLICATION_PROJECT
 				+ " - Target Board Configuration");
 		boardPage.setDescription("Specify the target board configuration");
