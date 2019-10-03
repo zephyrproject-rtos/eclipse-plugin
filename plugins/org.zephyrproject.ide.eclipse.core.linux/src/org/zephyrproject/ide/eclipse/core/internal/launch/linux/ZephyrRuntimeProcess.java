@@ -46,9 +46,17 @@ public class ZephyrRuntimeProcess extends RuntimeProcess {
 				findAllLeafProcesses(pid, leafPids);
 
 				/* Terminate the leaf node processes */
+				ArrayList<String> cmd = new ArrayList<String>();
+				cmd.add("kill"); //$NON-NLS-1$
+				cmd.add("-s TERM"); // $NON-NLS-1$
 				for (Integer p : leafPids) {
-					killPid(p);
+					cmd.add(p.toString());
 				}
+
+				ProcessBuilder pb =
+						new ProcessBuilder(cmd.toArray(new String[0]));
+				pb.start().waitFor();
+
 			} catch (Exception e) {
 			}
 		}
@@ -56,8 +64,16 @@ public class ZephyrRuntimeProcess extends RuntimeProcess {
 		super.terminate();
 	}
 
-	private static void findAllLeafProcesses(Integer pid,
-			HashSet<Integer> pids) {
+	private void findAllLeafProcesses(Integer pid, HashSet<Integer> pids) {
+
+		if (pids == null) {
+			return;
+		}
+
+		if (pid <= 1) {
+			return;
+		}
+
 		String[] command = {
 			"pgrep", //$NON-NLS-1$
 			"-P", //$NON-NLS-1$ ,
@@ -103,22 +119,6 @@ public class ZephyrRuntimeProcess extends RuntimeProcess {
 			}
 		} catch (Exception e) {
 		}
-	}
-
-	private static boolean killPid(Integer pid) {
-		try {
-			String command = String.format("kill -s TERM %d", pid);
-			Process process = Runtime.getRuntime().exec(command);
-
-			int exitval = process.waitFor();
-
-			if (exitval == 0) {
-				return true;
-			}
-		} catch (Exception e) {
-		}
-
-		return false;
 	}
 
 }
