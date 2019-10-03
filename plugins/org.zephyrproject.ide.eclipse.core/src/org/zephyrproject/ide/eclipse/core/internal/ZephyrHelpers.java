@@ -140,8 +140,10 @@ public final class ZephyrHelpers {
 			IEnvironmentVariable[] vars = CCorePlugin.getDefault()
 					.getBuildEnvironmentManager()
 					.getVariables(appBuildCfg.getBuildConfiguration(), true);
-			for (IEnvironmentVariable e : vars) {
-				envMap.put(e.getName(), e.getValue());
+			if (vars != null) {
+				for (IEnvironmentVariable e : vars) {
+					envMap.put(e.getName(), e.getValue());
+				}
 			}
 
 			/* Append Zephyr build environment */
