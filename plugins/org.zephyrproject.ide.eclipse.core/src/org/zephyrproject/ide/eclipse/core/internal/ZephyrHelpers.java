@@ -352,6 +352,10 @@ public final class ZephyrHelpers {
 
 		/* Check for toolchain names, e.g. i586-zephyr-elf */
 		File[] dirs = (new File(path)).listFiles();
+		if (dirs == null) {
+			return false;
+		}
+
 		for (File d : dirs) {
 			if (!d.isDirectory()) {
 				continue;

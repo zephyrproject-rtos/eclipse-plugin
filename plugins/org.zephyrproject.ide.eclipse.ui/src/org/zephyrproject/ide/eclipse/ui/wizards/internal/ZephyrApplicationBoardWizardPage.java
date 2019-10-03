@@ -64,6 +64,9 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 			ArrayList<String> boards = new ArrayList<>();
 
 			File[] entries = dir.listFiles();
+			if (entries == null) {
+				return boards;
+			}
 
 			SubMonitor subMon = monitor.newChild(entries.length);
 
@@ -114,22 +117,26 @@ public class ZephyrApplicationBoardWizardPage extends WizardPage {
 			SubMonitor monArch = SubMonitor.convert(monitor);
 
 			File[] archFiles = zBaseBoards.listFiles();
-			monArch.beginTask("Gathering board configurations",
-					archFiles.length);
-			for (File oneArch : archFiles) {
-				if (oneArch.isDirectory()) {
-					ArrayList<String> bList = explorePath(oneArch, monArch);
-					if (!bList.isEmpty()) {
-						boardConfigs.put(oneArch.getName(),
-								bList.toArray(new String[0]));
+			if (archFiles != null) {
+				monArch.beginTask("Gathering board configurations",
+						archFiles.length);
+				for (File oneArch : archFiles) {
+					if (oneArch.isDirectory()) {
+						ArrayList<String> bList = explorePath(oneArch, monArch);
+						if (!bList.isEmpty()) {
+							boardConfigs.put(oneArch.getName(),
+									bList.toArray(new String[0]));
+						}
 					}
 				}
-			}
-			monArch.done();
+				monArch.done();
 
-			String[] archs = boardConfigs.keySet().toArray(new String[0]);
-			Arrays.sort(archs);
-			archList.setItems(archs);
+				String[] archs = boardConfigs.keySet().toArray(new String[0]);
+				Arrays.sort(archs);
+				archList.setItems(archs);
+			} else {
+				archList.setItems(new String[0]);
+			}
 		}
 
 	}
