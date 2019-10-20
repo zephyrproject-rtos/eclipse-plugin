@@ -35,8 +35,6 @@ public class ZephyrPreferenceInitializer extends AbstractPreferenceInitializer {
 				ZephyrStrings.EMPTY_STRING);
 		store.setDefault(ZephyrPreferenceConstants.P_XTOOLS_TOOLCHAIN_PATH,
 				ZephyrStrings.EMPTY_STRING);
-		store.setDefault(ZephyrPreferenceConstants.P_ISSM_INSTALLATION_PATH,
-				ZephyrStrings.EMPTY_STRING);
 		store.setDefault(ZephyrPreferenceConstants.P_CROSS_COMPILE_PREFIX,
 				ZephyrStrings.EMPTY_STRING);
 	}

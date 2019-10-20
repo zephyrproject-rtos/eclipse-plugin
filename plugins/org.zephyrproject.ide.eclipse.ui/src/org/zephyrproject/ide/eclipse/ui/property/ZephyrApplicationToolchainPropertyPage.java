@@ -31,7 +31,6 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCo
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
@@ -54,9 +53,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 
 	private Composite grpGnuArmEmb;
 	private Text gnuArmEmbDir;
-
-	private Composite grpISSM;
-	private Text issmDir;
 
 	private Composite grpCrossCompile;
 	private Text crossCompilePrefix;
@@ -150,8 +146,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			tcDesc = CrosstoolsToolChain.DESCRIPTION;
 		} else if (storedTcVariant.equals(GnuArmEmbToolChain.VARIANT)) {
 			tcDesc = GnuArmEmbToolChain.DESCRIPTION;
-		} else if (storedTcVariant.equals(IssmToolChain.VARIANT)) {
-			tcDesc = IssmToolChain.DESCRIPTION;
 		} else if (storedTcVariant.equals(CrossCompileToolChain.VARIANT)) {
 			tcDesc = CrossCompileToolChain.DESCRIPTION;
 		} else {
@@ -177,9 +171,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 
 		grpGnuArmEmb = createOneControlGroup(tcParams);
 		createGroupGnuArmEmb(pStore);
-
-		grpISSM = createOneControlGroup(tcParams);
-		createGroupISSM(pStore);
 
 		grpCrossCompile = createOneControlGroup(tcParams);
 		createGroupCrossCompile(pStore);
@@ -349,22 +340,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	};
 
 	/**
-	 * Create a group for Intel System Studio for Microcontrollers toolchain.
-	 */
-	private void createGroupISSM(ScopedPreferenceStore pStore) {
-		Composite grp = grpISSM;
-
-		createLabel(grp, IssmToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
-				+ IssmToolChain.ENV + "):"); //$NON-NLS-1$
-
-		issmDir = createDirField(grp);
-
-		issmDir.setText(pStore.getString(IssmToolChain.ENV));
-
-		createBrowseBtn(grp, issmDir);
-	};
-
-	/**
 	 * Create a group for specifying CROSS_COMPILE toolchain.
 	 */
 	private void createGroupCrossCompile(ScopedPreferenceStore pStore) {
@@ -416,10 +391,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			tcVariant.setText(GnuArmEmbToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpGnuArmEmb;
-		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
-			tcVariant.setText(IssmToolChain.VARIANT);
-			tcVariant.setEnabled(false);
-			tcParamsLayout.topControl = grpISSM;
 		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
 			tcVariant.setText(CrossCompileToolChain.VARIANT);
 			tcVariant.setEnabled(false);
@@ -476,18 +447,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
 						+ " is not valid");
 			}
-		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
-			String dir = issmDir.getText();
-
-			valid = ZephyrHelpers.checkValidDirectory(dir);
-
-			if (dir.isEmpty()) {
-				setErrorMessage(IssmToolChain.DIRECTORY_DESCRIPTION
-						+ " must be specified");
-			} else if (!valid) {
-				setErrorMessage(
-						IssmToolChain.DIRECTORY_DESCRIPTION + " is not valid");
-			}
 		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
 			String prefix = crossCompilePrefix.getText();
 			if (!prefix.isEmpty()) {
@@ -539,9 +498,6 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
 			String dir = gnuArmEmbDir.getText();
 			pStore.putValue(GnuArmEmbToolChain.ENV, dir);
-		} else if (variant.equals(IssmToolChain.VARIANT)) {
-			String dir = issmDir.getText();
-			pStore.putValue(IssmToolChain.ENV, dir);
 		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
 			String prefix = crossCompilePrefix.getText();
 			pStore.putValue(CrossCompileToolChain.ENV, prefix);

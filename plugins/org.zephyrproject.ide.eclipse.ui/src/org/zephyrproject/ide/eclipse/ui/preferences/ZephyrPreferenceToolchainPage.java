@@ -56,14 +56,6 @@ public class ZephyrPreferenceToolchainPage extends FieldEditorPreferencePage
 		xtoolsPath.setEmptyStringAllowed(true);
 		addField(xtoolsPath);
 
-		/* Intel ISSM Installation Path */
-		DirectoryFieldEditor issmPath = new DirectoryFieldEditor(
-				ZephyrPreferenceConstants.P_ISSM_INSTALLATION_PATH,
-				"Default &Intel ISSM Installation Path:",
-				getFieldEditorParent());
-		issmPath.setEmptyStringAllowed(true);
-		addField(issmPath);
-
 		/* Cross compile prefix */
 		StringFieldEditor crossCompilePrefix = new StringFieldEditor(
 				ZephyrPreferenceConstants.P_CROSS_COMPILE_PREFIX,

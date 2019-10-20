@@ -22,9 +22,6 @@ public class ZephyrPreferenceConstants {
 	public static final String P_XTOOLS_TOOLCHAIN_PATH =
 			"XTOOLS_TOOLCHAIN_PATH"; //$NON-NLS-1$
 
-	public static final String P_ISSM_INSTALLATION_PATH =
-			"ISSM_INSTALLATION_PATH"; //$NON-NLS-1$
-
 	public static final String P_CROSS_COMPILE_PREFIX = "CROSS_COMPILE_PREFIX"; //$NON-NLS-1$
 
 }
