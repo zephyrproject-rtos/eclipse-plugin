@@ -37,7 +37,6 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCo
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrPreferenceConstants;
@@ -81,9 +80,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private Composite grpGnuArmEmb;
 	private Text gnuArmEmbDir;
 
-	private Composite grpISSM;
-	private Text issmDir;
-
 	private Composite grpCrossCompile;
 	private Text crossCompilePrefix;
 
@@ -117,10 +113,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 			tcVariant.setText(GnuArmEmbToolChain.VARIANT);
 			tcVariant.setEnabled(false);
 			tcParamsLayout.topControl = grpGnuArmEmb;
-		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
-			tcVariant.setText(IssmToolChain.VARIANT);
-			tcVariant.setEnabled(false);
-			tcParamsLayout.topControl = grpISSM;
 		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
 			tcVariant.setText(CrossCompileToolChain.VARIANT);
 			tcVariant.setEnabled(false);
@@ -296,23 +288,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	};
 
 	/**
-	 * Create a group for Intel System Studio for Microcontrollers toolchain.
-	 */
-	private void createGroupISSM() {
-		Composite grp = grpISSM;
-
-		createLabel(grp, IssmToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
-				+ IssmToolChain.ENV + "):"); //$NON-NLS-1$
-
-		issmDir = createDirField(grp);
-
-		issmDir.setText(zTopPref
-				.getString(ZephyrPreferenceConstants.P_ISSM_INSTALLATION_PATH));
-
-		createBrowseBtn(grp, issmDir);
-	};
-
-	/**
 	 * Create a group for specifying CROSS_COMPILE toolchain.
 	 */
 	private void createGroupCrossCompile() {
@@ -409,9 +384,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 		grpGnuArmEmb = createOneControlGroup(tcParams);
 		createGroupGnuArmEmb();
 
-		grpISSM = createOneControlGroup(tcParams);
-		createGroupISSM();
-
 		grpCrossCompile = createOneControlGroup(tcParams);
 		createGroupCrossCompile();
 
@@ -471,20 +443,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 			} else if (!valid) {
 				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
 						+ " is not valid");
-				setMessage(null);
-			}
-		} else if (selection.equals(IssmToolChain.DESCRIPTION)) {
-			String dir = issmDir.getText();
-
-			valid = ZephyrHelpers.checkValidDirectory(dir);
-
-			if (dir.isEmpty()) {
-				setErrorMessage(null);
-				setMessage(IssmToolChain.DIRECTORY_DESCRIPTION
-						+ " must be specified");
-			} else if (!valid) {
-				setErrorMessage(
-						IssmToolChain.DIRECTORY_DESCRIPTION + " is not valid");
 				setMessage(null);
 			}
 		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
@@ -548,9 +506,6 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
 			String dir = gnuArmEmbDir.getText();
 			pStore.putValue(GnuArmEmbToolChain.ENV, dir);
-		} else if (variant.equals(IssmToolChain.VARIANT)) {
-			String dir = issmDir.getText();
-			pStore.putValue(IssmToolChain.ENV, dir);
 		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
 			String prefix = crossCompilePrefix.getText();
 			pStore.putValue(CrossCompileToolChain.ENV, prefix);

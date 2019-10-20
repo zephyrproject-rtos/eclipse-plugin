@@ -40,7 +40,6 @@ import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCo
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.IssmToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.launch.IZephyrLaunchHelper;
@@ -423,8 +422,6 @@ public final class ZephyrHelpers {
 			tcVarName = CrosstoolsToolChain.ENV;
 		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
 			tcVarName = GnuArmEmbToolChain.ENV;
-		} else if (variant.equals(IssmToolChain.VARIANT)) {
-			tcVarName = IssmToolChain.ENV;
 		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
 			tcVarName = CrossCompileToolChain.ENV;
 		} else {

@@ -57,21 +57,6 @@ public final class ZephyrToolChainConstants {
 
 	}
 
-	public static class IssmToolChain {
-
-		public static final String VARIANT = "issm"; //$NON-NLS-1$
-
-		public static final String DESCRIPTION =
-				"Intel System Studio for Microcontrollers";
-
-		public static final String DIRECTORY_DESCRIPTION =
-				String.join(ZephyrStrings.ONE_EMPTY_SPACE, "ISSM",
-						"Installation", ZephyrStrings.PATH);
-
-		public static final String ENV = "ISSM_INSTALLATION_PATH"; //$NON-NLS-1$
-
-	}
-
 	public static class CrossCompileToolChain {
 
 		public static final String VARIANT = "cross-compiler"; //$NON-NLS-1$
@@ -102,7 +87,6 @@ public final class ZephyrToolChainConstants {
 		ZephyrSdkToolChain.DESCRIPTION,
 		CrosstoolsToolChain.DESCRIPTION,
 		GnuArmEmbToolChain.DESCRIPTION,
-		IssmToolChain.DESCRIPTION,
 		CrossCompileToolChain.DESCRIPTION,
 		CustomToolChain.DESCRIPTION
 	};
