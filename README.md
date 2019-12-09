@@ -24,14 +24,9 @@ guide.
 The plugin can be installed via update sites in Eclipse.
 
 1. Go to `Help` in the menu bar, and select `Install New Software`.
-2. Click the `Add` button to add a new update site. Choose one of
-   the following sites:
-   * For stable releases:
-     * Name: `zephyr-eclipse-stable`
-     * URL: `TBD`
-   * For experimental releases:
-     * Name: `zephyr-eclipse-experimental`
-     * URL: `TBD`
+2. Click the `Add` button to add a new update site:
+   * Name: `zephyr-eclipse`
+   * URL: https://builds.zephyrproject.org/eclipse-plugin/
 3. Select the newly added update site.
 4. Select `Zephyr Project` and `Zephyr Project Development Support` and
    click `Next`.
