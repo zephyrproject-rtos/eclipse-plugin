@@ -168,6 +168,9 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				btnDbgSrvBuildSys.setSelection(false);
 				btnDbgSrvWest.setSelection(true);
 				westDbgSrvArgsText.setEnabled(true);
+				westDbgSrvArgsText.setText(configuration.getAttribute(
+						ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_WEST_ARGS,
+						EMPTY_STRING));
 			} else {
 				/* Also "DBGSERVER_CMD_SEL_NONE" */
 				btnDbgSrvNone.setSelection(true);
@@ -200,6 +203,9 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 				btnFlashTargetBuildSys.setSelection(false);
 				btnFlashTargetWest.setSelection(true);
 				westFlashArgsText.setEnabled(true);
+				westFlashArgsText.setText(configuration.getAttribute(
+						ZephyrLaunchConstants.ATTR_FLASH_CMD_WEST_ARGS,
+						EMPTY_STRING));
 			} else {
 				/* Also "FLASH_CMD_SEL_NONE" */
 				btnFlashTargetNone.setSelection(true);
