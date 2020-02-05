@@ -321,12 +321,15 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private String getPathFromDefault(String toolchain) {
 		String defaultPath = zTopPref.getString(toolchain);
 		String path = getDialogSettings().get(toolchain);
-		if (!defaultPath.isEmpty())
+		if (!defaultPath.isEmpty()) {
 			return defaultPath;
-		else if (path != null)
+		}
+		else if (path != null) {
 			return path;
-		else
+		}
+		else {
 			return ZephyrStrings.EMPTY_STRING;
+		}
 	}
 
 	@Override
