@@ -247,8 +247,8 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		zephyrSdkInstallDir = createDirField(grp);
 
-		zephyrSdkInstallDir.setText(zTopPref
-				.getString(ZephyrPreferenceConstants.P_ZEPHYR_SDK_INSTALL_DIR));
+		zephyrSdkInstallDir.setText(getPathFromDefault(
+				ZephyrPreferenceConstants.P_ZEPHYR_SDK_INSTALL_DIR));
 
 		createBrowseBtn(grp, zephyrSdkInstallDir);
 	};
@@ -264,8 +264,8 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		xtoolsDir = createDirField(grp);
 
-		xtoolsDir.setText(zTopPref
-				.getString(ZephyrPreferenceConstants.P_XTOOLS_TOOLCHAIN_PATH));
+		xtoolsDir.setText(getPathFromDefault(
+				ZephyrPreferenceConstants.P_XTOOLS_TOOLCHAIN_PATH));
 
 		createBrowseBtn(grp, xtoolsDir);
 	};
@@ -281,7 +281,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		gnuArmEmbDir = createDirField(grp);
 
-		gnuArmEmbDir.setText(zTopPref.getString(
+		gnuArmEmbDir.setText(getPathFromDefault(
 				ZephyrPreferenceConstants.P_GNUARMEMB_TOOLCHAIN_PATH));
 
 		createBrowseBtn(grp, gnuArmEmbDir);
@@ -298,8 +298,8 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		crossCompilePrefix = createTextField(grp);
 
-		crossCompilePrefix.setText(zTopPref
-				.getString(ZephyrPreferenceConstants.P_CROSS_COMPILE_PREFIX));
+		crossCompilePrefix.setText(getPathFromDefault(
+				ZephyrPreferenceConstants.P_CROSS_COMPILE_PREFIX));
 
 		createBrowseBtn(grp, crossCompilePrefix);
 	};
@@ -317,6 +317,20 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 		createBrowseBtn(grp, customRoot);
 	};
+
+	private String getPathFromDefault(String toolchain) {
+		String defaultPath = zTopPref.getString(toolchain);
+		String path = getDialogSettings().get(toolchain);
+		if (!defaultPath.isEmpty()) {
+			return defaultPath;
+		}
+		else if (path != null) {
+			return path;
+		}
+		else {
+			return ZephyrStrings.EMPTY_STRING;
+		}
+	}
 
 	@Override
 	public void createControl(Composite parent) {
@@ -500,18 +514,27 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 		if (variant.equals(ZephyrSdkToolChain.VARIANT)) {
 			String dir = zephyrSdkInstallDir.getText();
 			pStore.putValue(ZephyrSdkToolChain.ENV, dir);
+			getDialogSettings().put(
+					ZephyrPreferenceConstants.P_ZEPHYR_SDK_INSTALL_DIR, dir);
 		} else if (variant.equals(CrosstoolsToolChain.VARIANT)) {
 			String dir = xtoolsDir.getText();
 			pStore.putValue(CrosstoolsToolChain.ENV, dir);
+			getDialogSettings().put(
+					ZephyrPreferenceConstants.P_XTOOLS_TOOLCHAIN_PATH, dir);
 		} else if (variant.equals(GnuArmEmbToolChain.VARIANT)) {
 			String dir = gnuArmEmbDir.getText();
 			pStore.putValue(GnuArmEmbToolChain.ENV, dir);
+			getDialogSettings().put(
+					ZephyrPreferenceConstants.P_GNUARMEMB_TOOLCHAIN_PATH, dir);
 		} else if (variant.equals(CrossCompileToolChain.VARIANT)) {
 			String prefix = crossCompilePrefix.getText();
 			pStore.putValue(CrossCompileToolChain.ENV, prefix);
+			getDialogSettings().put(
+					ZephyrPreferenceConstants.P_CROSS_COMPILE_PREFIX, prefix);
 		} else {
 			String tcRoot = customRoot.getText();
 			pStore.putValue(CustomToolChain.ENV, tcRoot);
+			getDialogSettings().put(CustomToolChain.ENV, tcRoot);
 		}
 
 		pStore.save();
