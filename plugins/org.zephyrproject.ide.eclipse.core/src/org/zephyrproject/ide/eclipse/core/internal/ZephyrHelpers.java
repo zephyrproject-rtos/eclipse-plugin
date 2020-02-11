@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -493,5 +494,21 @@ public final class ZephyrHelpers {
 	 */
 	public static String getProjectPreference(IProject project, String key) {
 		return getProjectPreference(getProjectPreferenceStore(project), key);
+	}
+
+	/**
+	 * Parses the west arguments into a list removing unnecessary spaces
+	 *
+	 * @param args String of arguments to run west
+	 * @return List of arguments or null if there is no argument
+	 */
+	public static List<String> getArguments(String args) {
+		args = args.trim().replaceAll("\\s+", " ");
+		if (args != null && !args.isEmpty()) {
+			return Arrays.asList(args.split(" "));
+		}
+		else {
+			return null;
+		}
 	}
 }
