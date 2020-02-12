@@ -76,7 +76,7 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 		cmds.add(westPath);
 		cmds.add(action);
 		if (args != null) {
-			cmds.addAll(ZephyrHelpers.getArguments(args));
+			cmds.addAll(ZephyrHelpers.parseWestArguments(args));
 		}
 
 		String[] command = cmds.toArray(new String[0]);

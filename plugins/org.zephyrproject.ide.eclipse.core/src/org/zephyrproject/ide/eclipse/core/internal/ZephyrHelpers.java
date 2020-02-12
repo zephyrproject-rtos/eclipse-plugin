@@ -502,7 +502,7 @@ public final class ZephyrHelpers {
 	 * @param args String of arguments to run west
 	 * @return List of arguments or null if there is no argument
 	 */
-	public static List<String> getArguments(String args) {
+	public static List<String> parseWestArguments(String args) {
 		args = args.trim().replaceAll("\\s+", " ");
 		if (args != null && !args.isEmpty()) {
 			return Arrays.asList(args.split(" "));
