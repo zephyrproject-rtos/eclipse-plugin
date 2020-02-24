@@ -8,6 +8,7 @@ package org.zephyrproject.ide.eclipse.core.internal.launch.java11;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -75,7 +76,7 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 		cmds.add(westPath);
 		cmds.add(action);
 		if (args != null) {
-			cmds.add(args);
+			cmds.addAll(ZephyrHelpers.parseWestArguments(args));
 		}
 
 		String[] command = cmds.toArray(new String[0]);
