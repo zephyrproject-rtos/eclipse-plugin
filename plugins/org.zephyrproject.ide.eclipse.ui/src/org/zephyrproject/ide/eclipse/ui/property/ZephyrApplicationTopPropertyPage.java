@@ -81,8 +81,6 @@ public class ZephyrApplicationTopPropertyPage extends PropertyPage
 
 	@Override
 	protected void performApply() {
-		super.performApply();
-
 		IProject project = getElement().getAdapter(IProject.class);
 		ScopedPreferenceStore pStore =
 				ZephyrHelpers.getProjectPreferenceStore(project);
@@ -95,6 +93,12 @@ public class ZephyrApplicationTopPropertyPage extends PropertyPage
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean performOk() {
+		performApply();
+		return true;
 	}
 
 }

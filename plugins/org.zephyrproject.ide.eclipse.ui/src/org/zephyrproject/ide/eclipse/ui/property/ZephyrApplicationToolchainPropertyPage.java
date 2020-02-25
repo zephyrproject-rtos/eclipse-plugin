@@ -513,4 +513,10 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 		}
 	}
 
+	@Override
+	public boolean performOk() {
+		performApply();
+		return true;
+	}
+
 }
