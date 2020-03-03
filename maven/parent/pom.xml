@@ -30,7 +30,7 @@
 		<repository>
 			<id>eclipse-release</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/releases/2019-03</url>
+			<url>http://download.eclipse.org/releases/2019-12</url>
 		</repository>
 	</repositories>
 
