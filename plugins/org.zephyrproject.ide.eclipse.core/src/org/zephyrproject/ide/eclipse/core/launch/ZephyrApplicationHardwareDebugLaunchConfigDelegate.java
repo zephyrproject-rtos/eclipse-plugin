@@ -71,26 +71,17 @@ extends GDBJtagDSFLaunchConfigurationDelegate {
 		String commandSelection = configuration.getAttribute(
 				ZephyrLaunchConstants.ATTR_FLASH_CMD_SEL,
 				ZephyrLaunchConstants.FLASH_CMD_SEL_NONE);
-		String cmdTarget = null;
 		Process process = null;
 		if (commandSelection
 					.equals(ZephyrLaunchConstants.FLASH_CMD_SEL_BUILDSYS)) {
-			cmdTarget = CMD_FLASH;
-
-			if (cmdTarget == null) {
-				throw new CoreException(ZephyrHelpers.errorStatus(
-						"Project is not correctly configured.", //$NON-NLS-1$
-						new RuntimeException("Unknown Command to Run"))); //$NON-NLS-1$
-			}
-
 			if (cmakeGenerator
 					.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
 				process = ZephyrHelpers.Launch.doMakefile(project, appBuildCfg,
-						launch, makeProgram, cmdTarget);
+						launch, makeProgram, CMD_FLASH);
 			} else if (cmakeGenerator
 					.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
 				process = ZephyrHelpers.Launch.doNinja(project, appBuildCfg,
-						launch, makeProgram, cmdTarget);
+						launch, makeProgram, CMD_FLASH);
 			} else {
 				throw new CoreException(ZephyrHelpers.errorStatus(
 						"Project is not correctly configured.", //$NON-NLS-1$
