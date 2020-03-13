@@ -8,8 +8,6 @@ package org.zephyrproject.ide.eclipse.core.internal.launch.java11;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;

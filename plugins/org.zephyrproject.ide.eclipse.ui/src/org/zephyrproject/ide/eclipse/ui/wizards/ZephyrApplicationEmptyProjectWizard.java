@@ -112,7 +112,7 @@ public class ZephyrApplicationEmptyProjectWizard extends TemplateWizard {
 			return generator;
 		}
 
-		generator = new ZephyrApplicationNewProjectGenerator(null); //$NON-NLS-1$
+		generator = new ZephyrApplicationNewProjectGenerator(null);
 		generator.setProjectName(mainPage.getProjectName());
 		generator.setCMakeGenerator(mainPage.getCMakeGenerator());
 		generator.setSourceDirectory(mainPage.getSourceDirectory());
