@@ -2,7 +2,7 @@
 <feature
       id="org.zephyrproject.ide.eclipse"
       label="Zephyr Project Development Support"
-      version="0.1.99.qualifier"
+      version="0.2.99.qualifier"
       provider-name="Zephyr Project"
       plugin="org.zephyrproject.ide.eclipse.ui">
 
@@ -318,7 +318,7 @@ version(s), and exceptions or additional permissions here}.&quot;
       <import plugin="org.eclipse.launchbar.ui" version="2.3.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.swt" version="3.113.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.ide" version="3.16.100" match="greaterOrEqual"/>
-      <import plugin="org.zephyrproject.ide.eclipse.core" version="0.1.99" match="greaterOrEqual"/>
+      <import plugin="org.zephyrproject.ide.eclipse.core" version="0.2.99" match="greaterOrEqual"/>
    </requires>
 
    <plugin

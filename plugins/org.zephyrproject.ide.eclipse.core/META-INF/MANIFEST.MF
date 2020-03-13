@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Zephyr Project Development Support - Core
 Bundle-SymbolicName: org.zephyrproject.ide.eclipse.core;singleton:=true
-Bundle-Version: 0.1.99.qualifier
+Bundle-Version: 0.2.99.qualifier
 Bundle-Activator: org.zephyrproject.ide.eclipse.core.ZephyrPlugin
 Bundle-Vendor: Zephyr Project
 Require-Bundle: com.google.gson,
