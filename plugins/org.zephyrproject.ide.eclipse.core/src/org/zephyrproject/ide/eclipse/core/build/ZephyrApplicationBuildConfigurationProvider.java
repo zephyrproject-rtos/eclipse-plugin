@@ -55,6 +55,11 @@ public class ZephyrApplicationBuildConfigurationProvider
 	@Override
 	public ICBuildConfiguration getCBuildConfiguration(
 			IBuildConfiguration config, String name) throws CoreException {
+		if (config.getName().equals(IBuildConfiguration.DEFAULT_CONFIG_NAME)) {
+			/* Do not support default build configuration */
+			return null;
+		}
+
 		try {
 			IToolChain toolChain = toolChainManager
 					.getProvider(ZephyrApplicationToolChainProvider.ID)
