@@ -2,8 +2,8 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Zephyr Project Development Support - Core - Linux
 Bundle-SymbolicName: org.zephyrproject.ide.eclipse.core.linux;singleton:=true
-Bundle-Version: 0.1.99.qualifier
-Fragment-Host: org.zephyrproject.ide.eclipse.core;bundle-version="0.1.99"
+Bundle-Version: 0.2.99.qualifier
+Fragment-Host: org.zephyrproject.ide.eclipse.core;bundle-version="0.2.99"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-PlatformFilter: (osgi.os=linux)
 Export-Package: org.zephyrproject.ide.eclipse.core.internal.launch.linux

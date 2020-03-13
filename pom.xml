@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>org.zephyrproject</groupId>
 		<artifactId>org.zephyrproject.ide.eclipse.parent</artifactId>
-		<version>0.1.99-SNAPSHOT</version>
+		<version>0.2.99-SNAPSHOT</version>
 		<relativePath>maven/parent</relativePath>
 	</parent>
 
