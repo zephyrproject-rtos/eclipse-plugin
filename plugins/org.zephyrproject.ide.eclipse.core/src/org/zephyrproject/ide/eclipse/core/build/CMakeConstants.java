@@ -13,7 +13,12 @@ public final class CMakeConstants {
 	public static final String CMAKE_GENERATOR_MAKEFILE = "Unix Makefiles"; //$NON-NLS-1$
 	public static final String CMAKE_GENERATOR_NINJA = "Ninja"; //$NON-NLS-1$
 
-	public static final String[] CMAKE_GENERATOR_LIST = {
+	public static final String[] CMAKE_GENERATOR_LIST_UNIX = {
+		CMAKE_GENERATOR_NINJA,
+		CMAKE_GENERATOR_MAKEFILE
+	};
+
+	public static final String[] CMAKE_GENERATOR_LIST_WINDOWS = {
 		CMAKE_GENERATOR_NINJA,
 		CMAKE_GENERATOR_MAKEFILE
 	};

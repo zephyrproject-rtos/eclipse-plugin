@@ -9,6 +9,7 @@ package org.zephyrproject.ide.eclipse.ui.wizards.internal;
 import java.io.IOException;
 
 import org.eclipse.core.resources.IProject;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.equinox.bidi.StructuredTextTypeHandlerFactory;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -256,7 +257,12 @@ public class ZephyrApplicationMainWizardPage
 		gridData = new GridData();
 		gridData.horizontalSpan = 2;
 		zCMakeGenerator.setLayoutData(gridData);
-		zCMakeGenerator.setItems(CMakeConstants.CMAKE_GENERATOR_LIST);
+		if (Platform.getOS().equals(Platform.OS_WIN32)) {
+			zCMakeGenerator
+					.setItems(CMakeConstants.CMAKE_GENERATOR_LIST_WINDOWS);
+		} else {
+			zCMakeGenerator.setItems(CMakeConstants.CMAKE_GENERATOR_LIST_UNIX);
+		}
 		zCMakeGenerator.select(0);
 		zCMakeGenerator.setFont(cmakeGroup.getFont());
 
