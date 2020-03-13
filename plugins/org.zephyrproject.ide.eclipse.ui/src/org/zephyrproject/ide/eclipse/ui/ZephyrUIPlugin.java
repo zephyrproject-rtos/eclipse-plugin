@@ -7,6 +7,7 @@
 package org.zephyrproject.ide.eclipse.ui;
 
 import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -81,14 +82,17 @@ public class ZephyrUIPlugin extends AbstractUIPlugin {
 	protected ImageRegistry createImageRegistry() {
 		ImageRegistry registry = super.createImageRegistry();
 
-		registry.put(IMG_ZEPHYR_KITE16, imageDescriptorFromPlugin(PLUGIN_ID,
-				"icons/zephyr-kite-logo_16x16.png")); //$NON-NLS-1$
+		registry.put(IMG_ZEPHYR_KITE16,
+				ResourceLocator.imageDescriptorFromBundle(PLUGIN_ID,
+						"icons/zephyr-kite-logo_16x16.png").get()); //$NON-NLS-1$
 
-		registry.put(IMG_ZEPHYR_KITE32, imageDescriptorFromPlugin(PLUGIN_ID,
-				"icons/zephyr-kite-logo_32x32.png")); //$NON-NLS-1$
+		registry.put(IMG_ZEPHYR_KITE32,
+				ResourceLocator.imageDescriptorFromBundle(PLUGIN_ID,
+						"icons/zephyr-kite-logo_32x32.png").get()); //$NON-NLS-1$
 
-		registry.put(IMG_ZEPHYR_KITE48, imageDescriptorFromPlugin(PLUGIN_ID,
-				"icons/zephyr-kite-logo_48x48.png")); //$NON-NLS-1$
+		registry.put(IMG_ZEPHYR_KITE48,
+				ResourceLocator.imageDescriptorFromBundle(PLUGIN_ID,
+						"icons/zephyr-kite-logo_48x48.png").get()); //$NON-NLS-1$
 
 		return registry;
 	}

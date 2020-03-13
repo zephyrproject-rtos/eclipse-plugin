@@ -30,14 +30,15 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ResourceLocator;
 import org.eclipse.jface.wizard.IWizardContainer;
 import org.eclipse.tools.templates.core.IGenerator;
 import org.eclipse.tools.templates.ui.TemplateWizard;
-import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrApplicationNewProjectGenerator;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
+import org.zephyrproject.ide.eclipse.ui.ZephyrUIPlugin;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationBoardWizardPage;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationMainWizardPage;
 import org.zephyrproject.ide.eclipse.ui.wizards.internal.ZephyrApplicationToolchainWizardPage;
@@ -349,8 +350,8 @@ public class ZephyrApplicationEmptyProjectWizard extends TemplateWizard {
 	 */
 	@Override
 	protected void initializeDefaultPageImageDescriptor() {
-		ImageDescriptor desc = AbstractUIPlugin.imageDescriptorFromPlugin(
-				ZephyrPlugin.PLUGIN_ID, "icons/wizard.png"); //$NON-NLS-1$
+		ImageDescriptor desc = ResourceLocator.imageDescriptorFromBundle(
+				ZephyrUIPlugin.PLUGIN_ID, "icons/wizard.png").get(); //$NON-NLS-1$
 		setDefaultPageImageDescriptor(desc);
 	}
 
