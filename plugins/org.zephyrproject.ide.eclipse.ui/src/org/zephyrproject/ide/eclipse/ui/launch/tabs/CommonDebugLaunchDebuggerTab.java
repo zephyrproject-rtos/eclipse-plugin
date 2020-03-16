@@ -15,7 +15,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class CommonDebugLaunchDebuggerTab extends GDBJtagDSFDebuggerTab {
@@ -49,9 +49,9 @@ public class CommonDebugLaunchDebuggerTab extends GDBJtagDSFDebuggerTab {
 						ZephyrHelpers.Launch.getBuildConfiguration(project);
 
 				IToolChain toolchain = appBuildCfg.getToolChain();
-				if (toolchain instanceof ZephyrApplicationToolChain) {
-					ZephyrApplicationToolChain zToolChain =
-							((ZephyrApplicationToolChain) toolchain);
+				if (toolchain instanceof ZephyrGCCToolChain) {
+					ZephyrGCCToolChain zToolChain =
+							((ZephyrGCCToolChain) toolchain);
 
 					String gdb = zToolChain.getGdbProgramPath();
 					if ((gdb != null) && !gdb.trim().isEmpty()) {

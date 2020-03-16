@@ -14,11 +14,9 @@ import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.runtime.CoreException;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
-import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 
 /**
  * Build configuration provider for Zephyr Application
@@ -61,17 +59,21 @@ public class ZephyrApplicationBuildConfigurationProvider
 		}
 
 		try {
-			IToolChain toolChain = toolChainManager
-					.getProvider(ZephyrApplicationToolChainProvider.ID)
-					.getToolChain(getBuildConfigToolChainId(config),
-							ZephyrStrings.EMPTY_STRING);
-
 			ICBuildConfiguration cBuildCfg = null;
-			ZephyrApplicationToolChain zToolChain =
-					(ZephyrApplicationToolChain) toolChain;
+
+			/* Figure out the toolchain */
+			IToolChain toolChain = this.getToolChain(config);
+
+			if (toolChain == null) {
+				return null;
+			}
+
+			ZephyrGCCToolChain zToolChain =
+					(ZephyrGCCToolChain) toolChain;
 
 			zToolChain.initCMakeVarsFromProjectPerfStore(config.getProject());
 
+			/* Create new build configuration */
 			if (config.getName().startsWith(
 					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
 				cBuildCfg = new ZephyrApplicationMakefilesBuildConfiguration(
@@ -96,27 +98,33 @@ public class ZephyrApplicationBuildConfigurationProvider
 	 *
 	 * @param config
 	 * @return
+	 * @throws CoreException
 	 */
-	private static String getBuildConfigToolChainId(
-			IBuildConfiguration config) {
+	private IToolChain getToolChain(IBuildConfiguration config)
+			throws CoreException {
 		String configName = config.getName();
-		StringBuilder tcId = new StringBuilder();
+		StringBuilder tcId =
+				new StringBuilder(ZephyrGCCToolChain.TOOLCHAIN_ID);
 
-		if (configName.startsWith(
-				ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
-			tcId.append(ZephyrApplicationMakefilesToolChain.TOOLCHAIN_ID);
-		} else if (configName.startsWith(
-				ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME)) {
-			tcId.append(ZephyrApplicationNinjaToolChain.TOOLCHAIN_ID);
-		}
-
-		String[] elem = config.getName().split("#", 2); //$NON-NLS-1$
+		String[] elem = configName.split("#", 2); //$NON-NLS-1$
 		if (elem.length == 2) {
 			tcId.append("#"); //$NON-NLS-1$
 			tcId.append(elem[1]);
 		}
 
-		return tcId.toString();
+		String tcIdStr = tcId.toString();
+
+		IToolChain toolChain = toolChainManager
+				.getToolChain(ZephyrGCCToolChain.TYPE_ID, tcIdStr);
+
+		if (toolChain != null) {
+			return toolChain;
+		}
+
+		toolChain = new ZephyrGCCToolChain(tcIdStr);
+		toolChainManager.addToolChain(toolChain);
+
+		return toolChain;
 	}
 
 }
