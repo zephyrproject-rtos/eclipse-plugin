@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.build;
+package org.zephyrproject.ide.eclipse.core.build.toolchain;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.cdt.build.gcc.core.GCCToolChain;
 import org.eclipse.cdt.core.CCorePlugin;
+import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.cdt.core.build.IToolChainProvider;
 import org.eclipse.cdt.core.dom.ast.gnu.c.GCCLanguage;
 import org.eclipse.cdt.core.dom.ast.gnu.cpp.GPPLanguage;
@@ -36,32 +37,42 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChainProvider;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 
 /**
  * Wrapper of GCCToolChain to build Zephyr Applications.
  */
-public abstract class ZephyrApplicationToolChain extends GCCToolChain {
+public class ZephyrGCCToolChain extends GCCToolChain {
 
 	public static final String TOOLCHAIN_OS = "zephyr"; //$NON-NLS-1$
 
+	public static final String TYPE_ID =
+			ZephyrPlugin.PLUGIN_STEM + ".toolchain"; //$NON-NLS-1$
+
+	public static final String TOOLCHAIN_ID = "zephyr.toolchain.gcc"; //$NON-NLS-1$
+
+	private final IToolChainProvider provider;
 	private HashMap<String, String> cmakeCacheMap;
 
-	public ZephyrApplicationToolChain(IToolChainProvider provider, String id) {
-		this(provider, id, ZephyrStrings.EMPTY_STRING);
-	}
+	public ZephyrGCCToolChain(String id) {
+		super(null, id, ZephyrStrings.EMPTY_STRING);
 
-	public ZephyrApplicationToolChain(IToolChainProvider provider, String id,
-			IBuildConfiguration config) {
-		this(provider, id, ZephyrStrings.EMPTY_STRING);
-	}
+		IToolChainProvider tcP = null;
+		try {
+			IToolChainManager toolChainManager =
+					ZephyrPlugin.getService(IToolChainManager.class);
+			tcP = toolChainManager
+					.getProvider(ZephyrApplicationToolChainProvider.ID);
+		} catch (CoreException e) {
+		}
 
-	public ZephyrApplicationToolChain(IToolChainProvider provider, String id,
-			String version) {
-		super(provider, id, version);
+		this.provider = tcP;
 		super.setProperty(ATTR_OS, TOOLCHAIN_OS);
 		this.cmakeCacheMap = new HashMap<>();
 	}
@@ -74,6 +85,16 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 		}
 
 		return null;
+	}
+
+	@Override
+	public IToolChainProvider getProvider() {
+		return provider;
+	}
+
+	@Override
+	public String getTypeId() {
+		return TYPE_ID;
 	}
 
 	@Override
@@ -343,5 +364,4 @@ public abstract class ZephyrApplicationToolChain extends GCCToolChain {
 		storeCMakeCacheVarHelper(pStore, CMakeCache.CMAKE_GDB);
 		storeCMakeCacheVarHelper(pStore, CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER);
 	}
-
 }

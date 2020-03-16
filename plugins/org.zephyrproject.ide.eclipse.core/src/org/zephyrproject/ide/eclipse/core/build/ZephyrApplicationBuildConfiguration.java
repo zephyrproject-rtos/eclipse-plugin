@@ -39,6 +39,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
@@ -335,12 +336,12 @@ public abstract class ZephyrApplicationBuildConfiguration
 	private void updateToolChain() throws CoreException {
 		/* Make sure it is of known toolchain class */
 		IToolChain iTC = getToolChain();
-		if ((iTC == null) || !(iTC instanceof ZephyrApplicationToolChain)) {
+		if ((iTC == null) || !(iTC instanceof ZephyrGCCToolChain)) {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Toolchain not configured properly.", new Exception()));
 		}
 
-		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
+		ZephyrGCCToolChain toolChain = (ZephyrGCCToolChain) iTC;
 		toolChain.initCMakeVarsFromProjectPerfStore(getProject());
 
 		this.cmakeMakeProgram = ZephyrHelpers.getProjectPreference(pStore,
@@ -374,10 +375,10 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 		/* Only work with known toolchain object */
 		IToolChain iTC = getToolChain();
-		if (!(iTC instanceof ZephyrApplicationToolChain)) {
+		if (!(iTC instanceof ZephyrGCCToolChain)) {
 			return;
 		}
-		ZephyrApplicationToolChain toolChain = (ZephyrApplicationToolChain) iTC;
+		ZephyrGCCToolChain toolChain = (ZephyrGCCToolChain) iTC;
 
 		/* Make sure it's a compiler command */
 		String[] compileCommands = toolChain.getCompileCommands();

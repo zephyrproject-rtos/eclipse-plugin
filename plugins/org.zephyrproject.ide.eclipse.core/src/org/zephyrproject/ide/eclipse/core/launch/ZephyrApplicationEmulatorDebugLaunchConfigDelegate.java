@@ -16,7 +16,7 @@ import org.eclipse.debug.core.ILaunchManager;
 import org.eclipse.launchbar.core.target.ILaunchTarget;
 import org.eclipse.launchbar.core.target.launch.ITargetedLaunch;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
@@ -50,8 +50,8 @@ public class ZephyrApplicationEmulatorDebugLaunchConfigDelegate
 
 		ZephyrApplicationBuildConfiguration appBuildCfg = ZephyrHelpers.Launch
 				.getBuildConfiguration(project, mode, target, monitor);
-		ZephyrApplicationToolChain toolChain =
-				(ZephyrApplicationToolChain) appBuildCfg.getToolChain();
+		ZephyrGCCToolChain toolChain =
+				(ZephyrGCCToolChain) appBuildCfg.getToolChain();
 
 		String cmakeGenerator = ZephyrHelpers.getCMakeGenerator(project);
 		String makeProgram = toolChain.getMakeProgram();

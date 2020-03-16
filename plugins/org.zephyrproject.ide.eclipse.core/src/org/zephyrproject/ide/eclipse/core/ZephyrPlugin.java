@@ -15,8 +15,10 @@ import org.osgi.framework.ServiceReference;
  */
 public class ZephyrPlugin extends AbstractUIPlugin {
 
+	public static final String PLUGIN_STEM = "org.zephyrproject.ide.eclipse"; //$NON-NLS-1$
+
 	// The plug-in ID
-	public static final String PLUGIN_ID = "org.zephyrproject.ide.eclipse.core"; //$NON-NLS-1$
+	public static final String PLUGIN_ID = PLUGIN_STEM + ".core"; //$NON-NLS-1$
 
 	// The shared instance
 	private static ZephyrPlugin plugin;
