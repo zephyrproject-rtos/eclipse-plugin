@@ -50,6 +50,10 @@
             class="org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChainProvider"
             id="org.zephyrproject.ide.eclipse.core.build.zephyrApplicationToolChainProvider">
       </provider>
+      <type
+            id="zephyr.toolchain.generic"
+            name="ZephyrGenericToolChain">
+      </type>
    </extension>
    <extension
          point="org.eclipse.debug.core.processFactories">
