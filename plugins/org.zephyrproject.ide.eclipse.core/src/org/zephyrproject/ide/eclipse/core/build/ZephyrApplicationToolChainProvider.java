@@ -6,8 +6,12 @@
 
 package org.zephyrproject.ide.eclipse.core.build;
 
+import org.eclipse.cdt.core.build.IToolChain;
+import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.cdt.core.build.IToolChainProvider;
+import org.eclipse.core.runtime.CoreException;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
 
 /**
  * Toolchain provider for Zephyr Application.
@@ -19,9 +23,18 @@ public class ZephyrApplicationToolChainProvider implements IToolChainProvider {
 	public static final String ID = ZephyrPlugin.PLUGIN_ID
 			+ ".build.zephyrApplicationToolChainProvider"; //$NON-NLS-1$
 
+	private IToolChainManager toolChainManager =
+			ZephyrPlugin.getService(IToolChainManager.class);
+
 	@Override
 	public String getId() {
 		return ID;
+	}
+
+	@Override
+	public void init(IToolChainManager manager) throws CoreException {
+		IToolChain tc = new ZephyrGenericToolChain();
+		toolChainManager.addToolChain(tc);
 	}
 
 }

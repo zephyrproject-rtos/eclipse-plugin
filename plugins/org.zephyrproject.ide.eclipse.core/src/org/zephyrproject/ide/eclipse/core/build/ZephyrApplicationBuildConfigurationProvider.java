@@ -17,6 +17,7 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
 
 /**
  * Build configuration provider for Zephyr Application
@@ -53,9 +54,36 @@ public class ZephyrApplicationBuildConfigurationProvider
 	@Override
 	public ICBuildConfiguration getCBuildConfiguration(
 			IBuildConfiguration config, String name) throws CoreException {
+
+		/* Returns a default C build configuration if asked to provide one.
+		 * If this happens, the project configuration is probably broken
+		 * so we need a minimally working build configuration. This allows
+		 * the project to be built without erroring out all the time.
+		 */
 		if (config.getName().equals(IBuildConfiguration.DEFAULT_CONFIG_NAME)) {
-			/* Do not support default build configuration */
-			return null;
+			ICBuildConfiguration cBuildCfg = null;
+			IToolChain toolChain = toolChainManager.getToolChain(
+					ZephyrGenericToolChain.TYPE_ID,
+					ZephyrGenericToolChain.TOOLCHAIN_ID);
+
+			if (toolChain == null) {
+				return null;
+			}
+
+			/* Create new build configuration */
+			if (config.getName().startsWith(
+					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME)) {
+				cBuildCfg = new ZephyrApplicationMakefilesBuildConfiguration(
+						config, config.getName(), toolChain);
+			} else if (config.getName().startsWith(
+					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME)) {
+				cBuildCfg = new ZephyrApplicationNinjaBuildConfiguration(config,
+						config.getName(), toolChain);
+			} else {
+				return null;
+			}
+
+			return cBuildCfg;
 		}
 
 		try {
