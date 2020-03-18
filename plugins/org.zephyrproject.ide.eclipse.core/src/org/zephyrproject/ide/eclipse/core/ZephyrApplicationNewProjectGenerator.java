@@ -33,8 +33,7 @@ import org.eclipse.tools.templates.freemarker.SourceRoot;
 import org.eclipse.tools.templates.freemarker.TemplateManifest;
 import org.osgi.framework.Bundle;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
-import org.zephyrproject.ide.eclipse.core.build.makefiles.ZephyrApplicationMakefilesBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ninja.ZephyrApplicationNinjaBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 
 /**
  * New project generator for Zephyr Application.
@@ -113,13 +112,10 @@ public class ZephyrApplicationNewProjectGenerator extends FMProjectGenerator {
 		IProject project = getProject();
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		StringBuilder cfgName = new StringBuilder();
-		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)) {
-			cfgName.append(
-					ZephyrApplicationMakefilesBuildConfiguration.CONFIG_NAME);
-		} else if (cmakeGenerator
-				.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
-			cfgName.append(
-					ZephyrApplicationNinjaBuildConfiguration.CONFIG_NAME);
+		if (cmakeGenerator.equals(CMakeConstants.CMAKE_GENERATOR_MAKEFILE)
+				|| cmakeGenerator
+						.equals(CMakeConstants.CMAKE_GENERATOR_NINJA)) {
+			cfgName.append(ZephyrApplicationBuildConfiguration.CONFIG_NAME);
 		}
 
 		cfgName.append("#"); //$NON-NLS-1$
