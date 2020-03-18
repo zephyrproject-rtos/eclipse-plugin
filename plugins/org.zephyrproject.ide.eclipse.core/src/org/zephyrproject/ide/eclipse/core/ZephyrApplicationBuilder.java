@@ -20,9 +20,6 @@ import org.eclipse.core.resources.IResourceDelta;
 import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.SubMonitor;
-import org.zephyrproject.ide.eclipse.core.build.CMakeGeneratorBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
@@ -78,8 +75,6 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 		IProject project = getProject();
 		IBuildConfiguration buildCfg = getBuildConfig();
 
-		SubMonitor subMonitor = SubMonitor.convert(monitor, 101);
-
 		/* Setup console */
 		IConsole console = CCorePlugin.getDefault().getConsole();
 		console.start(project);
@@ -87,8 +82,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 		/* Grab a build configuration from the provider */
 		ICBuildConfiguration appBuildCfg =
 				buildCfg.getAdapter(ICBuildConfiguration.class);
-		if ((appBuildCfg == null)
-				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+		if (appBuildCfg == null) {
 			try {
 				console.getErrorStream()
 						.write("Build not configured correctly");
@@ -99,17 +93,8 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 			return null;
 		}
 
-		ZephyrApplicationBuildConfiguration zAppBuildCfg =
-				(ZephyrApplicationBuildConfiguration) appBuildCfg;
-
-		/* Setup build configuration to run CMake */
-		ICBuildConfiguration cmakeBuildCfg =
-				new CMakeGeneratorBuildConfiguration(buildCfg, zAppBuildCfg);
-
-		cmakeBuildCfg.build(buildType, args, console, subMonitor.newChild(1));
-
 		/* Invoke application build */
-		zAppBuildCfg.build(buildType, args, console, subMonitor.newChild(100));
+		appBuildCfg.build(buildType, args, console, monitor);
 
 		return new IProject[] {
 			project
@@ -128,8 +113,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 		/* Grab a build configuration from the provider */
 		ICBuildConfiguration appBuildCfg =
 				buildCfg.getAdapter(ICBuildConfiguration.class);
-		if ((appBuildCfg == null)
-				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
+		if (appBuildCfg == null) {
 			try {
 				console.getErrorStream()
 						.write("Build not configured correctly");
@@ -140,17 +124,8 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 			return;
 		}
 
-		ZephyrApplicationBuildConfiguration zAppBuildCfg =
-				(ZephyrApplicationBuildConfiguration) appBuildCfg;
-
 		/* Invoke application clean */
-		zAppBuildCfg.clean(console, monitor);
-
-		/* Setup build configuration to run CMake */
-		ICBuildConfiguration cmakeBuildCfg =
-				new CMakeGeneratorBuildConfiguration(buildCfg, zAppBuildCfg);
-
-		cmakeBuildCfg.clean(console, monitor);
+		appBuildCfg.clean(console, monitor);
 	}
 
 }

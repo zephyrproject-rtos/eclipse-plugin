@@ -7,6 +7,7 @@
 
 package org.zephyrproject.ide.eclipse.core.build;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,12 +35,15 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IncrementalProjectBuilder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
@@ -57,8 +61,13 @@ import com.google.gson.Gson;
  *
  * Originally from org.eclipse.cdt.cmake.core.internal.CMakeBuildConfiguration.
  */
-public abstract class ZephyrApplicationBuildConfiguration
-		extends CBuildConfiguration {
+public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
+
+	public static final String CONFIG_NAME =
+			ZephyrApplicationBuildConfigurationProvider.ID
+					+ "/zephyr.app.build.config"; //$NON-NLS-1$
+
+	private String cmakeCmd;
 
 	private String cmakeMakeProgram;
 
@@ -72,11 +81,9 @@ public abstract class ZephyrApplicationBuildConfiguration
 
 		this.scannerInfoCache = new ZephyrScannerInfoCache(config);
 
-		if (Platform.getOS().equals(Platform.OS_WIN32)) {
-			this.cmakeMakeProgram = "ninja.exe"; //$NON-NLS-1$
-		} else {
-			this.cmakeMakeProgram = "ninja"; //$NON-NLS-1$
-		}
+		/* Default is to use cmake and ninja */
+		this.cmakeCmd = "cmake"; // $NON-NLS-1$
+		this.cmakeMakeProgram = "ninja"; //$NON-NLS-1$
 
 		this.pStore =
 				ZephyrHelpers.getProjectPreferenceStore(config.getProject());
@@ -123,31 +130,24 @@ public abstract class ZephyrApplicationBuildConfiguration
 		return generator;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Build the application by invoking make or ninja.
 	 *
 	 * @see org.eclipse.cdt.core.build.ICBuildConfiguration#build(int,
-	 * java.util.Map, org.eclipse.cdt.core.resources.IConsole,
-	 * org.eclipse.core.runtime.IProgressMonitor)
+	 *      java.util.Map, org.eclipse.cdt.core.resources.IConsole,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
 	 */
-	@Override
-	public IProject[] build(int kind, Map<String, String> args,
+	private IProject appBuild(int kind, Map<String, String> args,
 			IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 
 		try {
 			monitor.beginTask("Building...", 100);
 
-			/* Remove C-related warnings/errors */
-			project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
-					IResource.DEPTH_INFINITE);
-
 			ConsoleOutputStream consoleOut = console.getOutputStream();
 
 			Path buildDir = getBuildDirectory();
 			IFolder buildFolder = (IFolder) getBuildContainer();
-
-			updateToolChain();
 
 			String boardName = getBoardName();
 			String cmakeGenerator = getCMakeGenerator();
@@ -211,19 +211,162 @@ public abstract class ZephyrApplicationBuildConfiguration
 						buildFolder.getProjectRelativePath().toString()));
 			}
 
-			project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
-
 			processCompileCommandsFile(monitor);
 
 			monitor.done();
 
-			return new IProject[] {
-				project
-			};
+			return project;
 		} catch (IOException eio) {
 			throw new CoreException(ZephyrHelpers.errorStatus(String.format(
 					"Error building project %s!", project.getName()), eio));
 		}
+	}
+
+	/**
+	 * Run CMake to configure the application.
+	 *
+	 * @see org.eclipse.cdt.core.build.ICBuildConfiguration#build(int,
+	 *      java.util.Map, org.eclipse.cdt.core.resources.IConsole,
+	 *      org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	private IProject cmakeBuild(int kind, Map<String, String> args,
+			IConsole console, IProgressMonitor monitor) throws CoreException {
+		IProject project = getProject();
+
+		IPath prjIPath = project.getLocation();
+
+		/* Make sure CMakeLists.txt is there */
+		if (!prjIPath.append("CMakeLists.txt").toFile().exists()) { //$NON-NLS-1$
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"File CMakeLists.txt does not exist under project root",
+					null));
+		}
+
+		/* Make sure prj.conf is there */
+		if (!prjIPath.append("prj.conf").toFile().exists()) { //$NON-NLS-1$
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"File prj.conf does not exist under project root", null));
+		}
+
+		try {
+			monitor.beginTask("Running CMake...", 1);
+
+			ConsoleOutputStream consoleOut = console.getOutputStream();
+
+			Path buildDir = getBuildDirectory();
+			IFolder buildFolder = (IFolder) getBuildContainer();
+
+			String boardName = getBoardName();
+
+			String projectAbsPath =
+					new File(project.getLocationURI()).getAbsolutePath();
+
+			if (!Files.exists(buildDir.resolve("CMakeFiles")) //$NON-NLS-1$
+					|| (kind == IncrementalProjectBuilder.FULL_BUILD)) {
+
+				consoleOut.write(String.format(
+						"----- Generating CMake files for board %s in %s%n",
+						boardName,
+						buildFolder.getProjectRelativePath().toString()));
+
+				List<String> command = new ArrayList<>();
+
+				Path cmakePath = findCommand(cmakeCmd); // $NON-NLS-1$
+				if (cmakePath != null) {
+					command.add(cmakePath.toString());
+				} else {
+					/*
+					 * findCommand() may return null if path is not setup
+					 * correctly. Here assume the environment has been setup
+					 * correctly and cmake can be called anywhere here.
+					 */
+					command.add(cmakeCmd);
+				}
+
+				command.add(String.format("-DBOARD=%s", boardName)); //$NON-NLS-1$
+
+				command.add("-G"); //$NON-NLS-1$
+				command.add(getCMakeGenerator());
+
+				command.add("-DCMAKE_EXPORT_COMPILE_COMMANDS=ON"); //$NON-NLS-1$
+
+				command.add(projectAbsPath);
+
+				ProcessBuilder processBuilder = new ProcessBuilder(command)
+						.directory(buildDir.toFile());
+				setBuildEnvironment(processBuilder.environment());
+				Process process = processBuilder.start();
+				consoleOut.write(
+						String.join(" ", command) + System.lineSeparator());
+
+				watchProcess(process, console);
+
+				consoleOut.write(String.format(
+						"----- Done generating CMake files for board %s in %s%n",
+						boardName,
+						buildFolder.getProjectRelativePath().toString()));
+			}
+
+			/*
+			 * For previously created projects without those CMake variables
+			 * saved into project preference space, do this here to jumpstart
+			 * the process. Or else the actual build would fail as those
+			 * variables would result in NullPointerException later in
+			 * appBuild().
+			 */
+			parseCMakeCache(project, buildDir);
+
+			monitor.worked(1);
+			monitor.done();
+
+			/*
+			 * Return this project so that we get resource delta next time
+			 * this is invoked.
+			 */
+			return project;
+		} catch (IOException eio) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					String.format("Error invoking CMake for project %s!",
+							project.getName()),
+					eio));
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 *
+	 * @see org.eclipse.cdt.core.build.ICBuildConfiguration#build(int,
+	 * java.util.Map, org.eclipse.cdt.core.resources.IConsole,
+	 * org.eclipse.core.runtime.IProgressMonitor)
+	 */
+	@Override
+	public IProject[] build(int kind, Map<String, String> args,
+			IConsole console, IProgressMonitor monitor) throws CoreException {
+		IProject project = getProject();
+
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 101);
+
+		/* Remove C-related warnings/errors */
+		project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
+				IResource.DEPTH_INFINITE);
+
+		updateToolChain();
+
+		if (cmakeBuild(kind, args, console, subMonitor.newChild(1)) == null) {
+			return null;
+		}
+
+		updateCMakeVariables();
+
+		if (appBuild(kind, args, console, subMonitor.newChild(100)) == null) {
+			return null;
+		}
+
+		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+
+		return new IProject[] {
+			project
+		};
 	}
 
 	/*
@@ -256,6 +399,7 @@ public abstract class ZephyrApplicationBuildConfiguration
 			}
 
 			updateToolChain();
+			updateCMakeVariables();
 
 			String cmakeGenerator = getCMakeGenerator();
 
@@ -317,33 +461,21 @@ public abstract class ZephyrApplicationBuildConfiguration
 		return CCorePlugin.PLUGIN_ID + ".ELF"; //$NON-NLS-1$
 	}
 
-	@Override
-	public Path findCommand(String command) {
-		Path cmd = null;
-
-		try {
-			cmd = super.findCommand(command);
-		} catch (NullPointerException npe) {
-			/*
-			 * super.findCommand() may throw NullPointerException if
-			 * PATH is not in environment.
-			 */
-		}
-
-		return cmd;
-	}
-
 	private void updateToolChain() throws CoreException {
-		/* Make sure it is of known toolchain class */
+		/* Make sure it is of known toolchain classes */
 		IToolChain iTC = getToolChain();
-		if ((iTC == null) || !(iTC instanceof ZephyrGCCToolChain)) {
+		if (iTC instanceof ZephyrGenericToolChain) {
+			/* nothing to do here */
+		} else if (iTC instanceof ZephyrGCCToolChain) {
+			ZephyrGCCToolChain toolChain = (ZephyrGCCToolChain) iTC;
+			toolChain.initCMakeVarsFromProjectPerfStore(getProject());
+		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Toolchain not configured properly.", new Exception()));
 		}
+	}
 
-		ZephyrGCCToolChain toolChain = (ZephyrGCCToolChain) iTC;
-		toolChain.initCMakeVarsFromProjectPerfStore(getProject());
-
+	private void updateCMakeVariables() {
 		this.cmakeMakeProgram = ZephyrHelpers.getProjectPreference(pStore,
 				CMakeCache.CMAKE_MAKE_PROGRAM);
 	}
@@ -463,6 +595,43 @@ public abstract class ZephyrApplicationBuildConfiguration
 						"Cannot parse compiler commands from CMake for project %s",
 						project.getName()), e));
 			}
+		}
+	}
+
+	private void parseCMakeCache(IProject project, Path buildDir)
+			throws IOException, CoreException {
+		Path cachePath = buildDir.resolve("CMakeCache.txt"); //$NON-NLS-1$
+		boolean done = false;
+		if (Files.exists(cachePath)) {
+			CMakeCache cache = new CMakeCache(project);
+			done = cache.parseFile(cachePath.toFile());
+			if (done) {
+				ScopedPreferenceStore pStore =
+						ZephyrHelpers.getProjectPreferenceStore(project);
+
+				pStore.putValue(CMakeCache.CMAKE_C_COMPILER,
+						cache.getCCompiler());
+				pStore.putValue(CMakeCache.CMAKE_CXX_COMPILER,
+						cache.getCXXCompiler());
+				pStore.putValue(CMakeCache.CMAKE_MAKE_PROGRAM,
+						cache.getMakeProgram());
+				pStore.putValue(CMakeCache.CMAKE_GDB, cache.getGdb());
+
+				pStore.putValue(CMakeCache.WEST, cache.getWest());
+
+				String val = cache.getDebugRunner();
+				if ((val != null) && !val.isEmpty()) {
+					pStore.putValue(CMakeCache.ZEPHYR_BOARD_DEBUG_RUNNER,
+							cache.getDebugRunner());
+				}
+
+				pStore.save();
+			}
+		}
+
+		if (!done) {
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Build not configured properly.", new Exception()));
 		}
 	}
 
