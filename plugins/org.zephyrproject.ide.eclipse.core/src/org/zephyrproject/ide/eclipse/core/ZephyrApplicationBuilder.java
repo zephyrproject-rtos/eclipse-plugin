@@ -6,6 +6,7 @@
 
 package org.zephyrproject.ide.eclipse.core;
 
+import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
@@ -88,8 +89,14 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 				buildCfg.getAdapter(ICBuildConfiguration.class);
 		if ((appBuildCfg == null)
 				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-			appBuildCfg = ZephyrHelpers.Build.fixBuildConfig(buildCfg);
-			buildType = FULL_BUILD;
+			try {
+				console.getErrorStream()
+						.write("Build not configured correctly");
+			} catch (IOException e) {
+				throw new CoreException(ZephyrHelpers
+						.errorStatus("Exception while building", null));
+			}
+			return null;
 		}
 
 		ZephyrApplicationBuildConfiguration zAppBuildCfg =
@@ -123,7 +130,14 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 				buildCfg.getAdapter(ICBuildConfiguration.class);
 		if ((appBuildCfg == null)
 				|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-			appBuildCfg = ZephyrHelpers.Build.fixBuildConfig(buildCfg);
+			try {
+				console.getErrorStream()
+						.write("Build not configured correctly");
+			} catch (IOException e) {
+				throw new CoreException(ZephyrHelpers
+						.errorStatus("Exception while building", null));
+			}
+			return;
 		}
 
 		ZephyrApplicationBuildConfiguration zAppBuildCfg =

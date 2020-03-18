@@ -16,11 +16,7 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
-import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
-import org.eclipse.cdt.core.build.ICBuildConfigurationManager2;
-import org.eclipse.cdt.core.build.ICBuildConfigurationProvider;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
-import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -35,7 +31,6 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCompileToolChain;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
@@ -53,57 +48,6 @@ import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.Z
  * Contains helper functions.
  */
 public final class ZephyrHelpers {
-
-	public static class Build {
-
-		public static ICBuildConfiguration fixBuildConfig(
-				IBuildConfiguration config) throws CoreException {
-			ICBuildConfigurationManager configManager =
-					CCorePlugin.getService(ICBuildConfigurationManager.class);
-			ICBuildConfigurationManager2 configManager2 =
-					(ICBuildConfigurationManager2) configManager;
-
-			if (configManager == null) {
-				throw new CoreException(ZephyrHelpers.errorStatus(
-						"Cannot get build configuration manager!", null));
-			}
-
-			/* Ask CBuildConfigurationManager to retry. */
-			configManager2.recheckConfigs();
-
-			ICBuildConfiguration buildCfg =
-					configManager.getBuildConfiguration(config);
-
-			if ((buildCfg != null)
-					&& (buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-				return buildCfg;
-			}
-
-			/* Need to do it manually now... */
-			configManager2.recheckConfigs();
-
-			ICBuildConfigurationProvider provider = configManager.getProvider(
-					ZephyrApplicationBuildConfigurationProvider.ID);
-
-			if (provider == null) {
-				throw new CoreException(ZephyrHelpers.errorStatus(
-						"Cannot get build configuration provider!", null));
-			}
-
-			buildCfg = provider.getCBuildConfiguration(config, null);
-
-			if ((buildCfg == null)
-					|| !(buildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-				throw new CoreException(ZephyrHelpers.errorStatus(
-						"Unable to retrieve build configuration!", null));
-			}
-
-			configManager.addBuildConfiguration(config, buildCfg);
-
-			return buildCfg;
-		}
-
-	}
 
 	public static class Launch {
 
