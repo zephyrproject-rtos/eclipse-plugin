@@ -19,7 +19,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.PlatformObject;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChainProvider;
 
 /**
  * A Generic Zephyr toolchain which only provides bare minimum.
