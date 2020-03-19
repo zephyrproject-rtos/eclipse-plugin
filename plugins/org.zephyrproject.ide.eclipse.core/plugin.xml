@@ -172,4 +172,33 @@
             provider="org.zephyrproject.ide.eclipse.core.launchbar.ZephyrApplicationLaunchTargetProvider">
       </launchTargetType>
    </extension>
+   <extension
+         point="org.eclipse.cdt.debug.gdbjtag.core.JTagDevice">
+      <device
+            class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.QEMUDevice"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.qemuDevice"
+            name="QEMU">
+      </device>
+      <device
+            class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.ARCnSimDevice"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.arcnSimDevice"
+            name="ARC nSIM">
+      </device>
+      <device
+            class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.XtOCDDevice"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.xtOCDDevice"
+            name="xt-ocd">
+      </device>
+      <device
+            class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.Nios2Device"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.nios2Device"
+            name="Nios II GDB Server">
+      </device>
+            <device
+            class="org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagConnectionImpl"
+            default_connection="/dev/ttyACM0"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.blackMagicProbe"
+            name="BlackMagic Probe">
+      </device>
+   </extension>
 </plugin>
