@@ -47,7 +47,7 @@
    <extension
          point="org.eclipse.cdt.core.toolChainProvider">
       <provider
-            class="org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationToolChainProvider"
+            class="org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrApplicationToolChainProvider"
             id="org.zephyrproject.ide.eclipse.core.build.zephyrApplicationToolChainProvider">
       </provider>
       <type

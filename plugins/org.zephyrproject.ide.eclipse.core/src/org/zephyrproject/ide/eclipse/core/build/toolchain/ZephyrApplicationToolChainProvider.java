@@ -4,14 +4,13 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.build;
+package org.zephyrproject.ide.eclipse.core.build.toolchain;
 
 import org.eclipse.cdt.core.build.IToolChain;
 import org.eclipse.cdt.core.build.IToolChainManager;
 import org.eclipse.cdt.core.build.IToolChainProvider;
 import org.eclipse.core.runtime.CoreException;
 import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
-import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
 
 /**
  * Toolchain provider for Zephyr Application.

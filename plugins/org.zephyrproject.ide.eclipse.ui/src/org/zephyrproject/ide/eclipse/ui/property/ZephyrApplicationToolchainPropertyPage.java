@@ -26,12 +26,12 @@ import org.eclipse.ui.IWorkbenchPropertyPage;
 import org.eclipse.ui.dialogs.PropertyPage;
 import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrossCompileToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CrosstoolsToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.CustomToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.GnuArmEmbToolChain;
-import org.zephyrproject.ide.eclipse.core.build.ZephyrToolChainConstants.ZephyrSdkToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrossCompileToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrosstoolsToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CustomToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.GnuArmEmbToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.ZephyrSdkToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 public class ZephyrApplicationToolchainPropertyPage extends PropertyPage

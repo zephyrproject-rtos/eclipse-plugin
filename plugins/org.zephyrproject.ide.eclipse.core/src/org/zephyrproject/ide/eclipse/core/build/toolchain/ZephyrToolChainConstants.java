@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: EPL-2.0
  */
 
-package org.zephyrproject.ide.eclipse.core.build;
+package org.zephyrproject.ide.eclipse.core.build.toolchain;
 
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 
