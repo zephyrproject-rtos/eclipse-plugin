@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -15,7 +15,7 @@ import org.eclipse.debug.ui.CommonTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.sourcelookup.SourceLookupTab;
-import org.zephyrproject.ide.eclipse.ui.launch.tabs.CommonDebugLaunchDebuggerTab;
+import org.zephyrproject.ide.eclipse.ui.launch.tabs.EmulatorDebugLaunchDebuggerTab;
 import org.zephyrproject.ide.eclipse.ui.launch.tabs.EmulatorDebugLaunchMainTab;
 import org.zephyrproject.ide.eclipse.ui.launch.tabs.CommonDebugLaunchStartupTab;
 
@@ -32,7 +32,7 @@ public class ZephyrApplicationEmulatorDebugLaunchConfigurationTabGroup
 
 		if (mode.equals(ILaunchManager.DEBUG_MODE)) {
 			tabs.add(new EmulatorDebugLaunchMainTab());
-			tabs.add(new CommonDebugLaunchDebuggerTab());
+			tabs.add(new EmulatorDebugLaunchDebuggerTab());
 			tabs.add(new CommonDebugLaunchStartupTab());
 			tabs.add(new SourceLookupTab());
 			tabs.add(new CommonTab());
