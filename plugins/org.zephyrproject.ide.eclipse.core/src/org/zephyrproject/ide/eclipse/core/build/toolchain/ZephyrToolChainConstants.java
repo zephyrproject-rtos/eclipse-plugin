@@ -22,7 +22,7 @@ public final class ZephyrToolChainConstants {
 
 		public static final String DESCRIPTION = "Zephyr SDK";
 
-		public static final String DIRECTORY_DESCRIPTION =
+		public static final String ENV_DESC =
 				String.join(ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION, // $NON-NLS-1$
 						"Install", ZephyrStrings.PATH); //$NON-NLS-1$
 
@@ -36,7 +36,7 @@ public final class ZephyrToolChainConstants {
 
 		public static final String DESCRIPTION = "Crosstool-NG";
 
-		public static final String DIRECTORY_DESCRIPTION =
+		public static final String ENV_DESC =
 				String.join(ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION,
 						ZephyrStrings.TOOLCHAIN, ZephyrStrings.PATH);
 
@@ -50,7 +50,7 @@ public final class ZephyrToolChainConstants {
 
 		public static final String DESCRIPTION = "GNU ARM Embedded Toolchain";
 
-		public static final String DIRECTORY_DESCRIPTION = String.join(
+		public static final String ENV_DESC = String.join(
 				ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION, ZephyrStrings.PATH);
 
 		public static final String ENV = "GNUARMEMB_TOOLCHAIN_PATH"; //$NON-NLS-1$
@@ -63,7 +63,7 @@ public final class ZephyrToolChainConstants {
 
 		public static final String DESCRIPTION = "Cross Compile";
 
-		public static final String PREFIX_DESCRIPTION = String
+		public static final String ENV_DESC = String
 				.join(ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION, "Prefix");
 
 		public static final String ENV = "CROSS_COMPILE"; //$NON-NLS-1$
@@ -76,7 +76,7 @@ public final class ZephyrToolChainConstants {
 
 		public static final String DESCRIPTION = "Custom CMake Toolchain";
 
-		public static final String DIRECTORY_DESCRIPTION = String.join(
+		public static final String ENV_DESC = String.join(
 				ZephyrStrings.ONE_EMPTY_SPACE, DESCRIPTION, ZephyrStrings.PATH);
 
 		public static final String ENV = "TOOLCHAIN_ROOT"; //$NON-NLS-1$
