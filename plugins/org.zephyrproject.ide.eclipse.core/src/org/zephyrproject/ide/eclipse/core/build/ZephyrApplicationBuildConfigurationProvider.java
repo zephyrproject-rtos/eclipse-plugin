@@ -17,6 +17,11 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrossCompileToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrosstoolsToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.GnuArmEmbToolChain;
+import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.ZephyrSdkToolChain;
+import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
 
 /**
  * Build configuration provider for Zephyr Application
@@ -122,7 +127,23 @@ public class ZephyrApplicationBuildConfigurationProvider
 	private IToolChain getToolChain(IBuildConfiguration config)
 			throws CoreException {
 		String configName = config.getName();
-		StringBuilder tcId = new StringBuilder(ZephyrGCCToolChain.TOOLCHAIN_ID);
+		String tcVariant =
+				ZephyrHelpers.getToolChainVariant(config.getProject());
+
+		StringBuilder tcId = new StringBuilder();
+		if (tcVariant == null) {
+			tcId.append(ZephyrGenericToolChain.TOOLCHAIN_ID);
+		} else if (tcVariant.equals(ZephyrSdkToolChain.VARIANT)) {
+			tcId.append(ZephyrGCCToolChain.TOOLCHAIN_ID);
+		} else if (tcVariant.equals(CrosstoolsToolChain.VARIANT)) {
+			tcId.append(ZephyrGCCToolChain.TOOLCHAIN_ID);
+		} else if (tcVariant.equals(GnuArmEmbToolChain.VARIANT)) {
+			tcId.append(ZephyrGCCToolChain.TOOLCHAIN_ID);
+		} else if (tcVariant.equals(CrossCompileToolChain.VARIANT)) {
+			tcId.append(ZephyrGenericToolChain.TOOLCHAIN_ID);
+		} else {
+			tcId.append(ZephyrGenericToolChain.TOOLCHAIN_ID);
+		}
 
 		String[] elem = configName.split("#", 2); //$NON-NLS-1$
 		if (elem.length == 2) {
