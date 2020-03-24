@@ -242,7 +242,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private void createGroupZephyrSDK() {
 		Composite grp = grpZephyr;
 
-		createLabel(grp, ZephyrSdkToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, ZephyrSdkToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ ZephyrSdkToolChain.ENV + "):"); //$NON-NLS-1$
 
 		zephyrSdkInstallDir = createDirField(grp);
@@ -259,7 +259,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private void createGroupXtools() {
 		Composite grp = grpXTools;
 
-		createLabel(grp, CrosstoolsToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CrosstoolsToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CrosstoolsToolChain.ENV + "):"); //$NON-NLS-1$
 
 		xtoolsDir = createDirField(grp);
@@ -276,7 +276,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private void createGroupGnuArmEmb() {
 		Composite grp = grpGnuArmEmb;
 
-		createLabel(grp, GnuArmEmbToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, GnuArmEmbToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ GnuArmEmbToolChain.ENV + "):"); //$NON-NLS-1$
 
 		gnuArmEmbDir = createDirField(grp);
@@ -293,7 +293,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private void createGroupCrossCompile() {
 		Composite grp = grpCrossCompile;
 
-		createLabel(grp, CrossCompileToolChain.PREFIX_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CrossCompileToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CrossCompileToolChain.ENV + "):"); //$NON-NLS-1$
 
 		crossCompilePrefix = createTextField(grp);
@@ -310,7 +310,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 	private void createGroupCustom() {
 		Composite grp = grpCustom;
 
-		createLabel(grp, CustomToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CustomToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CustomToolChain.ENV + "):"); //$NON-NLS-1$
 
 		customRoot = createTextField(grp);
@@ -424,10 +424,10 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 			if (dir.isEmpty()) {
 				setErrorMessage(null);
-				setMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
+				setMessage(ZephyrSdkToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(ZephyrSdkToolChain.ENV_DESC
 						+ " is not valid");
 				setMessage(null);
 			}
@@ -438,10 +438,10 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 			if (dir.isEmpty()) {
 				setErrorMessage(null);
-				setMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
+				setMessage(CrosstoolsToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(CrosstoolsToolChain.ENV_DESC
 						+ " is not valid");
 				setMessage(null);
 			}
@@ -452,10 +452,10 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 
 			if (dir.isEmpty()) {
 				setErrorMessage(null);
-				setMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
+				setMessage(GnuArmEmbToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(GnuArmEmbToolChain.ENV_DESC
 						+ " is not valid");
 				setMessage(null);
 			}
@@ -464,7 +464,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 			if (!prefix.isEmpty()) {
 				valid = true;
 			} else {
-				setErrorMessage(CrossCompileToolChain.PREFIX_DESCRIPTION
+				setErrorMessage(CrossCompileToolChain.ENV_DESC
 						+ " must be specified");
 				setMessage(null);
 			}
@@ -475,7 +475,7 @@ public class ZephyrApplicationToolchainWizardPage extends WizardPage {
 				if (!tcRoot.isEmpty()) {
 					valid = true;
 				} else {
-					setErrorMessage(CustomToolChain.DIRECTORY_DESCRIPTION
+					setErrorMessage(CustomToolChain.ENV_DESC
 							+ " must be specified");
 					setMessage(null);
 				}

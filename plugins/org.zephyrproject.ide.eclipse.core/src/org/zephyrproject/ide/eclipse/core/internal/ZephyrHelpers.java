@@ -411,6 +411,19 @@ public final class ZephyrHelpers {
 		return getWestPath(getProjectPreferenceStore(project));
 	}
 
+	public static String getToolChainVariant(ScopedPreferenceStore pStore) {
+		return getProjectPreference(pStore,
+				ZephyrToolChainConstants.ZEPHYR_TOOLCHAIN_VARIANT);
+	}
+
+	public static String getToolChainVariant(IProject project) {
+		if (project == null) {
+			return null;
+		}
+
+		return getToolChainVariant(getProjectPreferenceStore(project));
+	}
+
 	/**
 	 * Get the name-value pair of project preference.
 	 *
@@ -421,6 +434,10 @@ public final class ZephyrHelpers {
 	 */
 	public static String getProjectPreference(ScopedPreferenceStore pStore,
 			String name) {
+		if (pStore == null) {
+			return null;
+		}
+
 		if (!pStore.contains(name)) {
 			return null;
 		}

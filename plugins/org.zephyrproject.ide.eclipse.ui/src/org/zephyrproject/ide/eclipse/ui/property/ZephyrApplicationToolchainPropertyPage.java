@@ -297,7 +297,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupZephyrSDK(ScopedPreferenceStore pStore) {
 		Composite grp = grpZephyr;
 
-		createLabel(grp, ZephyrSdkToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, ZephyrSdkToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ ZephyrSdkToolChain.ENV + "):"); //$NON-NLS-1$
 
 		zephyrSdkInstallDir = createDirField(grp);
@@ -313,7 +313,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupXtools(ScopedPreferenceStore pStore) {
 		Composite grp = grpXTools;
 
-		createLabel(grp, CrosstoolsToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CrosstoolsToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CrosstoolsToolChain.ENV + "):"); //$NON-NLS-1$
 
 		xtoolsDir = createDirField(grp);
@@ -329,7 +329,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupGnuArmEmb(ScopedPreferenceStore pStore) {
 		Composite grp = grpGnuArmEmb;
 
-		createLabel(grp, GnuArmEmbToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, GnuArmEmbToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ GnuArmEmbToolChain.ENV + "):"); //$NON-NLS-1$
 
 		gnuArmEmbDir = createDirField(grp);
@@ -345,7 +345,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupCrossCompile(ScopedPreferenceStore pStore) {
 		Composite grp = grpCrossCompile;
 
-		createLabel(grp, CrossCompileToolChain.PREFIX_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CrossCompileToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CrossCompileToolChain.ENV + "):"); //$NON-NLS-1$
 
 		crossCompilePrefix = createTextField(grp);
@@ -361,7 +361,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 	private void createGroupCustom(ScopedPreferenceStore pStore) {
 		Composite grp = grpCustom;
 
-		createLabel(grp, CustomToolChain.DIRECTORY_DESCRIPTION + " (" //$NON-NLS-1$
+		createLabel(grp, CustomToolChain.ENV_DESC + " (" //$NON-NLS-1$
 				+ CustomToolChain.ENV + "):"); //$NON-NLS-1$
 
 		customRoot = createTextField(grp);
@@ -417,10 +417,10 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			valid = ZephyrHelpers.checkValidZephyrSdkInstallDir(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(ZephyrSdkToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(ZephyrSdkToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(ZephyrSdkToolChain.ENV_DESC
 						+ " is not valid");
 			}
 		} else if (selection.equals(CrosstoolsToolChain.DESCRIPTION)) {
@@ -429,10 +429,10 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			valid = ZephyrHelpers.checkValidXToolsDirectory(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(CrosstoolsToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(CrosstoolsToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(CrosstoolsToolChain.ENV_DESC
 						+ " is not valid");
 			}
 		} else if (selection.equals(GnuArmEmbToolChain.DESCRIPTION)) {
@@ -441,10 +441,10 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			valid = ZephyrHelpers.checkValidDirectory(dir);
 
 			if (dir.isEmpty()) {
-				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(GnuArmEmbToolChain.ENV_DESC
 						+ " must be specified");
 			} else if (!valid) {
-				setErrorMessage(GnuArmEmbToolChain.DIRECTORY_DESCRIPTION
+				setErrorMessage(GnuArmEmbToolChain.ENV_DESC
 						+ " is not valid");
 			}
 		} else if (selection.equals(CrossCompileToolChain.DESCRIPTION)) {
@@ -452,7 +452,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 			if (!prefix.isEmpty()) {
 				valid = true;
 			} else {
-				setErrorMessage(CrossCompileToolChain.PREFIX_DESCRIPTION
+				setErrorMessage(CrossCompileToolChain.ENV_DESC
 						+ " must be specified");
 			}
 		} else if (selection.equals(CustomToolChain.DESCRIPTION)) {
@@ -462,7 +462,7 @@ public class ZephyrApplicationToolchainPropertyPage extends PropertyPage
 				if (!tcRoot.isEmpty()) {
 					valid = true;
 				} else {
-					setErrorMessage(CustomToolChain.DIRECTORY_DESCRIPTION
+					setErrorMessage(CustomToolChain.ENV_DESC
 							+ " must be specified");
 				}
 			} else {
