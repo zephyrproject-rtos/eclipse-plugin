@@ -105,7 +105,8 @@ public class HardwareDebugLaunchMainTab extends CMainTab2 {
 			if ((resources != null) && (resources.length > 0)) {
 				IProject project = resources[0].getProject();
 				ZephyrApplicationBuildConfiguration appBuildCfg =
-						ZephyrHelpers.Launch.getBuildConfiguration(project);
+						ZephyrHelpers.Launch
+								.getZephyrBuildConfiguration(project);
 
 				IContainer buildContainer = appBuildCfg.getBuildContainer();
 				if (buildContainer instanceof IFolder) {

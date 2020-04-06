@@ -49,7 +49,7 @@ public class ZephyrApplicationEmulatorDebugLaunchConfigDelegate
 		ILaunchTarget target = ((ITargetedLaunch) launch).getLaunchTarget();
 
 		ZephyrApplicationBuildConfiguration appBuildCfg = ZephyrHelpers.Launch
-				.getBuildConfiguration(project, mode, target, monitor);
+				.getZephyrBuildConfiguration(project, mode, target, monitor);
 		ZephyrGCCToolChain toolChain =
 				(ZephyrGCCToolChain) appBuildCfg.getToolChain();
 

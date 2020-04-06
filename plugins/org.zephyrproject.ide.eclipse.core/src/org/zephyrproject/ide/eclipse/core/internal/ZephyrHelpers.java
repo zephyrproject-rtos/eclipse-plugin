@@ -16,7 +16,9 @@ import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
+import org.eclipse.cdt.core.build.ICBuildConfigurationManager;
 import org.eclipse.cdt.core.envvar.IEnvironmentVariable;
+import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ProjectScope;
 import org.eclipse.core.runtime.CoreException;
@@ -31,6 +33,7 @@ import org.zephyrproject.ide.eclipse.core.ZephyrPlugin;
 import org.zephyrproject.ide.eclipse.core.ZephyrStrings;
 import org.zephyrproject.ide.eclipse.core.build.CMakeConstants;
 import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfiguration;
+import org.zephyrproject.ide.eclipse.core.build.ZephyrApplicationBuildConfigurationProvider;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrossCompileToolChain;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrToolChainConstants.CrosstoolsToolChain;
@@ -49,28 +52,69 @@ import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.Z
  */
 public final class ZephyrHelpers {
 
-	public static class Launch {
+	public static class Build {
 
-		public static ZephyrApplicationBuildConfiguration getBuildConfiguration(
+		private static ICBuildConfigurationManager cdtConfigManager =
+				CCorePlugin.getService(ICBuildConfigurationManager.class);
+
+		public static IBuildConfiguration getBuildConfiguration(
 				IProject project) throws CoreException {
-			ICBuildConfiguration appBuildCfg = project.getActiveBuildConfig()
-					.getAdapter(ICBuildConfiguration.class);
+			IBuildConfiguration buildCfg = project.getActiveBuildConfig();
 
-			if ((appBuildCfg == null)
-					|| !(appBuildCfg instanceof ZephyrApplicationBuildConfiguration)) {
-				throw new CoreException(ZephyrHelpers.errorStatus(
-						"Build not configured properly.", //$NON-NLS-1$
-						new RuntimeException(
-								"Build configuration is not valid."))); //$NON-NLS-1$
+			/* Check if the active build configuration is of Zephyr origin */
+			if (buildCfg.getName().startsWith(
+					ZephyrApplicationBuildConfigurationProvider.ID)) {
+				return buildCfg;
 			}
 
-			return (ZephyrApplicationBuildConfiguration) appBuildCfg;
+			/*
+			 * Somehow CDT is not using the Zephyr build configuration set
+			 * when project is created. So we need to set it manually.
+			 */
+			IBuildConfiguration[] configs = project.getBuildConfigs();
+			for (IBuildConfiguration icb : configs) {
+				if (icb.getName().startsWith(
+						ZephyrApplicationBuildConfigurationProvider.ID)) {
+					return icb;
+				}
+			}
+
+			/*
+			 * Zephyr build configuration is not in the list. This means
+			 * the project is not create correctly. So throw exception.
+			 */
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Project was not created correctly.", new RuntimeException(
+							"No Zephyr build configuration in project.")));
 		}
 
-		public static ZephyrApplicationBuildConfiguration getBuildConfiguration(
+		public static ZephyrApplicationBuildConfiguration getZephyrBuildConfiguration(
+				IProject project) throws CoreException {
+			IBuildConfiguration buildCfg = getBuildConfiguration(project);
+			ICBuildConfiguration appBuildCfg =
+					cdtConfigManager.getBuildConfiguration(buildCfg);
+			if (appBuildCfg instanceof ZephyrApplicationBuildConfiguration) {
+				return (ZephyrApplicationBuildConfiguration) appBuildCfg;
+			}
+
+			throw new CoreException(ZephyrHelpers.errorStatus(
+					"Project was not created correctly.", new RuntimeException(
+							"No Zephyr build configuration in project.")));
+		}
+
+	}
+
+	public static class Launch {
+
+		public static ZephyrApplicationBuildConfiguration getZephyrBuildConfiguration(
+				IProject project) throws CoreException {
+			return Build.getZephyrBuildConfiguration(project);
+		}
+
+		public static ZephyrApplicationBuildConfiguration getZephyrBuildConfiguration(
 				IProject project, String mode, ILaunchTarget target,
 				IProgressMonitor monitor) throws CoreException {
-			return getBuildConfiguration(project);
+			return getZephyrBuildConfiguration(project);
 		}
 
 		public static Map<String, String> getBuildEnvironmentMap(
