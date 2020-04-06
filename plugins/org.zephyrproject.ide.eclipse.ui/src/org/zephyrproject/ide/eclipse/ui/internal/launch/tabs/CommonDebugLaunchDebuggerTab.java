@@ -75,7 +75,8 @@ public abstract class CommonDebugLaunchDebuggerTab
 			if ((resources != null) && (resources.length > 0)) {
 				IProject project = resources[0].getProject();
 				ZephyrApplicationBuildConfiguration appBuildCfg =
-						ZephyrHelpers.Launch.getBuildConfiguration(project);
+						ZephyrHelpers.Launch
+								.getZephyrBuildConfiguration(project);
 
 				IToolChain toolchain = appBuildCfg.getToolChain();
 				if (toolchain instanceof ZephyrGCCToolChain) {

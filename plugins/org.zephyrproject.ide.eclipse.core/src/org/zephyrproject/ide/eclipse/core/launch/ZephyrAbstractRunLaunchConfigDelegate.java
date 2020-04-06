@@ -24,8 +24,8 @@ public abstract class ZephyrAbstractRunLaunchConfigDelegate
 	protected ZephyrApplicationBuildConfiguration getBuildConfiguration(
 			IProject project, String mode, ILaunchTarget target,
 			IProgressMonitor monitor) throws CoreException {
-		return ZephyrHelpers.Launch.getBuildConfiguration(project, mode, target,
-				monitor);
+		return ZephyrHelpers.Launch.getZephyrBuildConfiguration(project, mode,
+				target, monitor);
 	}
 
 	@Override

@@ -6,13 +6,11 @@
 
 package org.zephyrproject.ide.eclipse.core;
 
-import java.io.IOException;
 import java.util.Map;
 
 import org.eclipse.cdt.core.CCorePlugin;
 import org.eclipse.cdt.core.build.ICBuildConfiguration;
 import org.eclipse.cdt.core.resources.IConsole;
-import org.eclipse.core.resources.IBuildConfiguration;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
@@ -73,7 +71,6 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 		IResourceDelta delta = getDelta(getProject());
 		int buildType = adjustKind(kind, delta);
 		IProject project = getProject();
-		IBuildConfiguration buildCfg = getBuildConfig();
 
 		/* Setup console */
 		IConsole console = CCorePlugin.getDefault().getConsole();
@@ -81,17 +78,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 
 		/* Grab a build configuration from the provider */
 		ICBuildConfiguration appBuildCfg =
-				buildCfg.getAdapter(ICBuildConfiguration.class);
-		if (appBuildCfg == null) {
-			try {
-				console.getErrorStream()
-						.write("Build not configured correctly");
-			} catch (IOException e) {
-				throw new CoreException(ZephyrHelpers
-						.errorStatus("Exception while building", null));
-			}
-			return null;
-		}
+				ZephyrHelpers.Build.getZephyrBuildConfiguration(project);
 
 		/* Invoke application build */
 		appBuildCfg.build(buildType, args, console, monitor);
@@ -104,7 +91,6 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 	@Override
 	protected void clean(IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
-		IBuildConfiguration buildCfg = getBuildConfig();
 
 		/* Setup console */
 		IConsole console = CCorePlugin.getDefault().getConsole();
@@ -112,17 +98,7 @@ public class ZephyrApplicationBuilder extends IncrementalProjectBuilder {
 
 		/* Grab a build configuration from the provider */
 		ICBuildConfiguration appBuildCfg =
-				buildCfg.getAdapter(ICBuildConfiguration.class);
-		if (appBuildCfg == null) {
-			try {
-				console.getErrorStream()
-						.write("Build not configured correctly");
-			} catch (IOException e) {
-				throw new CoreException(ZephyrHelpers
-						.errorStatus("Exception while building", null));
-			}
-			return;
-		}
+				ZephyrHelpers.Build.getZephyrBuildConfiguration(project);
 
 		/* Invoke application clean */
 		appBuildCfg.clean(console, monitor);
