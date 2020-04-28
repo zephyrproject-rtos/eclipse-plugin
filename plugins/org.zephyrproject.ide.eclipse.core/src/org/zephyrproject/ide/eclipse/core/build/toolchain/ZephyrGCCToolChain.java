@@ -424,15 +424,14 @@ public class ZephyrGCCToolChain extends PlatformObject implements IToolChain {
 				if (!arg.startsWith("-")) { //$NON-NLS-1$
 					Path filePath;
 					try {
-						filePath = buildDirectory.resolve(commandLine.get(i))
-								.normalize();
+						filePath = buildDirectory.resolve(arg).normalize();
 					} catch (InvalidPathException e) {
 						continue;
 					}
 
 					IFile[] files = ResourcesPlugin.getWorkspace().getRoot()
 							.findFilesForLocationURI(filePath.toUri());
-					if (files.length > 0) {
+					if ((files.length > 0) && files[0].exists()) {
 						/* replace it with a tmp file */
 						String extension = files[0].getFileExtension();
 						if (extension == null) {
@@ -443,23 +442,33 @@ public class ZephyrGCCToolChain extends PlatformObject implements IToolChain {
 						tmpFile = Files.createTempFile(buildDirectory, ".sc", //$NON-NLS-1$
 								extension);
 						commandLine.set(i, tmpFile.toString());
-					} else {
-						switch (arg) {
-						case "-o": //$NON-NLS-1$
-						case "-D": //$NON-NLS-1$
-						case "-I": //$NON-NLS-1$
-							i++;
-							break;
-						case "-imacros": //$NON-NLS-1$
-							macroFiles.add(commandLine.get(++i));
-							break;
-						case "-include": //$NON-NLS-1$
-							includeFiles.add(commandLine.get(++i));
-							break;
-						}
+					}
+				} else {
+					switch (arg) {
+					case "-o": //$NON-NLS-1$
+					case "-D": //$NON-NLS-1$
+					case "-I": //$NON-NLS-1$
+						i++;
+						continue;
+					case "-imacros": //$NON-NLS-1$
+						macroFiles.add(commandLine.get(++i));
+						continue;
+					case "-isystem": //$NON-NLS-1$
+					case "-include": //$NON-NLS-1$
+						includePaths.add(commandLine.get(++i));
+						continue;
+					}
+
+					if (arg.startsWith("-imacros=")) {
+						String path = arg.substring("-imacros=".length());
+						macroFiles.add(path);
+						continue;
+					} else if (arg.startsWith("-imacros")) {
+						String path = arg.substring("-imacros".length());
+						macroFiles.add(path);
+						continue;
 					}
 				}
-				i++;
 			}
 			if (tmpFile == null) {
 				/* No source file found in command line, so skip */
