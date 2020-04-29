@@ -17,9 +17,11 @@ import org.eclipse.cdt.core.model.CModelException;
 import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICProject;
 import org.eclipse.cdt.core.model.IPathEntry;
+import org.eclipse.core.resources.FileInfoMatcherDescription;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IResourceFilterDescription;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -246,6 +248,27 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			 * project, so not exactly an issue.
 			 */
 			try {
+				/* Filter out "sanity-out" folder from linked resource */
+				FileInfoMatcherDescription sanityOutFilter =
+						new FileInfoMatcherDescription(
+								"org.eclipse.ui.ide.multiFilter",
+								"1.0-name-matches-false-false-sanity-out");
+				zBase.createFilter(
+						IResourceFilterDescription.EXCLUDE_ALL
+								| IResourceFilterDescription.FOLDERS,
+						sanityOutFilter, IResource.NONE, null);
+
+				/* Filter out "build" folder from linked resource */
+				FileInfoMatcherDescription buildFilter =
+						new FileInfoMatcherDescription(
+								"org.eclipse.ui.ide.multiFilter",
+								"1.0-name-matches-false-false-build");
+				zBase.createFilter(
+						IResourceFilterDescription.EXCLUDE_ALL
+								| IResourceFilterDescription.FOLDERS,
+						buildFilter, IResource.NONE, null);
+
+				/* Create link in project */
 				zBase.createLink(zBaseLink, IResource.BACKGROUND_REFRESH, null);
 			} catch (CoreException e) {
 				showErrorDialogAndDeleteProject(
