@@ -246,7 +246,7 @@ public class ZephyrApplicationNewProjectWizard extends TemplateWizard {
 			 * project, so not exactly an issue.
 			 */
 			try {
-				zBase.createLink(zBaseLink, IResource.NONE, null);
+				zBase.createLink(zBaseLink, IResource.BACKGROUND_REFRESH, null);
 			} catch (CoreException e) {
 				showErrorDialogAndDeleteProject(
 						String.format("Error creating linked resource to %s",
