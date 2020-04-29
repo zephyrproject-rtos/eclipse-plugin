@@ -211,9 +211,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 						buildFolder.getProjectRelativePath().toString()));
 			}
 
-			processCompileCommandsFile(monitor);
-
 			monitor.done();
+
+			processCompileCommandsFile(monitor);
 
 			return project;
 		} catch (IOException eio) {
@@ -344,7 +344,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			IConsole console, IProgressMonitor monitor) throws CoreException {
 		IProject project = getProject();
 
-		SubMonitor subMonitor = SubMonitor.convert(monitor, 101);
+		SubMonitor subMonitor = SubMonitor.convert(monitor, 103);
 
 		/* Remove C-related warnings/errors */
 		project.deleteMarkers(ICModelMarker.C_MODEL_PROBLEM_MARKER, false,
@@ -358,11 +358,11 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 		updateCMakeVariables();
 
-		if (appBuild(kind, args, console, subMonitor.newChild(100)) == null) {
+		if (appBuild(kind, args, console, subMonitor.newChild(101)) == null) {
 			return null;
 		}
 
-		project.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+		project.refreshLocal(IResource.DEPTH_INFINITE, subMonitor.newChild(1));
 
 		return new IProject[] {
 			project
@@ -565,6 +565,8 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 	private void processCompileCommandsFile(IProgressMonitor monitor)
 			throws CoreException {
+		monitor.beginTask("Parsing compile commands...", 1);
+
 		IProject project = getProject();
 		Path commandsFile =
 				getBuildDirectory().resolve("compile_commands.json"); //$NON-NLS-1$
@@ -596,6 +598,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 						project.getName()), e));
 			}
 		}
+
+		monitor.worked(1);
+		monitor.done();
 	}
 
 	private void parseCMakeCache(IProject project, Path buildDir)
