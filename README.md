@@ -160,3 +160,12 @@ This line tells OpenOCD to search for exported information on threads.
 
 With the correct configuration mentioned above, information on available
 threads will be displayed in Eclipse's debug perspective.
+
+## Troubleshooting
+
+* Eclipse is not responding after clicking Finish at project creation.
+
+> Due to the Zephyr source tree being linked within the project,
+> it may take some time for Eclipse to traverse the whole tree.
+> For example, after running sanity check, the output folder contains
+> a large amount of files for Eclipse to traverse.
