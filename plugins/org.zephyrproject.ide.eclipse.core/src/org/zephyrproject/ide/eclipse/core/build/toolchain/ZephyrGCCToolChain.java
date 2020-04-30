@@ -511,7 +511,9 @@ public class ZephyrGCCToolChain extends PlatformObject implements IToolChain {
 					if (line.equals("End of search list.")) { //$NON-NLS-1$
 						inIncludePaths = false;
 					} else {
-						includePath.add(line.trim());
+						Path incPath = buildDirectory.resolve(line.trim())
+								.normalize().toAbsolutePath();
+						includePath.add(incPath.toString());
 					}
 				} else if (line.startsWith("#define ")) { //$NON-NLS-1$
 					Matcher matcher = definePattern.matcher(line);
