@@ -292,64 +292,11 @@ public abstract class ZephyrApplicationAbstractProjectWizard
 		/*
 		 * Also need to tell CDT ZEPHYR_BASE is source so it will index the
 		 * source inside, for code completion and references/declarations
-		 * searching.
+		 * searching. However, exclude everything first so it would not
+		 * index any files before CMake is run.
 		 */
 		IPath[] exclusion = new Path[] {
-			/*
-			 * Parsing all boards is not useful as we only need one.
-			 */
-			new Path("boards/**"), //$NON-NLS-1$
-
-			/*
-			 * Files in these directories are ignored to speed up
-			 * indexing a bit by not looking at those files.
-			 */
-			new Path("cmake/**"), //$NON-NLS-1$
-			new Path("doc/**"), //$NON-NLS-1$
-			new Path("scripts/**"), //$NON-NLS-1$
-
-			/*
-			 * Code in ext/ is usually architecture specific and should not
-			 * be included unconditionally.
-			 */
-			new Path("ext/**"), //$NON-NLS-1$
-
-			/*
-			 * Default build and sanity check directories are ignored.
-			 */
-			new Path("**/build/**"), //$NON-NLS-1$
-			new Path("sanity-out/**"), //$NON-NLS-1$
-
-			/*
-			 * Ignore non-code files.
-			 */
-			new Path("CODEOWNERS"), //$NON-NLS-1$
-			new Path("CODE_OF_CONDUCT.md"), //$NON-NLS-1$
-			new Path("LICENSE"), //$NON-NLS-1$
-			new Path("VERSION"), //$NON-NLS-1$
-			new Path("dts/**"), //$NON-NLS-1$
-			new Path("share/**"), //$NON-NLS-1$
-			new Path("**/CMakeLists.txt"), //$NON-NLS-1$
-			new Path("**/Kconfig*"), //$NON-NLS-1$
-			new Path("**/Makefile"), // $NON-NLS
-			new Path("**/*.cmd"), //$NON-NLS-1$
-			new Path("**/*.dts"), //$NON-NLS-1$
-			new Path("**/*.dtsi"), //$NON-NLS-1$
-			new Path("**/*.h.in"), //$NON-NLS-1$
-			new Path("**/*.ld"), //$NON-NLS-1$
-			new Path("**/*.py"), //$NON-NLS-1$
-			new Path("**/*.pyc"), //$NON-NLS-1$
-			new Path("**/*.rst"), //$NON-NLS-1$
-			new Path("**/*.sh"), //$NON-NLS-1$
-			new Path("**/*.txt"), //$NON-NLS-1$
-			new Path("**/*.yml"), //$NON-NLS-1$
-
-			/*
-			 * samples/** and tests/** are excluded because code here is
-			 * almost never called in applications.
-			 */
-			new Path("samples/**"), //$NON-NLS-1$
-			new Path("tests/**"), //$NON-NLS-1$
+			new Path("*"),
 		};
 
 		entries.add(CoreModel.newSourceEntry(zBase.getFullPath(), exclusion));
