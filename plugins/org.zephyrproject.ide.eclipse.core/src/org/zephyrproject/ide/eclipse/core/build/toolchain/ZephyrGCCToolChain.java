@@ -550,7 +550,7 @@ public class ZephyrGCCToolChain extends PlatformObject implements IToolChain {
 		}
 	}
 
-	public void initCMakeVarsFromProjectPerfStore(IProject project) {
+	public void updateCMakeVarsFromProjectPerfStore(IProject project) {
 		ScopedPreferenceStore pStore =
 				ZephyrHelpers.getProjectPreferenceStore(project);
 

@@ -79,7 +79,7 @@ public class ZephyrApplicationBuildConfigurationProvider
 
 			ZephyrGCCToolChain zToolChain = (ZephyrGCCToolChain) toolChain;
 
-			zToolChain.initCMakeVarsFromProjectPerfStore(config.getProject());
+			zToolChain.updateCMakeVarsFromProjectPerfStore(config.getProject());
 
 			/* Create new build configuration */
 			if (config.getName().startsWith(
