@@ -24,8 +24,13 @@ import org.eclipse.cdt.core.IConsoleParser;
 import org.eclipse.cdt.core.build.CBuildConfiguration;
 import org.eclipse.cdt.core.build.IToolChain;
 import org.eclipse.cdt.core.index.IIndexManager;
+import org.eclipse.cdt.core.model.CModelException;
+import org.eclipse.cdt.core.model.CoreModel;
 import org.eclipse.cdt.core.model.ICElement;
 import org.eclipse.cdt.core.model.ICModelMarker;
+import org.eclipse.cdt.core.model.ICProject;
+import org.eclipse.cdt.core.model.IPathEntry;
+import org.eclipse.cdt.core.model.ISourceEntry;
 import org.eclipse.cdt.core.model.ITranslationUnit;
 import org.eclipse.cdt.core.parser.IExtendedScannerInfo;
 import org.eclipse.cdt.core.parser.IScannerInfo;
@@ -45,12 +50,14 @@ import org.eclipse.ui.preferences.ScopedPreferenceStore;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGCCToolChain;
 import org.zephyrproject.ide.eclipse.core.build.toolchain.ZephyrGenericToolChain;
 import org.zephyrproject.ide.eclipse.core.internal.ZephyrHelpers;
+import org.zephyrproject.ide.eclipse.core.internal.ZephyrPaths;
 import org.zephyrproject.ide.eclipse.core.internal.build.CMakeCache;
 import org.zephyrproject.ide.eclipse.core.internal.build.CompileCommand;
 import org.zephyrproject.ide.eclipse.core.internal.build.MakefileProgressMonitor;
 import org.zephyrproject.ide.eclipse.core.internal.build.NinjaProgressMonitor;
 import org.zephyrproject.ide.eclipse.core.internal.build.ZephyrScannerInfoCache;
 import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences;
+import org.zephyrproject.ide.eclipse.core.preferences.ZephyrProjectPreferences.ZephyrBase;
 
 import com.google.gson.Gson;
 
@@ -352,6 +359,10 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 
 		updateToolChain();
 
+		if (kind == IncrementalProjectBuilder.FULL_BUILD) {
+			updateZephyrBaseExclusionList(project);
+		}
+
 		if (cmakeBuild(kind, args, console, subMonitor.newChild(1)) == null) {
 			return null;
 		}
@@ -573,15 +584,16 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 				getBuildDirectory().resolve("compile_commands.json"); //$NON-NLS-1$
 		if (Files.exists(commandsFile)) {
 			try (FileReader reader = new FileReader(commandsFile.toFile())) {
+				/* Parse the JSON file produced from CMake */
 				Gson gson = new Gson();
 				ArrayList<ICElement> tuSelection = new ArrayList<>();
-
 				CompileCommand[] commands =
 						gson.fromJson(reader, CompileCommand[].class);
 				for (CompileCommand command : commands) {
 					processCompileCommand(command.getCommand(), tuSelection);
 				}
 
+				/* Start indexer on compiler files */
 				if (!tuSelection.isEmpty()) {
 					CCorePlugin.getIndexManager().update(
 							tuSelection.toArray(new ICElement[0]),
@@ -590,9 +602,9 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 									| IIndexManager.UPDATE_EXTERNAL_FILES_FOR_PROJECT
 									| IIndexManager.UPDATE_CHECK_CONTENTS_HASH
 									| IIndexManager.UPDATE_UNRESOLVED_INCLUDES);
-				}
 
-				scannerInfoCache.writeCache();
+					scannerInfoCache.writeCache();
+				}
 			} catch (IOException e) {
 				throw new CoreException(ZephyrHelpers.errorStatus(String.format(
 						"Cannot parse compiler commands from CMake for project %s",
@@ -641,4 +653,29 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		}
 	}
 
+	private void updateZephyrBaseExclusionList(IProject project)
+			throws CModelException {
+
+		ICProject cproj = CoreModel.getDefault().getCModel()
+				.getCProject(project.getName());
+
+		IPathEntry[] oldPathEntries = cproj.getRawPathEntries();
+		IPath zBase = project.getFolder(ZephyrBase.ZEPHYR_BASE).getFullPath();
+
+		ArrayList<IPathEntry> newPathEntryArray = new ArrayList<>();
+		for (IPathEntry ipe : oldPathEntries) {
+			if (!(ipe instanceof ISourceEntry)) {
+				newPathEntryArray.add(ipe);
+			} else {
+				/* Skip ZEPHYR_BASE */
+				if (!ipe.getPath().equals(zBase)) {
+					newPathEntryArray.add(ipe);
+				}
+			}
+		}
+		newPathEntryArray.add(CoreModel.newSourceEntry(zBase,
+				ZephyrPaths.generateZephyrBaseExclusionList()));
+		cproj.setRawPathEntries(newPathEntryArray.toArray(new IPathEntry[0]),
+				null);
+	}
 }
