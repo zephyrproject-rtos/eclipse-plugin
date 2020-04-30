@@ -357,6 +357,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 		}
 
 		updateCMakeVariables();
+		updateToolChain();
 
 		if (appBuild(kind, args, console, subMonitor.newChild(101)) == null) {
 			return null;
@@ -468,7 +469,7 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 			/* nothing to do here */
 		} else if (iTC instanceof ZephyrGCCToolChain) {
 			ZephyrGCCToolChain toolChain = (ZephyrGCCToolChain) iTC;
-			toolChain.initCMakeVarsFromProjectPerfStore(getProject());
+			toolChain.updateCMakeVarsFromProjectPerfStore(getProject());
 		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Toolchain not configured properly.", new Exception()));
