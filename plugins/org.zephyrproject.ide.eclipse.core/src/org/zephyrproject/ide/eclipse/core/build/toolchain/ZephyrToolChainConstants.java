@@ -59,7 +59,7 @@ public final class ZephyrToolChainConstants {
 
 	public static class CrossCompileToolChain {
 
-		public static final String VARIANT = "cross-compiler"; //$NON-NLS-1$
+		public static final String VARIANT = "cross-compile"; //$NON-NLS-1$
 
 		public static final String DESCRIPTION = "Cross Compile";
 
