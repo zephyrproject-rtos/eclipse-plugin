@@ -194,6 +194,11 @@
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.nios2Device"
             name="Nios II GDB Server">
       </device>
+      <device
+            class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.OpenIPCDevice"
+            id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.openIPCDevice"
+            name="OpenIPC">
+      </device>
             <device
             class="org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagConnectionImpl"
             default_connection="/dev/ttyACM0"

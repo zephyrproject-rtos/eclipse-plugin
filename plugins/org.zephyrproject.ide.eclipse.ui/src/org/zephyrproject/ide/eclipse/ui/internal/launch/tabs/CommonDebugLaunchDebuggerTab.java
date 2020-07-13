@@ -55,6 +55,9 @@ public abstract class CommonDebugLaunchDebuggerTab
 		new JTagDeviceDesc("openocd", //$NON-NLS-1$
 				"org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.OpenOCDSocket", //$NON-NLS-1$
 				JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333),
+		new JTagDeviceDesc("openipc", //$NON-NLS-1$
+				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.openIPCDevice", //$NON-NLS-1$
+				JTagDeviceDesc.IP_ADDR_LOCALHOST, 8086),
 	};
 
 	@Override
