@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, 2016 QNX Software Systems and others.
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -635,7 +635,10 @@ public class ZephyrApplicationBuildConfiguration extends CBuildConfiguration {
 						cache.getMakeProgram());
 				pStore.putValue(CMakeCache.CMAKE_GDB, cache.getGdb());
 
-				pStore.putValue(CMakeCache.WEST, cache.getWest());
+				String west = cache.getWest();
+				if (west != null) {
+					pStore.putValue(CMakeCache.WEST, cache.getWest());
+				}
 
 				String val = cache.getDebugRunner();
 				if ((val != null) && !val.isEmpty()) {

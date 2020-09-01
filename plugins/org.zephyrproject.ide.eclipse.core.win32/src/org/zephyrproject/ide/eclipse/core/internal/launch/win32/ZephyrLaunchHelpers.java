@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -7,10 +7,12 @@
 package org.zephyrproject.ide.eclipse.core.internal.launch.win32;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.runtime.CoreException;
@@ -26,6 +28,25 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 	private static final String BAT_FILE_SUFFIX = ".bat"; //$NON-NLS-1$
 
 	public ZephyrLaunchHelpers() {
+	}
+
+	private static String findCommand(String command) {
+		if (!command.toString().endsWith(".exe") //$NON-NLS-1$
+				&& !command.toString().endsWith(".bat")) { //$NON-NLS-1$
+			command = command.trim() + ".exe"; //$NON-NLS-1$
+		}
+
+		/* Look for it in the path environment var */
+		String path = System.getenv("PATH"); //$NON-NLS-1$
+		for (String entry : path.split(File.pathSeparator)) {
+			Path entryPath = Paths.get(entry);
+			Path cmdPath = entryPath.resolve(command);
+			if (Files.isExecutable(cmdPath)) {
+				return cmdPath.toString();
+			}
+		}
+
+		return null;
 	}
 
 	private static Path createBatchFile(
@@ -94,6 +115,14 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 			ZephyrApplicationBuildConfiguration appBuildCfg, ILaunch launch,
 			String action, String args) throws CoreException, IOException {
 		String westPath = ZephyrHelpers.getWestPath(project);
+
+		/*
+		 * Path to West may not have been cached by CMake.
+		 * So this try to find West here.
+		 */
+		if ((westPath == null) || (westPath.trim().isEmpty())) {
+			westPath = findCommand("west"); //$NON-NLS-1$
+		}
 
 		if ((westPath == null) || (westPath.trim().isEmpty())) {
 			throw new CoreException(ZephyrHelpers.errorStatus(
