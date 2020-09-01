@@ -106,7 +106,16 @@ public final class ZephyrLaunchHelpers implements IZephyrLaunchHelper {
 		}
 
 		ArrayList<String> cmds = new ArrayList<String>();
-		cmds.add(westPath);
+
+		if (westPath.indexOf(';') == -1) {
+			cmds.add(westPath);
+		} else {
+			String[] westPathBits = westPath.split(";");
+			for (String s : westPathBits) {
+				cmds.add(s);
+			}
+		}
+
 		cmds.add(action);
 		if (args != null) {
 			cmds.addAll(ZephyrHelpers.parseWestArguments(args));

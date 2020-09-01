@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -83,7 +83,22 @@ public class CMakeCache {
 	 *         not of type FILEPATH
 	 */
 	public String getFilePath(String name) {
-		return getTypedValue("FILEPATH=", name); //$NON-NLS-1$
+		String val = getTypedValue("FILEPATH=", name); //$NON-NLS-1$
+
+		if ((val != null) && (val.indexOf("-NOTFOUND") != -1)) {
+			return null;
+		}
+
+		return val;
+	}
+
+	/**
+	 * @param name Name of cached variable with type INTERNAL
+	 * @return The INTERNAL value or {@code null} if variable does not exist or
+	 *         not of type INTERNAL
+	 */
+	public String getInternal(String name) {
+		return getTypedValue("INTERNAL=", name); //$NON-NLS-1$
 	}
 
 	/**
@@ -118,7 +133,15 @@ public class CMakeCache {
 	 * @return Path to West as discovered by CMake
 	 */
 	public String getWest() {
-		return getFilePath(WEST);
+		/* WEST can appear as FILEPATH or INTERNAL. */
+
+		String val = getFilePath(WEST);
+
+		if (val == null) {
+			val = getInternal(WEST);
+		}
+
+		return val;
 	}
 
 	/**
