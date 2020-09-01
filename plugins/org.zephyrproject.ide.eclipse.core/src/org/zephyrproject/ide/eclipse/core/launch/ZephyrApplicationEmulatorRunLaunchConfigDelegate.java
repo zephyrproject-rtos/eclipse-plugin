@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -81,11 +81,11 @@ public class ZephyrApplicationEmulatorRunLaunchConfigDelegate
 			String args = configuration.getAttribute(
 					ZephyrLaunchConstants.ATTR_RUN_CMD_WEST_ARGS,
 					ZephyrStrings.EMPTY_STRING);
-			if (args.trim().isEmpty()) {
-				args = null;
-			}
 
-			runWest(project, appBuildCfg, launch, CMD_RUN, args);
+			args = "-t run " + args; //$NON-NLS-1$
+			args = args.trim();
+
+			runWest(project, appBuildCfg, launch, "build", args); //$NON-NLS-1$
 		} else {
 			throw new CoreException(ZephyrHelpers.errorStatus(
 					"Project is not correctly configured.", //$NON-NLS-1$

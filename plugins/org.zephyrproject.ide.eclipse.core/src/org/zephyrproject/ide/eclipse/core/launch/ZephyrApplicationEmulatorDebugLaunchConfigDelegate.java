@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019 Intel Corporation
+ * Copyright (c) 2019-2020 Intel Corporation
  *
  * SPDX-License-Identifier: EPL-2.0
  */
@@ -88,12 +88,12 @@ public class ZephyrApplicationEmulatorDebugLaunchConfigDelegate
 			String args = configuration.getAttribute(
 					ZephyrLaunchConstants.ATTR_DBGSERVER_CMD_WEST_ARGS,
 					ZephyrStrings.EMPTY_STRING);
-			if (args.trim().isEmpty()) {
-				args = null;
-			}
+
+			args = "-t debugserver " + args; //$NON-NLS-1$
+			args = args.trim();
 
 			ZephyrHelpers.Launch.runWest(project, appBuildCfg, launch,
-					CMD_DEBUGSERVER, args);
+					"build", args); //$NON-NLS-1$
 		} else if (commandSelection
 				.equals(ZephyrLaunchConstants.DBGSERVER_CMD_SEL_NONE)) {
 			/* Instructed not to launch debugserver */
