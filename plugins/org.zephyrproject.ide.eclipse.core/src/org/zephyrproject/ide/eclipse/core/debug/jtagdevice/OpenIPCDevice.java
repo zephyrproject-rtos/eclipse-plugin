@@ -13,14 +13,9 @@ package org.zephyrproject.ide.eclipse.core.debug.jtagdevice;
 
 import java.util.Collection;
 
-import org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagDeviceImpl;
+import org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagConnectionImpl;
 
-public class OpenIPCDevice extends DefaultGDBJtagDeviceImpl {
-
-	@Override
-	public String getDefaultPortNumber() {
-		return "8086"; //$NON-NLS-1$
-	}
+public class OpenIPCDevice extends DefaultGDBJtagConnectionImpl {
 
 	@Override
 	public void doDelay(int delay, Collection<String> commands) {
