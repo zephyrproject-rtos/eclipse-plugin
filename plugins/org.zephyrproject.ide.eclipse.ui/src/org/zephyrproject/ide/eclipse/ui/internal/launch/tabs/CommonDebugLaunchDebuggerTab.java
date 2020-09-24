@@ -23,9 +23,8 @@ public abstract class CommonDebugLaunchDebuggerTab
 		extends GDBJtagDSFDebuggerTab {
 
 	protected String defaultJtagDevice = JTagDeviceDesc.GENERIC_TCPIP_DEVICE;
-	protected String defaultHost = JTagDeviceDesc.IP_ADDR_LOCALHOST;
-	protected Integer defaultPort = 10000;
-	protected String defaultConnection = null;
+	protected String defaultConnection =
+			String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 10000);
 
 	protected JTagDeviceDesc[] jtagDevices = new JTagDeviceDesc[] {
 
@@ -33,10 +32,10 @@ public abstract class CommonDebugLaunchDebuggerTab
 
 		new JTagDeviceDesc("arc-nsim", //$NON-NLS-1$
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.arcnSimDevice", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333)),
 		new JTagDeviceDesc("qemu", //$NON-NLS-1$
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.qemuDevice", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 1234),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 1234)),
 
 		/* Hardware targets */
 
@@ -45,19 +44,20 @@ public abstract class CommonDebugLaunchDebuggerTab
 				"/dev/ttyACM0"), //$NON-NLS-1$
 		new JTagDeviceDesc("intel_s1000", //$NON-NLS-1$
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.xtOCDDevice", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 20000),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST,
+						20000)),
 		new JTagDeviceDesc("JLink", //$NON-NLS-1$
 				"org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.SeggerJLink", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 2331),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 2331)),
 		new JTagDeviceDesc("nios2", //$NON-NLS-1$
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.nios2Device", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333)),
 		new JTagDeviceDesc("openocd", //$NON-NLS-1$
 				"org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.OpenOCDSocket", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333)),
 		new JTagDeviceDesc("openipc", //$NON-NLS-1$
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.openIPCDevice", //$NON-NLS-1$
-				JTagDeviceDesc.IP_ADDR_LOCALHOST, 8086),
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 8086)),
 	};
 
 	@Override
@@ -69,8 +69,6 @@ public abstract class CommonDebugLaunchDebuggerTab
 
 		String device = defaultJtagDevice;
 		String connection = defaultConnection;
-		String ipAddr = defaultHost;
-		Integer ipPort = defaultPort;
 
 		/* Grab GDB path and runner from CMake */
 		try {
@@ -103,8 +101,7 @@ public abstract class CommonDebugLaunchDebuggerTab
 								if (jtag.connection != null) {
 									connection = jtag.connection;
 								} else {
-									ipAddr = jtag.host;
-									ipPort = jtag.port;
+									connection = defaultConnection;
 								}
 
 								break;
@@ -119,16 +116,18 @@ public abstract class CommonDebugLaunchDebuggerTab
 
 		configuration.setAttribute(IGDBJtagConstants.ATTR_JTAG_DEVICE_ID,
 				device);
-		if (connection != null) {
-			configuration.setAttribute(IGDBJtagConstants.ATTR_CONNECTION,
-					connection);
-		} else {
-			configuration.setAttribute(IGDBJtagConstants.ATTR_IP_ADDRESS,
-					ipAddr);
 
-			configuration.setAttribute(IGDBJtagConstants.ATTR_PORT_NUMBER,
-					ipPort);
+		String connText;
+		if (connection != null) {
+			connText = connection;
+		} else {
+			connText = defaultConnection;
 		}
+
+		/* The ATTR_CONNECTION attribute needs "gdb:" prefix */
+		connText = String.format("gdb:%s", connText);
+
+		configuration.setAttribute(IGDBJtagConstants.ATTR_CONNECTION, connText);
 	}
 
 }

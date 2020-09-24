@@ -13,9 +13,9 @@ package org.zephyrproject.ide.eclipse.core.debug.jtagdevice;
 
 import java.util.Collection;
 
-import org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagDeviceImpl;
+import org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.DefaultGDBJtagConnectionImpl;
 
-public class Nios2Device extends DefaultGDBJtagDeviceImpl {
+public class Nios2Device extends DefaultGDBJtagConnectionImpl {
 
 	@Override
 	public void doDelay(int delay, Collection<String> commands) {
@@ -27,16 +27,6 @@ public class Nios2Device extends DefaultGDBJtagDeviceImpl {
 
 	@Override
 	public void doReset(Collection<String> commands) {
-	}
-
-	@Override
-	public String getDefaultIpAddress() {
-		return "localhost"; //$NON-NLS-1$
-	}
-
-	@Override
-	public String getDefaultPortNumber() {
-		return "3333"; //$NON-NLS-1$
 	}
 
 }

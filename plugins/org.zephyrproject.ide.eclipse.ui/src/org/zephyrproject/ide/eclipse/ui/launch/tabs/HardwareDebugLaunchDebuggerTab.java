@@ -18,8 +18,8 @@ public class HardwareDebugLaunchDebuggerTab
 		/* Most boards use OpenOCD or pyOCD, so set it as default */
 		super.defaultJtagDevice =
 				"org.eclipse.cdt.debug.gdbjtag.core.jtagdevice.OpenOCDSocket"; //$NON-NLS-1$
-		super.defaultHost = JTagDeviceDesc.IP_ADDR_LOCALHOST;
-		super.defaultPort = 3333;
+		super.defaultConnection =
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 3333);
 	}
 
 }

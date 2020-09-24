@@ -21,8 +21,8 @@ public class EmulatorDebugLaunchDebuggerTab
 		 */
 		super.defaultJtagDevice =
 				"org.zephyrproject.ide.eclipse.core.debug.jtagdevice.qemuDevice"; //$NON-NLS-1$
-		super.defaultHost = JTagDeviceDesc.IP_ADDR_LOCALHOST;
-		super.defaultPort = 1234;
+		super.defaultConnection =
+				String.format("%s:%d", JTagDeviceDesc.IP_ADDR_LOCALHOST, 1234);
 	}
 
 }

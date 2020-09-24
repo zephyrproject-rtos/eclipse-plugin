@@ -176,26 +176,31 @@
          point="org.eclipse.cdt.debug.gdbjtag.core.JTagDevice">
       <device
             class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.QEMUDevice"
+            default_connection="localhost:1234"
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.qemuDevice"
             name="QEMU">
       </device>
       <device
             class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.ARCnSimDevice"
+            default_connection="localhost:3333"
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.arcnSimDevice"
             name="ARC nSIM">
       </device>
       <device
             class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.XtOCDDevice"
+            default_connection="localhost:20000"
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.xtOCDDevice"
             name="xt-ocd">
       </device>
       <device
             class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.Nios2Device"
+            default_connection="localhost:3333"
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.nios2Device"
             name="Nios II GDB Server">
       </device>
       <device
             class="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.OpenIPCDevice"
+            default_connection="localhost:8086"
             id="org.zephyrproject.ide.eclipse.core.debug.jtagdevice.openIPCDevice"
             name="OpenIPC">
       </device>
