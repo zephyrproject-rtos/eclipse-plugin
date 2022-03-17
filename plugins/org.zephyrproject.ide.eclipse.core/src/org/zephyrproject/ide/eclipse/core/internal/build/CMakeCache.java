@@ -112,7 +112,14 @@ public class CMakeCache {
 	 * @return Path to C++ compiler as discovered by CMake
 	 */
 	public String getCXXCompiler() {
-		return getFilePath(CMAKE_CXX_COMPILER);
+		/* CMAKE_CXX_COMPILER can appear as FILEPATH or STRING */
+		String cxx_compiler = getFilePath(CMAKE_CXX_COMPILER);
+
+		if (cxx_compiler == null) {
+			cxx_compiler = getString(CMAKE_CXX_COMPILER);
+		}
+
+		return cxx_compiler;
 	}
 
 	/**
