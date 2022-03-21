@@ -105,7 +105,14 @@ public class CMakeCache {
 	 * @return Path to C compiler as discovered by CMake
 	 */
 	public String getCCompiler() {
-		return getFilePath(CMAKE_C_COMPILER);
+		/* CMAKE_C_COMPILER can appear as FILEPATH or STRING */
+		String c_compiler = getFilePath(CMAKE_C_COMPILER);
+
+		if (c_compiler == null) {
+			c_compiler = getString(CMAKE_C_COMPILER);
+		}
+
+		return c_compiler;
 	}
 
 	/**
